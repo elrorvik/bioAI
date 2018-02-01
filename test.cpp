@@ -15,11 +15,9 @@ int main(){
 
     cout << "Hello world!\n";
 
-    fetch_data(filename, customers, depots, n_vehicles, n_customers, n_depots);
+    read_data(filename, customers, depots, n_vehicles, n_customers, n_depots);
 
-    
     int i = 0;
-
     set<depot>::iterator d_iter = depots.begin();
     while( i++ < n_depots) {
         cout << d_iter->x << endl;

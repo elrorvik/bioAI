@@ -1,6 +1,6 @@
 #include"file.h"
 
-void fetch_data(const string filename, set<customer> &customers, set<depot> &depots, int &n_vehicles, int &n_customers, int &n_depots) {
+void read_data(const string filename, set<customer> &customers, set<depot> &depots, int &n_vehicles, int &n_customers, int &n_depots) {
     ifstream data_file;
     data_file.open(filename);
 
