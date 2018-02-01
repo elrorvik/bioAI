@@ -12,9 +12,7 @@ struct customer {
 
 };
 
-bool operator<(const customer &right, const customer &left) {
-    return (right.index < left.index);
-}
+bool operator<(const customer &right, const customer &left);
 
 struct depot{
     int max_duration_per_vehicle;
@@ -26,9 +24,7 @@ struct depot{
         : max_duration_per_vehicle(max_duration_per_vehicle), max_load_per_vehicle(max_load_per_vehicle), x(x), y(y) {}
 };
 
-bool operator<(const depot &right, const depot &left) {
-    return (right.x + right.y < left.x + left.y);
-}
+bool operator<(const depot &right, const depot &left);
 
 
 void GA_mVRP();

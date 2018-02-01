@@ -3,6 +3,14 @@
 #include "mVRP.h"
 #include "population.h"
 
+bool operator<(const depot &right, const depot &left) {
+	return (right.x + right.y < left.x + left.y);
+}
+
+bool operator<(const customer &right, const customer &left) {
+	return (right.index < left.index);
+}
+
 void GA_mVRP() {
 	std::cout << " Welcome to foor loop !" << std::endl;
 	// initalize population

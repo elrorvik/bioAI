@@ -1,6 +1,7 @@
 #include <iostream>
 #include "mVRP.h"
 #include "file.h"
+#include "visualization.h"
 
 int main() {
 
@@ -26,6 +27,8 @@ int main() {
     }
 	
 	//GA_mVRP();
-	system("pause");
+	//system("pause");
+
+	cin.get();
 	return 0;
 }
