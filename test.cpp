@@ -3,6 +3,19 @@
 
 bool test_ONOFF = true;
 
+double placeholder_fitness() {
+    double fitness = 0;
+    int i  = 0;
+
+    while( i++ < n_customers-1) {
+        city c = get_city(i);
+        city cn = get_city(i+1);
+        fitness += (cn.x-c.x)^2 + (cn.y - c.y)^2;
+
+
+    }
+}
+
 int main(){
 
     string filename = "Data Files\\p01";
