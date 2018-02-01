@@ -19,7 +19,7 @@
     <ClCompile Include="mVRP.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="population_handling.cpp">
+    <ClCompile Include="population.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -27,7 +27,7 @@
     <ClInclude Include="mVRP.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="population_handling.h">
+    <ClInclude Include="population.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

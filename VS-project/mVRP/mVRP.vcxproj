@@ -117,11 +117,11 @@
   <ItemGroup>
     <ClCompile Include="main.cpp" />
     <ClCompile Include="mVRP.cpp" />
-    <ClCompile Include="population_handling.cpp" />
+    <ClCompile Include="population.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="mVRP.h" />
-    <ClInclude Include="population_handling.h" />
+    <ClInclude Include="population.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

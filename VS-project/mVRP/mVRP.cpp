@@ -1,7 +1,7 @@
 #include <iostream>
 #include <set>
 #include "mVRP.h"
-#include "population_hadling.h"
+#include "population.h"
 
 void GA_mVRP() {
 	std::cout << " Welcome to foor loop !" << std::endl;
@@ -11,10 +11,11 @@ void GA_mVRP() {
 	int n_vehicles;
 	int n_customers;
 	int n_depots;
+	int n_individuals;
 
 	// get data from function
-	customer** population;
-	initialize_population(population,n_vehicles,n_customers,n_depots,costumers,depots);
+	Population population(n_vehicles, n_customers, n_depots, n_individuals, costumers, depots);
+
 
 
 }
