@@ -1,0 +1,13 @@
+﻿  file.cpp
+  Generating Code...
+  Compiling...
+  main.cpp
+  Generating Code...
+main.obj : error LNK2005: "bool __cdecl operator<(struct customer const &,struct customer const &)" (??M@YA_NABUcustomer@@0@Z) already defined in file.obj
+main.obj : error LNK2005: "bool __cdecl operator<(struct depot const &,struct depot const &)" (??M@YA_NABUdepot@@0@Z) already defined in file.obj
+main.obj : error LNK2005: "bool test_ONOFF" (?test_ONOFF@@3_NA) already defined in file.obj
+mVRP.obj : error LNK2005: "bool __cdecl operator<(struct customer const &,struct customer const &)" (??M@YA_NABUcustomer@@0@Z) already defined in file.obj
+mVRP.obj : error LNK2005: "bool __cdecl operator<(struct depot const &,struct depot const &)" (??M@YA_NABUdepot@@0@Z) already defined in file.obj
+population.obj : error LNK2005: "bool __cdecl operator<(struct customer const &,struct customer const &)" (??M@YA_NABUcustomer@@0@Z) already defined in file.obj
+population.obj : error LNK2005: "bool __cdecl operator<(struct depot const &,struct depot const &)" (??M@YA_NABUdepot@@0@Z) already defined in file.obj
+E:\EllaLovise\Documents\NTNU\bio-AI\project_1\git-bioAI\VS-project\mVRP\Debug\mVRP.exe : fatal error LNK1169: one or more multiply defined symbols found

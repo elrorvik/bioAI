@@ -1,15 +1,17 @@
 #pragma once
 
 struct customer {
-    int index;
-    int x;
-    int y;
-    int duration;
-    int demand;
+    int index = 0;
+    int x = 0;
+    int y = 0;
+    int duration = 0;
+    int demand = 0;
 
     customer(int index, int x, int y, int duration, int demand) : index(index), x(x), y(y), duration(duration), demand(demand) {}
+	customer() {}
 
 };
+
 bool operator<(const customer &right, const customer &left) {
     return (right.index < left.index);
 }
