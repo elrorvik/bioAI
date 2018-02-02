@@ -5,7 +5,7 @@
 
 int main() {
 
-	string filename = "Data Files\\p01";
+	/*string filename = "Data Files\\p01";
     std::set<customer> customers;
     std::set<depot> depots;
 
@@ -24,11 +24,10 @@ int main() {
     while( i++ < n_depots) {
         cout << d_iter->x << endl;
         d_iter++;
-    }
+    }*/
 	
-	//GA_mVRP();
-	//system("pause");
-
+	GA_mVRP();
+	system("pause");
 	cin.get();
 	return 0;
 }

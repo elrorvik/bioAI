@@ -22,6 +22,8 @@ struct depot{
 
     depot(int max_duration_per_vehicle, int max_load_per_vehicle, int x, int y)
         : max_duration_per_vehicle(max_duration_per_vehicle), max_load_per_vehicle(max_load_per_vehicle), x(x), y(y) {}
+
+	depot() {}
 };
 
 bool operator<(const depot &right, const depot &left);
