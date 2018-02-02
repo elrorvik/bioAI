@@ -1,4 +1,3 @@
-﻿  main.cpp
-  mVRP.cpp
-  Generating Code...
+﻿  population.cpp
+e:\ellalovise\documents\ntnu\bio-ai\project_1\git-bioai\vs-project\mvrp\population.cpp(65): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
   mVRP.vcxproj -> E:\EllaLovise\Documents\NTNU\bio-AI\project_1\git-bioAI\VS-project\mVRP\Debug\mVRP.exe
