@@ -22,8 +22,5 @@ void GA_mVRP() {
 	int n_individuals = 0;
 
 	// get data from function
-	//Population population(n_vehicles, n_customers, n_depots, n_individuals, costumers, depots);
-
-
-
+	Population population(n_vehicles, n_customers, n_depots, n_individuals, costumers, depots);
 }
