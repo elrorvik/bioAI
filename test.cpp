@@ -3,17 +3,23 @@
 
 bool test_ONOFF = true;
 
-double placeholder_fitness() {
+double placeholder_fitness(Individual ind) {
     double fitness = 0;
     int i  = 0;
 
+    city c = get_city(0);
+    city cn = c;
+
+    fitness += (c.x-ind.d.x)^2 + (c.y-ind.d.y)^2;
+
     while( i++ < n_customers-1) {
-        city c = get_city(i);
-        city cn = get_city(i+1);
+        c = cn;
+        cn = get_city(i+1);
         fitness += (cn.x-c.x)^2 + (cn.y - c.y)^2;
-
-
     }
+
+    
+
 }
 
 int main(){
