@@ -76,11 +76,11 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\Users\Daniel\Documents\OpenGL\freeglut\include;C:\Users\Daniel\Documents\OpenGL\glew-2.1.0\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>E:\EllaLovise\Documents\Programmer - mappe\openGL\glew-2.1.0\include;E:\EllaLovise\Documents\Programmer - mappe\openGL\freeglut\include;C:\Users\Daniel\Documents\OpenGL\freeglut\include;C:\Users\Daniel\Documents\OpenGL\glew-2.1.0\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <AdditionalDependencies>freeglut.lib;glew32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>C:\Users\Daniel\Documents\OpenGL\freeglut\lib;C:\Users\Daniel\Documents\OpenGL\glew-2.1.0-win32\glew-2.1.0\lib\Release\Win32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>E:\EllaLovise\Documents\Programmer - mappe\openGL\glew-2.1.0\lib\Release\Win32;E:\EllaLovise\Documents\Programmer - mappe\openGL\freeglut\lib;C:\Users\Daniel\Documents\OpenGL\freeglut\lib;C:\Users\Daniel\Documents\OpenGL\glew-2.1.0-win32\glew-2.1.0\lib\Release\Win32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <EntryPointSymbol>mainCRTStartup</EntryPointSymbol>
     </Link>
   </ItemDefinitionGroup>
