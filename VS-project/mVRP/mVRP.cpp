@@ -4,6 +4,14 @@
 #include "population.h"
 #include "file.h"
 
+/*void customer::operator=(const customer &other) {
+	this->index = other.index;
+	this->x = other.x;
+	this->y = other.y;
+	this->duration = other.duration;
+	this->demand = other.demand;
+}*/
+
 bool operator<(const depot &right, const depot &left) {
 	return (right.x + right.y < left.x + left.y);
 }

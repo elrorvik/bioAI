@@ -1,7 +1,9 @@
-﻿  mVRP.cpp
-  Generating Code...
-  Compiling...
+﻿  visualization.cpp
   population.cpp
-e:\ellalovise\documents\ntnu\bio-ai\project_1\git-bioai\vs-project\mvrp\population.cpp(61): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
+c:\users\daniel\documents\skole\s18v\bio\prosjekt 1\bioai\vs-project\mvrp\population.cpp(153): warning C4018: '<': signed/unsigned mismatch
+  mVRP.cpp
+  main.cpp
+  file.cpp
   Generating Code...
-  mVRP.vcxproj -> E:\EllaLovise\Documents\NTNU\bio-AI\project_1\git-bioAI\VS-project\mVRP\Debug\mVRP.exe
+  LINK : C:\Users\Daniel\Documents\Skole\S18V\Bio\Prosjekt 1\bioAI\VS-project\mVRP\Debug\mVRP.exe not found or not built by the last incremental link; performing full link
+  mVRP.vcxproj -> C:\Users\Daniel\Documents\Skole\S18V\Bio\Prosjekt 1\bioAI\VS-project\mVRP\Debug\mVRP.exe

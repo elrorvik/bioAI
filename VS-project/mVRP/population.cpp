@@ -4,7 +4,8 @@
 #include <time.h> 
 #include <vector>
 #include <set>
-
+#include <utility>
+#include <cmath>
 
 Population::Population(int n_vehicles, int n_customers, int n_depots, int n_individuals, std::set<customer> &customers, std::set<depot> &depots){
 	this->population = new std::vector<int>*[n_individuals];
@@ -58,7 +59,6 @@ Population::~Population() {
 }
 
 void Population::initialize_population_random() {
-	srand(time(NULL)); // initialize random seed
 	for (int individual_index = 0; individual_index < n_individuals; individual_index++) {
 		std::vector<int> available_customer_indexes; // customers needed to be placed
 		//int sum = 0;
@@ -133,3 +133,64 @@ void Population::print_vehicles_customer_queue(int individual_index, int vehicle
 	std::cout << std::endl;
 	
 }
+
+double Population::fitness_individual(std::vector<int> *individual) {
+	double fitness = 0;
+	double duration = 0;
+	double load = 0;
+	double punishment = 0;
+
+	/*Fitness is "duration of service" = travel distance
+	+ punishment of not satisfying all customers on a route
+	+ punishment of a route being too long*/
+	for (int i = 0; i < n_vehicles*n_depots; i++) {
+
+		customer c = get_customer(individual[i][0]);
+		customer cn = c;
+		depot d = depots[static_cast<int>(std::floor(i / n_vehicles + 0.001 / n_vehicles))];
+
+		duration += sqrt((c.x - d.x) ^ 2 + (c.y - d.y) ^ 2);
+		for (int j = 0; j < individual[i].size(); j++) {
+			c = cn;
+			cn = get_customer(individual[i][j]);
+			duration += sqrt((cn.x - c.x) ^ 2 + (cn.y - c.y) ^ 2);
+			duration += c.duration;
+			load += c.demand;
+		}
+		duration += sqrt((cn.x - d.x) ^ 2 + (cn.y - d.y) ^ 2);
+		load += cn.demand;
+
+		if (duration > d.max_duration_per_vehicle) punishment += 500;
+		if (load > d.max_load_per_vehicle) punishment += 500;
+		fitness = duration + punishment;
+	}
+
+	return fitness;
+}
+
+void Population::mutate_swap_internally_vehicle(std::vector<int> *individual) {
+	int random_vehicle = rand() % n_vehicles*n_depots;
+	int random_loci_A = rand() % individual[random_vehicle].size();
+	int random_loci_B;
+	do {
+		random_loci_B = rand() % individual[random_vehicle].size();
+	} while (random_loci_B != random_loci_A);
+
+	std::swap(individual[random_vehicle][random_loci_A], individual[random_vehicle][random_loci_B]);
+}
+
+void Population::mutate_insert_between_vehicle(std::vector<int> *individual) {
+	int random_vehicle_A = rand() % n_vehicles*n_depots;
+	int random_vehicle_B = rand() % n_vehicles*n_depots;
+	int random_loci_A = rand() % individual[random_vehicle_A].size();
+	int random_loci_B = rand() % individual[random_vehicle_B].size();
+
+	std::vector<int>::iterator it_A, it_B;
+	it_A = individual[random_vehicle_A].begin() + random_loci_A;
+	it_B = individual[random_vehicle_B].begin() + random_loci_B;
+
+	individual[random_vehicle_A].insert(it_A, individual[random_vehicle_B][random_loci_B]);
+	individual[random_vehicle_B].erase(it_B);
+}
+
+// void crossover_edge(std:vector<int>)

@@ -11,7 +11,7 @@ struct customer {
 
     customer(int index, int x, int y, int duration, int demand) : index(index), x(x), y(y), duration(duration), demand(demand) {}
 	customer() :index(invalid_city), x(0), y(0), duration(0), demand(0) {};
-
+	//void operator=(const customer &other);
 };
 
 bool operator<(const customer &right, const customer &left);

@@ -28,5 +28,9 @@ public:
 	void print_vehicles_customer_queue(int individual_index, int vehicle_index, int depot_index);
 	int get_vehicle_queue_size(int individual_index, int depot_index, int vehicle_index);
 
+	double fitness_individual(std::vector<int> *individual);
+	void mutate_swap_internally_vehicle(std::vector<int> *individual);
+	void mutate_insert_between_vehicle(std::vector<int> *individual);
+
 };
 
