@@ -4,41 +4,43 @@
 
 bool test_ONOFF = true;
 
-double placeholder_fitness_individual(Individual ind) {
-    double fitness = 0;
-    double duration = 0;
-    double load = 0;
-    double punishment = 0;
 
-    city c = ind.get_city(0);
-    city cn = c;
 
-    duration += sqrt((c.x-ind.d.x)^2 + (c.y-ind.d.y)^2);
-    for(int i = 0; i < n_customers-1; i++) {
+std::vector<double> * fitness;
+void SUS_selection(std::vector<int> ** potential_parents, int number_of_parents) {
+    
+}
+
+double Population::fitness_vehicle(std::vector<int> *individual, int vehicle) {
+	double fitness = 0;
+	double duration = 0;
+	double load = 0;
+	double punishment = 0;
+
+	/*Fitness is "duration of service" = travel distance
+	+ punishment of not satisfying all customers on a route
+	+ punishment of a route being too long*/
+    customer c = get_customer(individual[vehicle][0]);
+    customer cn = c;
+    depot d = depots[static_cast<int>(std::floor(vehicle / n_vehicles + 0.001 / n_vehicles))];
+    std::cout << static_cast<int>(std::floor(vehicle / n_vehicles + 0.001 / n_vehicles)) << std::endl;
+
+    duration += sqrt(pow(c.x - d.x, 2) + pow(c.y - d.y, 2));
+    for (int j = 0; j < individual[vehicle].size(); j++) {
         c = cn;
-        cn = ind.get_city(i+1);
-        duration += sqrt((cn.x-c.x)^2 + (cn.y - c.y)^2);
+        cn = get_customer(individual[vehicle][j]);
+        duration += sqrt(pow(cn.x - c.x, 2) + pow(cn.y - c.y, 2));
         duration += c.duration;
-        load += c.load;
+        load += c.demand;
     }
-    duration += sqrt((cn.x-ind.d.x)^2 + (cn.y-ind.d.y)^2);
-    load += cn.load;
+    duration += sqrt(pow(cn.x - d.x, 2) + pow(cn.y - d.y, 2));
+    load += cn.demand;
 
-    if(duration > ind.d.max_duration_per_vehicle) punishment += 500;
-    if(load > ind.d.max_load_per_vehicle) punishment += 500;
+    if (duration > d.max_duration_per_vehicle) punishment += 500;
+    if (load > d.max_load_per_vehicle) punishment += 500;
     fitness = duration + punishment;
 
     return fitness;
-}
-
-double placeholder_fitness_total(Population pop) { //Blir vel i så fall en litt meningsløs funksjon.
-    double fitness;
-    for each individual in population:
-        fitness = placeholder_fitness_individual(individual);
-    
-    if not all cities visited: // Dette er vel umulig i utgangspunktet
-        cout << "Illegal configuration" << endl;
-        exit(1);
 }
 
 int main(){
