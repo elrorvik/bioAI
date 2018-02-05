@@ -1,12 +1,15 @@
 #include <iostream>
 #include "mVRP.h"
+#include "visualization.h"
 
-int main() {
+int main(int num_args, char** arg_strings) {
 
 	
 	
 	GA_mVRP();
-	std::cout << "finised" << std::endl;
+
+	foo(num_args, arg_strings);
+
 	system("pause");
 	std::cin.get();
 	return 0;
