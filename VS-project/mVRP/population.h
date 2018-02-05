@@ -32,5 +32,7 @@ public:
 	void mutate_swap_internally_vehicle(std::vector<int> *individual);
 	void mutate_insert_between_vehicle(std::vector<int> *individual);
 
+	void test();
+
 };
 

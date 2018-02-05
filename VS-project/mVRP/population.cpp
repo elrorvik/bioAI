@@ -148,16 +148,17 @@ double Population::fitness_individual(std::vector<int> *individual) {
 		customer c = get_customer(individual[i][0]);
 		customer cn = c;
 		depot d = depots[static_cast<int>(std::floor(i / n_vehicles + 0.001 / n_vehicles))];
+		std::cout << static_cast<int>(std::floor(i / n_vehicles + 0.001 / n_vehicles)) << std::endl;
 
-		duration += sqrt((c.x - d.x) ^ 2 + (c.y - d.y) ^ 2);
+		duration += sqrt(pow(c.x - d.x, 2) + pow(c.y - d.y, 2));
 		for (int j = 0; j < individual[i].size(); j++) {
 			c = cn;
 			cn = get_customer(individual[i][j]);
-			duration += sqrt((cn.x - c.x) ^ 2 + (cn.y - c.y) ^ 2);
+			duration += sqrt(pow(cn.x - c.x, 2) + pow(cn.y - c.y, 2));
 			duration += c.duration;
 			load += c.demand;
 		}
-		duration += sqrt((cn.x - d.x) ^ 2 + (cn.y - d.y) ^ 2);
+		duration += sqrt(pow(cn.x - d.x, 2) + pow(cn.y - d.y, 2));
 		load += cn.demand;
 
 		if (duration > d.max_duration_per_vehicle) punishment += 500;
@@ -174,23 +175,30 @@ void Population::mutate_swap_internally_vehicle(std::vector<int> *individual) {
 	int random_loci_B;
 	do {
 		random_loci_B = rand() % individual[random_vehicle].size();
-	} while (random_loci_B != random_loci_A);
+	} while (random_loci_B == random_loci_A);
 
 	std::swap(individual[random_vehicle][random_loci_A], individual[random_vehicle][random_loci_B]);
 }
 
 void Population::mutate_insert_between_vehicle(std::vector<int> *individual) {
 	int random_vehicle_A = rand() % n_vehicles*n_depots;
-	int random_vehicle_B = rand() % n_vehicles*n_depots;
+	int random_vehicle_B;
+	do {
+		random_vehicle_B = rand() % n_vehicles*n_depots;
+	} while (random_vehicle_B == random_vehicle_A);
+
 	int random_loci_A = rand() % individual[random_vehicle_A].size();
 	int random_loci_B = rand() % individual[random_vehicle_B].size();
 
 	std::vector<int>::iterator it_A, it_B;
 	it_A = individual[random_vehicle_A].begin() + random_loci_A;
 	it_B = individual[random_vehicle_B].begin() + random_loci_B;
-
 	individual[random_vehicle_A].insert(it_A, individual[random_vehicle_B][random_loci_B]);
 	individual[random_vehicle_B].erase(it_B);
 }
 
 // void crossover_edge(std:vector<int>)
+
+void Population::test() {
+	std::cout << fitness_individual(population[0]) << std::endl;
+}
