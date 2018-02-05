@@ -1,5 +1,7 @@
 #pragma once
 
+const int invalid_city = -1;
+
 struct customer {
     int index = 0;
     int x = 0;
@@ -8,7 +10,7 @@ struct customer {
     int demand = 0;
 
     customer(int index, int x, int y, int duration, int demand) : index(index), x(x), y(y), duration(duration), demand(demand) {}
-	customer() {}
+	customer() :index(invalid_city), x(0), y(0), duration(0), demand(0) {};
 
 };
 
@@ -31,4 +33,3 @@ bool operator<(const depot &right, const depot &left);
 
 void GA_mVRP();
 
-const int invalid_city = -1;

@@ -3,10 +3,11 @@
 #include "mVRP.h"
 #include <time.h> 
 #include <vector>
+#include <set>
 
 
 Population::Population(int n_vehicles, int n_customers, int n_depots, int n_individuals, std::set<customer> &customers, std::set<depot> &depots){
-	this->population = new int*[n_individuals];
+	this->population = new std::vector<int>*[n_individuals];
 	this->n_customers = n_customers;
 	this->n_depots = n_depots;
 	this->n_individuals = n_individuals;
@@ -16,10 +17,7 @@ Population::Population(int n_vehicles, int n_customers, int n_depots, int n_indi
 	
 	for (int i = 0; i < n_individuals; i++)
 	{
-		this->population[i] = new int[n_vehicles*n_customers];
-		for (int j = 0; j < n_vehicles*n_customers;j++) {
-			this->population[i][j] = invalid_city;
-		}
+		this->population[i] = new std::vector<int>[n_vehicles*n_depots];
 	}
 
 	int  index = 0;
@@ -60,59 +58,77 @@ Population::~Population() {
 }
 
 void Population::initialize_population_random() {
-
-	
 	srand(time(NULL)); // initialize random seed
 	for (int individual_index = 0; individual_index < n_individuals; individual_index++) {
-		std::vector<int> available_customer_indexes;
-		std::vector<int> available_individual_indexes;
+		std::vector<int> available_customer_indexes; // customers needed to be placed
+		//int sum = 0;
 		for (int i = 0; i < n_customers; i++) available_customer_indexes.push_back(i);
-		for (int i = 0; i < n_customers*n_vehicles; i++) available_individual_indexes.push_back(i);
-
 		for (int i = 0; i < n_customers; i++) {
 			int random_index = rand() % available_customer_indexes.size();
 			int customer_index = available_customer_indexes[random_index];
 			available_customer_indexes.erase(available_customer_indexes.begin() + random_index);
-			random_index = rand() % available_individual_indexes.size();
-			int gene_index = available_individual_indexes[random_index];
-			this->population[individual_index][gene_index] = customer_index;
-			available_individual_indexes.erase(available_individual_indexes.begin() + random_index);
-		}
-		
-		
+			int depot_random_index = rand() % n_depots;
+			int vehicle_random_index = rand() % n_vehicles;
+			int index_depot_vehicle = get_depot_vehicle_index(vehicle_random_index, depot_random_index);
+			this->population[individual_index][index_depot_vehicle].push_back(customer_index);
+			//sum += customer_index;
+		}	
+		//std::cout << " initialize inidividual" << individual_index << "check sum : " << sum << std::endl;
 	}
-	
 }
 
 void Population::print_population() {
 
 	for (int individual_index = 0; individual_index < n_individuals; individual_index++) {
 		std::cout << "*** Individual. " << individual_index <<  " ***"<<std::endl;
-		for (int i = 0; i < this->n_vehicles; i++) {
-			this->print_vehicles_customer_queue(individual_index, i);
+		for (int depot_index = 0; depot_index < n_depots; depot_index++) {
+			std::cout << "Depot nr.: " << std::endl;
+			for (int vehicle_index = 0; vehicle_index < n_vehicles; vehicle_index++) {
+				this->print_vehicles_customer_queue(individual_index, vehicle_index, depot_index);
+			}
 		}
 	}
 }
 
 customer Population::get_customer(int index){
+	if (index >= n_customers || index < 0) {
+		return customer();
+	}
 	return this->customers[index];
 }
-
-customer Population::get_customer(int individual_index, int vehicle_index,int customer_index_in_queue) {
-	int customer_index = this->population[individual_index][vehicle_index*n_customers + customer_index_in_queue];
-	return this->get_customer(customer_index);
+int Population::get_depot_vehicle_index(int vehicle_index,int depot_index) {
+	return this->n_vehicles*depot_index + vehicle_index;
 }
 
-void Population::print_vehicles_customer_queue(int individual_index, int vehicle_index) {
+customer Population::get_customer(int individual_index, int depot_index, int vehicle_index, int customer_index_in_queue) {
+	int customer_index = this->population[individual_index][get_depot_vehicle_index(vehicle_index,depot_index)][customer_index_in_queue];
+	if (customer_index != invalid_city) {
+		return this->get_customer(customer_index);
+	}
+	else {
+		return customer();
+	}
+	
+}
+
+int Population::get_customer_index(int individual_index, int depot_index, int vehicle_index, int customer_index_in_queue) {
+	int customer_index = this->population[individual_index][get_depot_vehicle_index(vehicle_index, depot_index)][customer_index_in_queue];
+	return customer_index;
+
+}
+
+int Population::get_vehicle_queue_size(int individual_index, int depot_index, int vehicle_index) {
+	return this->population[individual_index][get_depot_vehicle_index(vehicle_index, depot_index)].size();
+
+}
+
+void Population::print_vehicles_customer_queue(int individual_index, int vehicle_index, int depot_index) {
 	int sum = 0;
 	std::cout << "Vehicle nr. " << vehicle_index << "queue: ";
-	for (int i = 0; i < n_customers; i++) {
-		int customer_index = this->population[individual_index][vehicle_index*n_customers + i];
-		/*if (customer_index == invalid_city) {
-			continue;
-		}*/
-		std::cout << customer_index << " ";
+	for (int i = 0; i < get_vehicle_queue_size(individual_index, depot_index, vehicle_index); i++) {
+		int customer_index = this->get_customer_index(individual_index,depot_index,vehicle_index,i);
 		
+		std::cout << customer_index << " ";
 	}
 	std::cout << std::endl;
 	
