@@ -28,11 +28,12 @@ void GA_mVRP() {
 	int n_customers;
 	int n_depots;
 	int n_individuals = 10;
+	int n_parents = 2;
 
 	read_data(filename, customers, depots, n_vehicles, n_customers, n_depots);
 
 
-	Population population(n_vehicles, n_customers, n_depots, n_individuals, customers, depots);
+	Population population(n_vehicles, n_customers, n_depots, n_individuals,n_parents, customers, depots);
 	population.initialize_population_random();
 	population.print_population();
 	population.test();
