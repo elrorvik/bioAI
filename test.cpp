@@ -4,7 +4,64 @@
 
 bool test_ONOFF = true;
 
+/*
+void crossover_edge(std:vector<int> *parent_A, std::vector<int> *parent_B) {
 
+    int vehicle_A = (rand() % n_vehicles) + n_vehicles*depot;
+	int vehicle_B;
+	do {
+		(rand() % n_vehicles) + n_vehicles*depot
+	} while (vehicle_B == vehicle_A);
+
+    int* nodes_added_to_offspring = new int[n_customers];
+    int* nodes_not_added_to_offspring = new int[n_customers];
+    int length_A = parent_A[vehicle_A].size();
+    int length_B = parent_B[vehicle_B].size();
+    set<set<int>> edge_table;
+
+    // Deal with the depot as an element in the cyclic list
+    int depot_node = n_customers; // Give the node a unique identifier
+    edge_table;
+
+    
+    for (int i = 0; i < length_A+length_B) {
+        delete edge_table[i];
+    }
+    delete left_out [];
+    delete left_in [];
+    
+}
+*/
+
+void recombination_BCRC(std:vector<int> *parent_A, std::vector<int> *parent_B) {
+
+    int vehicle_A = (rand() % n_vehicles) + n_vehicles*depot;
+	int vehicle_B;
+	do {
+		(rand() % n_vehicles) + n_vehicles*depot
+	} while (vehicle_B == vehicle_A);
+    
+    std::vector<int>* offspring_A = new std::vector<int>[n_vehicles];
+	std::vector<int>* offspring_B = new std::vector<int>[n_vehicles];
+    for (int i = 0; i < n_vehicles; i++) {
+        offspring_A[i] = 
+    }
+
+    
+        
+
+
+    
+
+}
+
+double distance(const customer ca, const customer cb) {
+    return sqrt((ca.x - cb.x)^2 + (ca.y-cb.y)^2);
+}
+
+double distance(const depot d, const customer c) {
+    return sqrt((d.x - c.x)^2 + (d.y-c.y)^2);
+}
 
 std::vector<double> * fitness;
 void SUS_selection(std::vector<int> ** potential_parents, int number_of_parents) {
@@ -26,7 +83,7 @@ double Population::fitness_vehicle(std::vector<int> *individual, int vehicle) {
     std::cout << static_cast<int>(std::floor(vehicle / n_vehicles + 0.001 / n_vehicles)) << std::endl;
 
     duration += sqrt(pow(c.x - d.x, 2) + pow(c.y - d.y, 2));
-    for (int j = 0; j < individual[vehicle].size(); j++) {
+    for (int j = 0; j < individual[vehicle].size(); j++) {  
         c = cn;
         cn = get_customer(individual[vehicle][j]);
         duration += sqrt(pow(cn.x - c.x, 2) + pow(cn.y - c.y, 2));
