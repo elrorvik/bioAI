@@ -11,6 +11,7 @@ Population::Population(int n_vehicles, int n_customers, int n_depots, int n_indi
 	this->n_parents = n_parents;
 	this->population = new std::vector<int>*[n_individuals];
 	this->offspring = new std::vector<int>*[n_individuals];
+	this->fitness_vehicle = new double*[n_individuals];
 	this->parent_index = new int [n_parents];
 	this->n_customers = n_customers;
 	this->n_depots = n_depots;
