@@ -1,4 +1,5 @@
 #include <iostream>
+#include <iomanip>
 #include "population.h"
 #include "mVRP.h"
 #include <time.h> 
@@ -7,16 +8,15 @@
 #include <utility>
 #include <cmath>
 
-Population::Population(int n_vehicles, int n_customers, int n_depots, int n_individuals,int n_parents, std::set<customer> &customers, std::set<depot> &depots){
-	this->n_parents = n_parents;
+Population::Population(int n_vehicles, int n_customers, int n_depots, int n_individuals,int n_ellitisme, std::set<customer> &customers, std::set<depot> &depots){
 	this->population = new std::vector<int>*[n_individuals];
 	this->offspring = new std::vector<int>*[n_individuals];
 	this->fitness_vehicle = new double*[n_individuals];
-	this->parent_index = new int [n_parents];
+	this->fitness_individual = new double[n_individuals];
+	this->n_vehicles = n_vehicles;
 	this->n_customers = n_customers;
 	this->n_depots = n_depots;
 	this->n_individuals = n_individuals;
-	this->n_vehicles = n_vehicles;
 
 	std::cout <<"customers: " <<  this->n_customers << ", depots: " << this->n_depots << " individuals: " << this->n_individuals << " vehicles: " << this->n_vehicles<< std::endl;
 	
@@ -66,8 +66,6 @@ Population::~Population() {
 	delete[] this->population;
 	delete[] this->offspring;
 	delete[] this->fitness_vehicle;
-	delete[] this->parent_index;
-
 }
 
 void Population::initialize_population_random() {
@@ -92,9 +90,9 @@ void Population::initialize_population_random() {
 void Population::print_population() {
 
 	for (int individual_index = 0; individual_index < n_individuals; individual_index++) {
-		std::cout << "*** Individual. " << individual_index <<  " ***"<<std::endl;
+		std::cout << "*** Individual. " << individual_index << " Fitness score: "  <<fitness_individual[individual_index] << " ***"<<std::endl;
 		for (int depot_index = 0; depot_index < n_depots; depot_index++) {
-			std::cout << "Depot nr.: " << std::endl;
+			std::cout << "Depot nr.: " <<  depot_index << std::endl;
 			for (int vehicle_index = 0; vehicle_index < n_vehicles; vehicle_index++) {
 				this->print_vehicles_customer_queue(individual_index, vehicle_index, depot_index);
 			}
@@ -134,9 +132,13 @@ int Population::get_vehicle_queue_size(int individual_index, int depot_index, in
 
 }
 
+double Population::get_fitness_individual(int individual_index) {
+	return this->fitness_individual[individual_index];
+}
+
 void Population::print_vehicles_customer_queue(int individual_index, int vehicle_index, int depot_index) {
 	int sum = 0;
-	std::cout << "Vehicle nr. " << vehicle_index << "queue: ";
+	std::cout << "Vehicle nr. " << vehicle_index << " ,Queue: ";
 	for (int i = 0; i < get_vehicle_queue_size(individual_index, depot_index, vehicle_index); i++) {
 		int customer_index = this->get_customer_index(individual_index,depot_index,vehicle_index,i);
 		
@@ -146,7 +148,7 @@ void Population::print_vehicles_customer_queue(int individual_index, int vehicle
 	
 }
 
-void Population::fitness_population_initalization(std::vector<int> *individual, int individual_index) {
+void Population::fitness_population_initalization() {
 
 
 	/*Fitness is "duration of service" = travel distance
@@ -155,18 +157,20 @@ void Population::fitness_population_initalization(std::vector<int> *individual, 
 	this->fitness_total = 0;
 	for (int j = 0; j < n_individuals; j++) {
 		std::vector<int> *individual = population[j];
-		double fitness = 0;
 		double duration = 0;
 		double load = 0;
 		double punishment = 0;
 		double individual_fitness = 0;
 
 		for (int i = 0; i < n_vehicles*n_depots; i++) {
-
+			if (individual[i].size() == 0) {
+				fitness_vehicle[j][i] = 0;
+				continue;
+			}
 			customer c = get_customer(individual[i][0]);
 			customer cn = c;
 			depot d = depots[static_cast<int>(std::floor(i / n_vehicles + 0.001 / n_vehicles))];
-			std::cout << static_cast<int>(std::floor(i / n_vehicles + 0.001 / n_vehicles)) << std::endl;
+			//std::cout << static_cast<int>(std::floor(i / n_vehicles + 0.001 / n_vehicles)) << std::endl;
 
 			duration += sqrt(pow(c.x - d.x, 2) + pow(c.y - d.y, 2));
 			for (int j = 1; j < individual[i].size(); j++) {
@@ -181,7 +185,7 @@ void Population::fitness_population_initalization(std::vector<int> *individual, 
 
 			if (duration > d.max_duration_per_vehicle) punishment += 500;
 			if (load > d.max_load_per_vehicle) punishment += 500;
-			fitness = duration + punishment;
+			double fitness = duration + punishment;
 			fitness_vehicle[j][i] = fitness;
 			this->fitness_total += fitness;
 			individual_fitness += fitness;
@@ -228,36 +232,73 @@ struct wheel_piece_t {
 	double l_b = 0;
 	double u_b = 0;
 	int individual_index = 0;
-	wheel_piece_t(double l_b, double u_b, double population_index) : l_b(l_b), u_b(u_b), individual_index(population_index) {};
+	wheel_piece_t(double l_b, double u_b, double individual_index) : l_b(l_b), u_b(u_b), individual_index(individual_index) {};
 	wheel_piece_t() : l_b(0), u_b(0), individual_index(-1) {};
 };
 
-void Population::SUS_selection(int n_pointers) {
 
-	// make wheel
-
-	wheel_piece_t* wheel = new wheel_piece_t[n_individuals]; // n = number of population taken care of
-	double l_b = 0;
+void Population::selection_ellitisme(int n_ellitisme, std::set<int>& survival_index) {
+	int l_b = -1;
 	for (int i = 0; i < n_individuals; i++) {
-		double f = fitness_individual[i] / this->fitness_total;
-		wheel[i] = wheel_piece_t(l_b, l_b+f, i);
+		if (this->fitness_individual[i] > l_b) {
+			l_b = fitness_individual[i];
+			if (survival_index.size() < n_ellitisme) {
+				survival_index.insert(i);
+			}
+			else {
+				survival_index.erase(survival_index.begin());
+				survival_index.insert(i);
+			}
+		}
+	}
+}
+
+void Population::selection_SUS(int n_pointers, std::set<int>& survival_index) {
+	// make wheel
+	double sum_valid_fitness = 0;
+	double n_valid_individuals = n_individuals - survival_index.size();
+	wheel_piece_t* wheel = new wheel_piece_t[n_valid_individuals]; // n = number of population taken care of
+	int index_wheel = 0;
+	for (int i = 0; i < n_individuals; i++) {
+		if (survival_index.find(i) == survival_index.end()) {
+			sum_valid_fitness += fitness_individual[i];
+			wheel[index_wheel] = wheel_piece_t(0, 0, i);
+			index_wheel++;
+		}
+	}
+	
+	double l_b = 0;
+	for (int i = 0; i < n_valid_individuals; i++) {
+		double f = fitness_individual[wheel[i].individual_index] / sum_valid_fitness;
+		wheel[i].l_b = l_b;
+		wheel[i].u_b = l_b+f;
 		l_b += f;
 	}
+	/*std::cout << "wheel" << std::endl;
+	for (int i = 0; i < n_valid_individuals; i++) {
+		std::cout <<"Index: " << wheel[i].individual_index << " lb: " << wheel[i].l_b << " ub: " << wheel[i].u_b << std::endl;
+	}*/
 
 	double step_size = 1.0 / n_pointers; 
 	double p_start = (rand() % (100+1)) / 100.0;
 
 	// roulette wheel
 	int n_curr_offspring = 0;
-	double pointer = 0;
+	double pointer = p_start;
 	int i = 0;
 	while (n_curr_offspring < n_pointers) {
 		if (wheel[i].l_b <= pointer && wheel[i].u_b >= pointer) {
-			parent_index[n_curr_offspring] = wheel[i].individual_index;
+			//std::cout << std::fixed;
+			//std::cout << "Pointer " << pointer << " individual " << std::setprecision(4) << wheel[i].l_b << " " << std::setprecision(4) << wheel[i].u_b << std::endl;
+			survival_index.insert(wheel[i].individual_index);
 			pointer += step_size;
 			n_curr_offspring += 1;
-			if (pointer > 1) pointer = 1 - pointer;
+			if (pointer > 1) pointer = pointer - 1;
 		}
-		i++;	
+		i++;
+		if (i >= n_valid_individuals) {
+			i = 0;
+		}
 	}
+	delete[] wheel;
 }
