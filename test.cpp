@@ -33,19 +33,119 @@ void crossover_edge(std:vector<int> *parent_A, std::vector<int> *parent_B) {
 }
 */
 
+double fitness_vehicle(int depot_number, std::vector<int> vehicle) {
+    double duration = 0;
+    double load = 0;
+    double fitness = 0;
+    double punishment = 0;
+
+    customer c = vehicle[0];
+    customer cn = c;
+    depot d = depots[depot_number];
+
+    duration += sqrt(pow(c.x - d.x, 2) + pow(c.y - d.y, 2));
+    for (int j = 1; j < individual[i].size(); j++) {
+        c = cn;
+        cn = vehicle[j];
+        duration += sqrt(pow(cn.x - c.x, 2) + pow(cn.y - c.y, 2));
+        duration += c.duration;
+        load += c.demand;
+    }
+    duration += sqrt(pow(cn.x - d.x, 2) + pow(cn.y - d.y, 2));
+    load += cn.demand;
+
+    if (duration > d.max_duration_per_vehicle) punishment += 500;
+    if (load > d.max_load_per_vehicle) punishment += 500;
+    fitness = duration + punishment;
+    return fitness;
+}
+
 void recombination_BCRC(std::vector<int> *parent_A, std::vector<int> *parent_B) {
     
-    std::vector<int>* offspring_A = new std::vector<int>[n_vehicles];
-	std::vector<int>* offspring_B = new std::vector<int>[n_vehicles];
-    for (int i = 0; i < n_vehicles; i++) {
+    int random_depot = rand() % n_depot;
+    int random_vehicle_A_index = (rand() % n_vehicles) + n_vehicles*random_depot;
+	int random_vehicle_B_index = (rand() % n_vehicles) + n_vehicles*random_depot;
+
+    std::vector<int>* offspring_A = offspring[n_offspring++];
+	std::vector<int>* offspring_B = offspring[n_offspring++];
+    //std::vector<int> vehicle_A_customer_buffer = ...; Should be Population member variable in order to allocate instead of reallocation over and over?
+    //std::vector<int> vehicle_B_customer_buffer = ...; Same as ^
+    //std::vector<double> cost_of_insertion_buffer = ...; Same as ^ 
+
+    for (int i = 0; i < n_vehicles*n_depots; i++) {
         offspring_A[i] = parent_A[i];
         offspring_B[i] = parent_B[i];
     }
 
-    int random_vehicle_A_index = (rand() % n_vehicles) + n_vehicles*depot;
-	int random_vehicle_B_index = (rand() % n_vehicles) + n_vehicles*depot;
-    int* vehicle_A = new int[offspring_A[random_vehicle_A_index].size()];
-    int* vehicle_B = new int[offspring_B[random_vehicle_B_index].size()];
+    // Remove customers in vehicle_A_customer_buffer from offspring_B, and vica versa
+    vehicle_A_customer_buffer = offspring_A[random_vehicle_A_index];
+    vehicle_B_customer_buffer = offspring_B[random_vehicle_B_index];
+    for (int vehicle_i = 0; vehicle_i < n_depots*n_vehicles; vehicle_i++) {
+        for (int customer_i = 0; customer_i < offspring_A[vehicle_i].size(); customer_i++) {
+            for (int customer_buffer_i = 0; customer_buffer_i < vehicle_B_customer_buffer; customer_buffer_i++) {
+                if (offspring_A[vehicle_i][customer_i] == vehicle_B_customer_buffer[customer_buffer_i]) {
+                    // Remove customer at customer_i from offspring_A[vehicle_i]
+                    auto it = offspring_A[vehicle_i].begin() + customer_i;
+                    offspring_A[vehicle_i].erase(it);
+                }
+            }
+        }
+        for (int customer_i = 0; customer_i < offspring_B[vehicle_i].size(); customer_i++) {
+            for (int customer_buffer_i = 0; customer_buffer_i < vehicle_A_customer_buffer; customer_buffer_i++) {
+                if (offspring_B[vehicle_i][customer_i] == vehicle_A_customer_buffer[customer_buffer_i]) {
+                    // Remove customer at customer_i from offspring_B[vehicle_i]
+                    auto it = offspring_B[vehicle_i].begin() + customer_i;
+                    offspring_B[vehicle_i].erase(it);
+                }
+            }
+        }
+    }
+
+    // For the CHOSEN depot, compute insertion of vehicle_A_customer_buffer customers into all "FEASIBLE" points in random_depot (only), in offspring_B, and vica versa
+    for (int removed_customer_A_i = 0; removed_customer_A_i < vehicle_A_customer_buffer.size(); removed_customer_A_i++) {
+        double lowest_insertion_fitness = DBL_MAX;
+        double cost_of_insertion = 0;
+        int index_of_best_insertion = 0;
+        int vehicle_of_best_insertion = 0;
+        for (int vehicle_i = 0; vehicle_i < n_vehicles; vehicle_i++) {
+            for (int offspring_customer_B_i = 0; offspring_customer_B_i < offspring_B[vehicle_i].size(); offspring_customer_B_i++) {
+                auto it = offspring_B.begin() + offspring_customer_B_i;
+                offspring_B[vehicle_i].insert(it, vehicle_A_customer_buffer[removed_customer_A_i]);
+                double cost_of_insertion = fitness_vehicle(random_depot, offspring_B[vehicle_i]);
+                if (cost_of_insertion < lowest_insertion_fitness) {
+                    lowest_insertion_fitness = cost_of_insertion;
+                    index_of_best_insertion = offspring_customer_B_i;
+                    vehicle_of_best_insertion = vehicle_i;
+                }
+                offspring_B[vehicle_i].erase(it);
+            }
+        }
+        auto it = offspring_B.begin() + index_of_best_insertion;
+        offspring_B[vehicle_of_best_insertion].insert(it, vehicle_A_customer_buffer[removed_customer_A_i])
+    }
+    for (int removed_customer_B_i = 0; removed_customer_B_i < vehicle_A_customer_buffer.size(); removed_customer_B_i++) {
+        double lowest_insertion_fitness = DBL_MAX;
+        double cost_of_insertion = 0;
+        int index_of_best_insertion = 0;
+        int vehicle_of_best_insertion = 0;
+        for (int vehicle_i = 0; vehicle_i < n_vehicles; vehicle_i++) {
+            for (int offspring_customer_A_i = 0; offspring_customer_A_i < offspring_A[vehicle_i].size(); offspring_customer_A_i++) {
+                auto it = offspring_A.begin() + offspring_customer_A_i;
+                offspring_A[vehicle_i].insert(it, vehicle_A_customer_buffer[removed_customer_B_i]);
+                double cost_of_insertion = fitness_vehicle(random_depot, offspring_A[vehicle_i]);
+                if (cost_of_insertion < lowest_insertion_fitness) {
+                    lowest_insertion_fitness = cost_of_insertion;
+                    index_of_best_insertion = offspring_customer_A_i;
+                    vehicle_of_best_insertion = vehicle_i;
+                }
+                offspring_A[vehicle_i].erase(it);
+            }
+        }
+        auto it = offspring_A.begin() + index_of_best_insertion;
+        offspring_A[vehicle_of_best_insertion].insert(it, vehicle_B_customer_buffer[removed_customer_B_i])
+    }
+    //TODO: "Feasibility" er ikke brydd om fordi dette er et grådig søk uansett - har vi tenkt å bry oss noe om det?
+    //TODO: Bør antakelig skrive noen hjelpefunksjoner for å gjøre dette lesbart. Også - sjekk at det funker.
 }
 
 double distance(const customer ca, const customer cb) {
