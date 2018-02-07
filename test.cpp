@@ -33,26 +33,19 @@ void crossover_edge(std:vector<int> *parent_A, std::vector<int> *parent_B) {
 }
 */
 
-void recombination_BCRC(std:vector<int> *parent_A, std::vector<int> *parent_B) {
-
-    int vehicle_A = (rand() % n_vehicles) + n_vehicles*depot;
-	int vehicle_B;
-	do {
-		(rand() % n_vehicles) + n_vehicles*depot
-	} while (vehicle_B == vehicle_A);
+void recombination_BCRC(std::vector<int> *parent_A, std::vector<int> *parent_B) {
     
     std::vector<int>* offspring_A = new std::vector<int>[n_vehicles];
 	std::vector<int>* offspring_B = new std::vector<int>[n_vehicles];
     for (int i = 0; i < n_vehicles; i++) {
-        offspring_A[i] = 
+        offspring_A[i] = parent_A[i];
+        offspring_B[i] = parent_B[i];
     }
 
-    
-        
-
-
-    
-
+    int random_vehicle_A_index = (rand() % n_vehicles) + n_vehicles*depot;
+	int random_vehicle_B_index = (rand() % n_vehicles) + n_vehicles*depot;
+    int* vehicle_A = new int[offspring_A[random_vehicle_A_index].size()];
+    int* vehicle_B = new int[offspring_B[random_vehicle_B_index].size()];
 }
 
 double distance(const customer ca, const customer cb) {
