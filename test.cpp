@@ -81,6 +81,7 @@ void recombination_BCRC(std::vector<int> *parent_A, std::vector<int> *parent_B) 
     vehicle_A_customer_buffer = offspring_A[random_vehicle_A_index];
     vehicle_B_customer_buffer = offspring_B[random_vehicle_B_index];
     for (int vehicle_i = 0; vehicle_i < n_depots*n_vehicles; vehicle_i++) {
+        if (vehicle_B_customer_buffer.size()) {
         for (int customer_i = 0; customer_i < offspring_A[vehicle_i].size(); customer_i++) {
             for (int customer_buffer_i = 0; customer_buffer_i < vehicle_B_customer_buffer; customer_buffer_i++) {
                 if (offspring_A[vehicle_i][customer_i] == vehicle_B_customer_buffer[customer_buffer_i]) {
@@ -89,7 +90,9 @@ void recombination_BCRC(std::vector<int> *parent_A, std::vector<int> *parent_B) 
                     offspring_A[vehicle_i].erase(it);
                 }
             }
-        }
+        } // endfor
+        } // endif
+        if (vehicle_A_customer_buffer.size()) {
         for (int customer_i = 0; customer_i < offspring_B[vehicle_i].size(); customer_i++) {
             for (int customer_buffer_i = 0; customer_buffer_i < vehicle_A_customer_buffer; customer_buffer_i++) {
                 if (offspring_B[vehicle_i][customer_i] == vehicle_A_customer_buffer[customer_buffer_i]) {
@@ -98,22 +101,27 @@ void recombination_BCRC(std::vector<int> *parent_A, std::vector<int> *parent_B) 
                     offspring_B[vehicle_i].erase(it);
                 }
             }
-        }
+        } // endfor
+        } // endif
     }
 
     // For the CHOSEN depot, compute insertion of vehicle_A_customer_buffer customers into all "FEASIBLE" points in random_depot (only), in offspring_B, and vica versa
     for (int removed_customer_A_i = 0; removed_customer_A_i < vehicle_A_customer_buffer.size(); removed_customer_A_i++) {
-        double lowest_insertion_fitness = DBL_MAX;
+        double lowest_cost_of_insertion = DBL_MAX;
+        double fitness_of_insertion = 0;
+        double fitness_pre_insertion = 0;
         double cost_of_insertion = 0;
         int index_of_best_insertion = 0;
         int vehicle_of_best_insertion = 0;
-        for (int vehicle_i = 0; vehicle_i < n_vehicles; vehicle_i++) {
-            for (int offspring_customer_B_i = 0; offspring_customer_B_i < offspring_B[vehicle_i].size(); offspring_customer_B_i++) {
+        for (int vehicle_i = n_vehicles*random_depot; vehicle_i < n_vehicles*random_depot + n_vehicles; vehicle_i++) {
+            for (int offspring_customer_B_i = 0; offspring_customer_B_i < offspring_B[vehicle_i*random_depot].size() + 1; offspring_customer_B_i++) { // Need to check insertion costs for empty vehicles, and insertion at the end of the route
+                fitness_pre_insertion = fitness_vehicle(random_depot, offspring_B[vehicle_i]);
                 auto it = offspring_B.begin() + offspring_customer_B_i;
                 offspring_B[vehicle_i].insert(it, vehicle_A_customer_buffer[removed_customer_A_i]);
-                double cost_of_insertion = fitness_vehicle(random_depot, offspring_B[vehicle_i]);
-                if (cost_of_insertion < lowest_insertion_fitness) {
-                    lowest_insertion_fitness = cost_of_insertion;
+                fitness_of_insertion = fitness_vehicle(random_depot, offspring_B[vehicle_i]);
+                cost_of_insertion = fitness_of_insertion - fitness_pre_insertion;
+                if (cost_of_insertion < lowest_cost_of_insertion) {
+                    lowest_cost_of_insertion = cost_of_insertion;
                     index_of_best_insertion = offspring_customer_B_i;
                     vehicle_of_best_insertion = vehicle_i;
                 }
@@ -124,17 +132,21 @@ void recombination_BCRC(std::vector<int> *parent_A, std::vector<int> *parent_B) 
         offspring_B[vehicle_of_best_insertion].insert(it, vehicle_A_customer_buffer[removed_customer_A_i])
     }
     for (int removed_customer_B_i = 0; removed_customer_B_i < vehicle_A_customer_buffer.size(); removed_customer_B_i++) {
-        double lowest_insertion_fitness = DBL_MAX;
+        double lowest_cost_of_insertion = DBL_MAX;
+        double fitness_of_insertion = 0;
+        double fitness_pre_insertion = 0;
         double cost_of_insertion = 0;
         int index_of_best_insertion = 0;
         int vehicle_of_best_insertion = 0;
-        for (int vehicle_i = 0; vehicle_i < n_vehicles; vehicle_i++) {
-            for (int offspring_customer_A_i = 0; offspring_customer_A_i < offspring_A[vehicle_i].size(); offspring_customer_A_i++) {
+        for (int vehicle_i = n_vehicles*random_depot; vehicle_i < n_vehicles*random_depot + n_vehicles; vehicle_i++) {
+            for (int offspring_customer_A_i = 0; offspring_customer_A_i < offspring_A[vehicle_i].size() + 1; offspring_customer_A_i++) { // Need to check insertion costs for empty vehicles, and insertion at the end of the route
+                fitness_pre_insertion = fitness_vehicle(random_depot, offspring_B[vehicle_i]);
                 auto it = offspring_A.begin() + offspring_customer_A_i;
                 offspring_A[vehicle_i].insert(it, vehicle_A_customer_buffer[removed_customer_B_i]);
-                double cost_of_insertion = fitness_vehicle(random_depot, offspring_A[vehicle_i]);
-                if (cost_of_insertion < lowest_insertion_fitness) {
-                    lowest_insertion_fitness = cost_of_insertion;
+                fitness_of_insertion = fitness_vehicle(random_depot, offspring_A[vehicle_i]);
+                cost_of_insertion = fitness_of_insertion - fitness_pre_insertion;
+                if (cost_of_insertion < lowest_cost_of_insertion) {
+                    lowest_cost_of_insertion = cost_of_insertion;
                     index_of_best_insertion = offspring_customer_A_i;
                     vehicle_of_best_insertion = vehicle_i;
                 }
@@ -146,6 +158,7 @@ void recombination_BCRC(std::vector<int> *parent_A, std::vector<int> *parent_B) 
     }
     //TODO: "Feasibility" er ikke brydd om fordi dette er et grådig søk uansett - har vi tenkt å bry oss noe om det?
     //TODO: Bør antakelig skrive noen hjelpefunksjoner for å gjøre dette lesbart. Også - sjekk at det funker.
+    // Det jeg tenker er interne funksjoner bare for å gjøre koden lesbar egentlig.
 }
 
 double distance(const customer ca, const customer cb) {
