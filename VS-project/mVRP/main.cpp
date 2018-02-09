@@ -8,9 +8,8 @@ int main(int num_args, char** arg_strings) {
 	
 	GA_mVRP();
 
-	foo(num_args, arg_strings);
+	//foo(num_args, arg_strings);
 
 	system("pause");
-	std::cin.get();
 	return 0;
 }

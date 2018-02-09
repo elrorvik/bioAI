@@ -418,6 +418,7 @@ void Population::recombination_BCRC(std::vector<int> *parent_A, std::vector<int>
 							// Remove customer at customer_index from offspring_A[vehicle_index]
 							auto it = offspring_A[vehicle_index].begin() + customer_A_index;
 							offspring_A[vehicle_index].erase(it);
+							it--;
 						}
 						//std::cout << "Løkke 1 " << vehicle_index << std::endl;
 					}
@@ -430,6 +431,7 @@ void Population::recombination_BCRC(std::vector<int> *parent_A, std::vector<int>
 							// Remove customer at customer_index from offspring_B[vehicle_index]
 							auto it = offspring_B[vehicle_index].begin() + customer_index;
 							offspring_B[vehicle_index].erase(it);
+							it--;
 						}
 						//std::cout << "Løkke 2 " << vehicle_index << std::endl;
 					}

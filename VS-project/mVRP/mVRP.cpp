@@ -36,7 +36,6 @@ void GA_mVRP() {
 	Population population(n_vehicles, n_customers, n_depots, n_individuals,n_parents, customers, depots);
 	population.initialize_population_random();
 	population.print_population();
-	population.test();
 
 
 
