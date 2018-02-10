@@ -105,7 +105,6 @@ void Population::print_population() {
 }
 
 void Population::print_individual(int individual_index) {
-
 	std::cout << "*** Individual. " << individual_index << " Fitness score: " << fitness_individual[individual_index] << " ***" << std::endl;
 	for (int depot_index = 0; depot_index < n_depots; depot_index++) {
 		std::cout << "Depot nr.: " << depot_index << std::endl;
@@ -113,6 +112,26 @@ void Population::print_individual(int individual_index) {
 			this->print_vehicles_customer_queue(individual_index, vehicle_index, depot_index);
 		}
 	}
+
+	std::cout << "Validity of individual: " << validate_individual(individual_index) << std::endl;
+}
+
+bool Population::validate_individual(int individual_index) {
+	std::set<int> customers_in_individual;
+	for (int depot_index = 0; depot_index < n_depots; depot_index++) {
+		for (int vehicle_index = 0; vehicle_index < n_vehicles; vehicle_index++) {
+			for (int customer_index = 0; customer_index < population[individual_index][vehicle_index + depot_index * n_vehicles].size(); customer_index++) {
+				customers_in_individual.insert(population[individual_index][vehicle_index + depot_index * n_vehicles][customer_index]);
+			}
+		}
+	}
+	if (customers_in_individual.size() != n_customers) return false;
+	int last_customer = 0;
+	for (auto it = customers_in_individual.begin(); it != customers_in_individual.end(); it++) {
+		if ((it != customers_in_individual.begin()) && (last_customer + 1 != *it)) return false;
+		last_customer = *it;
+	}
+	return true;
 }
 
 customer Population::get_customer(int index) {
@@ -328,25 +347,27 @@ void Population::insert_mutation_in_population(std::set<int>* parent_index) {
 void Population::insert_recombination_in_population(std::set<int>* parent_index) {
 	std::vector<int>* individual_A;
 	std::vector<int>* individual_B;
-	for (auto it = parent_index->begin(); it != parent_index->end(); it++) { // Ugly double iteration, but found no alternative
+	for (auto it = parent_index->begin(); it != parent_index->end();) { // Iterate it twice without going past end
 		it++;
-		//std::cout << *it << std::endl;
+		if (it == parent_index->end()) continue;
 		individual_A = population[*it - 1];
 		individual_B = population[*it];
-		//print_vehicles_customer_queue(*it, 0, 0);
 		recombination_BCRC(individual_A, individual_B);
+		it++;
 	}
 }
 
 void Population::remove_not_selected_members(std::set<int>* selected_index) { // selected indexes = the ones which survives selection
 	std::vector<int> offspring_selected;
 	std::vector<int> original_not_selected;
-	std::cout << " orignal removes: ";
+
+	std::cout << "Individuals: " << n_individuals << ", size of selected: " << selected_index->size() << std::endl;
+	//std::cout << "Originals removed: ";
 	for (int i = 0; i < n_individuals + n_offspring; i++) {
 		if (selected_index->find(i) == selected_index->end()) {
 			if (i < n_individuals) {
 				original_not_selected.push_back(i);
-				std::cout << i << " ";
+				//std::cout << i << " ";
 			}
 		}
 		else {
@@ -410,6 +431,12 @@ void Population::recombination_BCRC(std::vector<int> *parent_A, std::vector<int>
 	// Remove customers in vehicle_A_customer_buffer from offspring_B, and vica versa
 	vehicle_A_customer_buffer = offspring_A[random_vehicle_A_index];
 	vehicle_B_customer_buffer = offspring_B[random_vehicle_B_index];
+	static int i = 0;
+	if (i == 0) {
+		print_individual(n_individuals + n_offspring - 1);
+		std::cout << std::endl << "n_individuals: " << n_individuals << ", n_offspring: " << n_offspring << std::endl;
+		i++;
+	}
 
 	for (int vehicle_index = 0; vehicle_index < n_depots*n_vehicles; vehicle_index++) {
 		if (vehicle_B_customer_buffer.size() > 0 && offspring_A[vehicle_index].size() > 0) {
@@ -501,6 +528,13 @@ void Population::recombination_BCRC(std::vector<int> *parent_A, std::vector<int>
 	}
 	fitness_individual_initalization(offspring_A, n_offspring + n_individuals - 2);
 	fitness_individual_initalization(offspring_B, n_offspring + n_individuals - 1);
+
+	static int j = 0;
+	if (j == 0) {
+		print_individual(n_individuals + n_offspring - 1);
+		std::cout << std::endl << "n_individuals: " << n_individuals << ", n_offspring: " << n_offspring << std::endl;
+		j++;
+	}
 }
 
 
@@ -524,18 +558,32 @@ void Population::selection_ellitisme(int n_ellitisme, std::set<int>& survival_in
 	double l_b = DBL_MAX;
 	double u_b = DBL_MAX;
 	for (int i = 0; i < n_individ; i++) {
-		if (this->fitness_individual[i] < u_b) {
+		if (temp.size() < n_ellitisme) {
+			temp.insert(fitness_index(i, fitness_individual[i]));
 
-			if (temp.size() < n_ellitisme) {
-				temp.insert(fitness_index(i, fitness_individual[i]));
-			}
-			else {
-				temp.erase(temp.begin());
-				temp.insert(fitness_index(i, fitness_individual[i]));
-			}
 			if (fitness_individual[i] < l_b) {
 				l_b = fitness_individual[i];
 			}
+			/*for (auto it = temp.begin(); it != temp.end(); it++) {
+				std::cout << "F: " << it->fitness << std::endl;
+			}
+			std::cout << std::endl;*/
+			u_b = (temp.begin())->fitness;
+		}
+		else if (this->fitness_individual[i] < u_b) {
+			
+			auto it = temp.end();
+			it--;
+			temp.erase(it);
+			temp.insert(fitness_index(i, fitness_individual[i]));
+			
+			if (fitness_individual[i] < l_b) {
+				l_b = fitness_individual[i];
+			}
+			/*for (auto it = temp.begin(); it != temp.end(); it++) {
+				std::cout << "F: " << it->fitness << std::endl;
+			}
+			std::cout << std::endl;*/
 			u_b = (temp.begin())->fitness;
 		}
 	}
@@ -589,8 +637,9 @@ void Population::selection_SUS(int n_pointers, std::set<int>& survival_index, se
 	int n_curr_offspring = 0;
 	double pointer = p_start;
 	int i = 0;
+	double epsilon = step_size / 100;
 	while (n_curr_offspring < n_pointers) {
-		if (wheel[i].l_b <= pointer && wheel[i].u_b >= pointer) {
+		if (wheel[i].l_b - epsilon <= pointer && wheel[i].u_b + epsilon >= pointer) {
 			//std::cout << std::fixed;
 			//std::cout << "Pointer " << pointer << " individual " << std::setprecision(4) << wheel[i].l_b << " " << std::setprecision(4) << wheel[i].u_b << std::endl;
 			survival_index.insert(wheel[i].individual_index);
@@ -599,6 +648,7 @@ void Population::selection_SUS(int n_pointers, std::set<int>& survival_index, se
 			if (pointer > 1) pointer = pointer - 1;
 		}
 		i++;
+		if (pointer < 0 || pointer > 1) std::cout << "SUS wheel pointer out of range: " << pointer << std::endl;
 		if (i >= n_valid_individuals) {
 			i = 0;
 		}
