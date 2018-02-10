@@ -3,13 +3,11 @@
 #include "visualization.h"
 #include <ctime> 
 
-int main(int num_args, char** arg_strings) {
 
+int main(int num_args, char** arg_strings) {
+	srand(time(0));
 	GA_mVRP();
 
-	//foo(num_args, arg_strings);
-	srand(time(0));
 	system("pause");
-	std::cin.get();
 	return 0;
 }
