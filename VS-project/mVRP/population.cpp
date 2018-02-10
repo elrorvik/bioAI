@@ -8,6 +8,7 @@
 #include <utility>
 #include <cmath>
 
+
 Population::Population(int n_vehicles, int n_customers, int n_depots, int n_individuals, int n_ellitisme, std::set<customer> &customers, std::set<depot> &depots) {
 	this->population = new std::vector<int>*[n_individuals * 2];
 	//this->offspring = new std::vector<int>*[n_individuals];
@@ -93,9 +94,9 @@ void Population::initialize_population_random() {
 void Population::print_population() {
 
 	for (int individual_index = 0; individual_index < n_individuals; individual_index++) {
-		std::cout << "*** Individual. " << individual_index << " Fitness score: " << fitness_individual[individual_index] << " ***" << std::endl;
+		std::cout << "*** Individual. " << individual_index << " Fitness score: "  <<fitness_individual[individual_index] << " ***"<<std::endl;
 		for (int depot_index = 0; depot_index < n_depots; depot_index++) {
-			std::cout << "Depot nr.: " << depot_index << std::endl;
+			std::cout << "Depot nr.: " <<  depot_index << std::endl;
 			for (int vehicle_index = 0; vehicle_index < n_vehicles; vehicle_index++) {
 				this->print_vehicles_customer_queue(individual_index, vehicle_index, depot_index);
 			}
@@ -149,6 +150,7 @@ int Population::get_vehicle_queue_size(int individual_index, int depot_index, in
 double Population::get_fitness_individual(int individual_index) {
 	return this->fitness_individual[individual_index];
 }
+
 
 double Population::get_fitness_individual(std::vector<int> *individual) {
 
@@ -230,9 +232,11 @@ void Population::print_vehicles_customer_queue(int individual_index, int vehicle
 
 }
 
+
 void Population::set_n_offspring(int num) {
 	this->n_offspring = num;
 }
+
 
 void Population::fitness_population_initalization() {
 
@@ -246,6 +250,7 @@ void Population::fitness_individual_initalization(std::vector<int> *individual, 
 	/*Fitness is "duration of service" = travel distance
 	+ punishment of not satisfying all customers on a route
 	+ punishment of a route being too long*/
+
 	double duration = 0;
 	double load = 0;
 	double punishment = 0;
@@ -503,6 +508,9 @@ bool operator<(const fitness_index &right, const fitness_index &left) {
 	return right.fitness < left.fitness;
 }
 
+
+
+
 void Population::selection_ellitisme(int n_ellitisme, std::set<int>& survival_index, selection_on selection_type) {
 	std::set<fitness_index> temp;
 	int n_individ;
@@ -565,11 +573,12 @@ void Population::selection_SUS(int n_pointers, std::set<int>& survival_index, se
 	for (int i = 0; i < n_valid_individuals; i++) {
 		double f = fitness_individual[wheel[i].individual_index] / sum_valid_fitness;
 		wheel[i].l_b = l_b;
-		wheel[i].u_b = l_b + f;
+		wheel[i].u_b = l_b+f;
 		l_b += f;
 	}
 	/*std::cout << "wheel" << std::endl;
 	for (int i = 0; i < n_valid_individuals; i++) {
+
 	std::cout <<"Index: " << wheel[i].individual_index << " lb: " << wheel[i].l_b << " ub: " << wheel[i].u_b << std::endl;
 	}*/
 

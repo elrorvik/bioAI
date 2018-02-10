@@ -3,6 +3,7 @@
 #include "mVRP.h"
 #include "population.h"
 #include "file.h"
+#include <string>
 
 /*void customer::operator=(const customer &other) {
 	this->index = other.index;
@@ -21,7 +22,7 @@ bool operator<(const customer &right, const customer &left) {
 }
 
 void GA_mVRP() {
-	string filename = "..\\..\\testing_data\\data_files\\p01";
+	std::string filename = "..\\..\\testing_data\\data_files\\p01";
 	std::set<customer> customers;
 	std::set<depot> depots;
 	int n_vehicles;
@@ -30,27 +31,9 @@ void GA_mVRP() {
 	int n_individuals = 5;
 	int n_parents = 2;
 
+
 	read_data(filename, customers, depots, n_vehicles, n_customers, n_depots);
 
-
-	/*Population population(n_vehicles, n_customers, n_depots, n_individuals,n_parents, customers, depots);
-	population.initialize_population_random();
-	population.fitness_population_initalization();
-	population.print_population();
-
-
-	// selection test
-	int n_ellitisme = 2;
-	int n_sus_candiates = 3;
-	std::set<int> survival_index;
-	population.selection_ellitisme(n_ellitisme,survival_index, population_selection);
-	population.selection_SUS(n_sus_candiates, survival_index, population_selection);
-
-	std::cout << "\n Selected population " << std::endl;
-	for (auto it = survival_index.begin(); it != survival_index.end(); it++) {
-	std::cout << "Index :" << *it <<" ,Fitness: " << population.get_fitness_individual(*it) << std::endl;
-	}
-	//population.test();*/
 
 	// psedocode for whole algorithm:
 
@@ -108,7 +91,5 @@ void GA_mVRP() {
 
 	}
 	//population.print_population();
-
-
 
 }

@@ -72,3 +72,4 @@ struct fitness_index {
 };
 
 bool operator<(const fitness_index &right, const fitness_index &left);
+
