@@ -35,7 +35,7 @@ public:
 	customer get_customer(int index);
 	void print_population();
 	void print_individual(int individual_index);
-	bool validate_individual(int individual_index);
+	void validate_individual(int individual_index);
 	int get_depot_vehicle_index(int vehicle_index, int depot_index);
 	double get_best_fitness();
 	double get_fitness_individual(int individual_index);

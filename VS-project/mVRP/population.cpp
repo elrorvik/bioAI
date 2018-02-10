@@ -7,6 +7,7 @@
 #include <set>
 #include <utility>
 #include <cmath>
+#include <algorithm>
 
 
 Population::Population(int n_vehicles, int n_customers, int n_depots, int n_individuals, int n_ellitisme, std::set<customer> &customers, std::set<depot> &depots) {
@@ -112,26 +113,34 @@ void Population::print_individual(int individual_index) {
 			this->print_vehicles_customer_queue(individual_index, vehicle_index, depot_index);
 		}
 	}
-
-	std::cout << "Validity of individual: " << validate_individual(individual_index) << std::endl;
 }
 
-bool Population::validate_individual(int individual_index) {
-	std::set<int> customers_in_individual;
+void Population::validate_individual(int individual_index) {
+	std::vector<int> customers_in_individual;
 	for (int depot_index = 0; depot_index < n_depots; depot_index++) {
 		for (int vehicle_index = 0; vehicle_index < n_vehicles; vehicle_index++) {
 			for (int customer_index = 0; customer_index < population[individual_index][vehicle_index + depot_index * n_vehicles].size(); customer_index++) {
-				customers_in_individual.insert(population[individual_index][vehicle_index + depot_index * n_vehicles][customer_index]);
+				customers_in_individual.push_back(population[individual_index][vehicle_index + depot_index * n_vehicles][customer_index]);
 			}
 		}
 	}
-	if (customers_in_individual.size() != n_customers) return false;
+	if (customers_in_individual.size() != n_customers) {
+		std::cout << "n_customers: " << n_customers << ", number of customers in this individual: " << customers_in_individual.size() << std::endl;
+		std::cout << "Invalid individual. The program will now exit." << std::endl;
+		std::cin.get();
+		exit(1);
+	}
+	sort(customers_in_individual.begin(), customers_in_individual.end());
 	int last_customer = 0;
 	for (auto it = customers_in_individual.begin(); it != customers_in_individual.end(); it++) {
-		if ((it != customers_in_individual.begin()) && (last_customer + 1 != *it)) return false;
+		if ((it != customers_in_individual.begin()) && (last_customer + 1 != *it)) {
+			std::cout << "Previous customer in individual: " << last_customer << ", next customer: " << *it << std::endl;
+			std::cout << "Invalid individual. The program will now exit." << std::endl;
+			std::cin.get();
+			exit(1);
+		}
 		last_customer = *it;
 	}
-	return true;
 }
 
 customer Population::get_customer(int index) {
@@ -535,6 +544,9 @@ void Population::recombination_BCRC(std::vector<int> *parent_A, std::vector<int>
 		std::cout << std::endl << "n_individuals: " << n_individuals << ", n_offspring: " << n_offspring << std::endl;
 		j++;
 	}
+
+	validate_individual(n_individuals + n_offspring - 1);
+	validate_individual(n_individuals + n_offspring - 2);
 }
 
 
