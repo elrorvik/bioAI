@@ -46,21 +46,31 @@ void GA_mVRP() {
 	population.initialize_population_random();
 	population.fitness_population_initalization();
 
-	int improvement_in_fitness = 1000;
+	int improvement_in_fitness = 5000;
 	double best_fitness = DBL_MAX;
 	int generation = 0;
-	int n_generations = 1000;
+	int n_generations = 5000;
 	double second_generation_best_fitness = 0;
 
 	while (improvement_in_fitness > 0 && generation < n_generations) {
 		// apply recombination on parent_index
 		std::set<int> parent_index_1;
 		int n_elitism_1 = n_elitism;
+		int n_parents_greedy = n_parents - 0;
+		int n_parents_greedier = 0;
 		if (n_parents == n_individuals) n_elitism_1 = n_parents;
 		population.selection_ellitisme(n_elitism_1, parent_index_1, parent_selection);
-		if (n_parents < n_individuals) population.selection_SUS(n_parents, parent_index_1, parent_selection);
+		if (n_parents < n_individuals) population.selection_SUS(n_parents_greedy, parent_index_1, parent_selection);
 		
-		population.insert_recombination_in_population_random_pairing(&parent_index_1);
+		population.insert_greedy_recombination_in_population_random_pairing(&parent_index_1);
+
+		/*std::set<int> parent_index_2;
+		int n_elitism_2 = 0;
+		if (rand() % 2 == 0) n_elitism_2 = 1;
+		if (n_parents < n_individuals) population.selection_SUS(n_parents_greedier, parent_index_2, parent_selection);
+		population.selection_ellitisme(n_elitism_2, parent_index_2, parent_selection);
+
+		population.insert_greedier_recombination_in_population_random_pairing(&parent_index_2);*/
 
 		/*std::set<int> parent_index_2;
 		population.selection_ellitisme(n_elitism, parent_index_2, parent_selection);
@@ -78,7 +88,7 @@ void GA_mVRP() {
 			n_volatile_mutate = (rand() % static_cast<int>(n_offspring*0.05)) + static_cast<int>(n_offspring*0.05);
 		}
 		population.insert_volatile_mutation_in_offspring(n_volatile_mutate, 3);
-		population.insert_volatile_mutation_in_offspring(1, 100);
+		population.insert_volatile_mutation_in_offspring(3, 100);
 
 
 		// select survivors

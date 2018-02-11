@@ -29,7 +29,8 @@ public:
 	void fitness_individual_initalization(std::vector<int> *individual, int index_individual);
 	void insert_mutation_in_offspring(int n_mutate);
 	void insert_volatile_mutation_in_offspring(int n_mutate, int volatility);
-	void insert_recombination_in_population_random_pairing(std::set<int>* parent_index);
+	void insert_greedy_recombination_in_population_random_pairing(std::set<int>* parent_index);
+	void insert_greedier_recombination_in_population_random_pairing(std::set<int>* parent_index);
 	void insert_recombination_in_population_deterministic_pairing(std::set<int>* parent_index);
 	Population(int n_vehicles, int n_customers, int n_depots, int n_individuals, int n_ellitisme, std::set<customer> &customers, std::set<depot> &depots);
 	void initialize_population_random();

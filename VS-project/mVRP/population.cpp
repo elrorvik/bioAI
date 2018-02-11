@@ -346,6 +346,7 @@ void Population::insert_mutation_in_offspring(int n_mutate) {
 		}
 		offspring_index++;
 		if (offspring_index = this->n_parents + this->n_offspring) offspring_index = n_parents;
+		fitness_individual_initalization(population[this->n_parents + offspring_index], this->n_parents + offspring_index);
 	}
 }
 
@@ -355,6 +356,7 @@ void Population::insert_volatile_mutation_in_offspring(int n_mutate, int volatil
 		for (int j = 0; j < volatility; j++) {
 			mutate_insert_between_vehicle(population[this->n_parents + random_offspring]);
 		}
+		fitness_individual_initalization(population[this->n_parents + random_offspring], this->n_parents + random_offspring);
 	}
 }
 
@@ -371,7 +373,7 @@ void Population::insert_recombination_in_population_deterministic_pairing(std::s
 	}
 }
 
-void Population::insert_recombination_in_population_random_pairing(std::set<int>* parent_index) {
+void Population::insert_greedy_recombination_in_population_random_pairing(std::set<int>* parent_index) {
 	std::vector<int>* individual_A;
 	std::vector<int>* individual_B;
 	while (parent_index->size() > 1) {
@@ -392,6 +394,32 @@ void Population::insert_recombination_in_population_random_pairing(std::set<int>
 		individual_A = population[*itA];
 		individual_B = population[*itB];
 		recombination_BCRC_greedy(individual_A, individual_B);
+		parent_index->erase(itA);
+		parent_index->erase(itB);
+	}
+}
+
+void Population::insert_greedier_recombination_in_population_random_pairing(std::set<int>* parent_index) {
+	std::vector<int>* individual_A;
+	std::vector<int>* individual_B;
+	while (parent_index->size() > 1) {
+		int rand_index_A = rand() % parent_index->size();
+		int rand_index_B = rand_index_A;
+		while (rand_index_A == rand_index_B) {
+			rand_index_B = rand() % parent_index->size();
+		}
+		auto itA = parent_index->begin();
+		auto itB = parent_index->begin();
+		for (int i = 0; i < rand_index_A; i++) {
+			itA++;
+		}
+		for (int i = 0; i < rand_index_B; i++) {
+			itB++;
+		}
+
+		individual_A = population[*itA];
+		individual_B = population[*itB];
+		recombination_BCRC_greedier(individual_A, individual_B);
 		parent_index->erase(itA);
 		parent_index->erase(itB);
 	}
@@ -811,6 +839,8 @@ void Population::selection_ellitisme(int n_ellitisme, std::set<int>& survival_in
 	if (error == 0 && n_ellitisme == 0) {
 		std::cout << "Warning, number of elitism set to zero." << std::endl;
 		error++;
+	}
+	if (n_ellitisme == 0) {
 		return;
 	}
 	
