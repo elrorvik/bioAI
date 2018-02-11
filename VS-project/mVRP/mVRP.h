@@ -1,7 +1,7 @@
 #pragma once
 
 const int invalid_city = -1;
-enum selection_on { offspring_selection, population_selection };
+enum selection_on { offspring_selection, parent_selection, population_selection };
 
 
 struct customer {

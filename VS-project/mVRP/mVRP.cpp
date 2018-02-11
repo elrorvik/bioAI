@@ -28,13 +28,13 @@ void GA_mVRP() {
 	int n_vehicles;
 	int n_customers;
 	int n_depots;
-	int n_individuals = 100;
+	int n_individuals = 500;
 	double parent_percentage = 1;
-	double survivor_elitism_percentage = 0.1;
+	double survivor_elitism_percentage = 0.05;
 	int n_parents = static_cast<int>(parent_percentage*n_individuals);
+	int n_offspring = static_cast<int>(n_parents / 2);
 	int n_elitism = static_cast<int>(survivor_elitism_percentage*n_individuals);
 	int n_sus = n_individuals - n_elitism;
-
 
 	read_data(filename, customers, depots, n_vehicles, n_customers, n_depots);
 
@@ -46,30 +46,29 @@ void GA_mVRP() {
 	population.fitness_population_initalization();
 
 	int improvement_in_fitness = 30;
-	double best_fitness = 0.0;
+	double best_fitness = DBL_MAX;
 	int generation = 0;
-	int n_generations = 40;
+	int n_generations = 100;
 	double second_generation_best_fitness = 0;
 
 	while (improvement_in_fitness > 0 && generation < n_generations) {
 		// apply recombination on parent_index
 		std::set<int> parent_index;
-		population.selection_SUS(n_parents, parent_index, population_selection);
-		std::cout << "Selection finished" << std::endl;
+		population.selection_ellitisme(n_elitism, parent_index, parent_selection);
+		population.selection_SUS(n_parents, parent_index, parent_selection);
 		population.insert_recombination_in_population(&parent_index);
 
-		std::cout << "Recombination finished" << std::endl;
 
 		// apply mutation on offspring
+		
+		int n_mutate = (rand() % static_cast<int>(n_offspring*0.6)) + static_cast<int>(n_offspring*0.4);
+		population.insert_mutation_in_offspring(n_mutate);
 
-		// ...
 
 		// select survivors
 		std::set<int> selected_index;
-		std::cout << n_elitism << std::endl;
-		population.selection_ellitisme(n_elitism, selected_index, offspring_selection);
-		std::cout << "Number selected by elitism: " << selected_index.size() << std::endl;
-		population.selection_SUS(n_sus, selected_index, offspring_selection);
+		population.selection_ellitisme(n_elitism, selected_index, population_selection);
+		population.selection_SUS(n_sus, selected_index, population_selection);
 
 		/*std::cout << "\n Selected population " << std::endl;
 		for (auto it = selected_index.begin(); it != selected_index.end(); it++) {
@@ -79,19 +78,18 @@ void GA_mVRP() {
 		// remove non-survivors
 		population.remove_not_selected_members(&selected_index);
 		double current_best_fitness = population.get_best_fitness();
-		if (current_best_fitness == best_fitness) {
+		if (current_best_fitness >= best_fitness) {
 			improvement_in_fitness--;
 		}
-		else if (best_fitness < current_best_fitness) {
+		else {
 			best_fitness = current_best_fitness;
-			improvement_in_fitness = 10;
+			improvement_in_fitness = 30;
 		}
 		if (generation == 0) {
 			second_generation_best_fitness = best_fitness;
 		}
-		std::cout << std::endl << "Nr. generation: " << generation << ", best fitness: " << best_fitness << std::endl << std::endl;
+		std::cout << "Nr. generation: " << generation << ", best fitness: " << best_fitness << std::endl;
 		generation++;
-
 	}
 
 	std::cout << std::endl << std::endl << "Second generation best fitness: " << second_generation_best_fitness << ", best fitness at termination: " << best_fitness << std::endl;

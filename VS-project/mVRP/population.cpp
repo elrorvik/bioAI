@@ -210,8 +210,8 @@ double Population::get_fitness_individual(std::vector<int> *individual) {
 		duration += sqrt(pow(cn.x - d.x, 2) + pow(cn.y - d.y, 2));
 		load += cn.demand;
 
-		if (duration > d.max_duration_per_vehicle) punishment += 500;
-		if (load > d.max_load_per_vehicle) punishment += 500;
+		if (duration > d.max_duration_per_vehicle) punishment += 1000;
+		if (load > d.max_load_per_vehicle) punishment += 1000;
 
 		double fitness = duration + punishment;
 		individual_fitness += fitness;
@@ -242,8 +242,8 @@ double Population::get_fitness_vehicle(int depot_number, std::vector<int> vehicl
 	duration += sqrt(pow(cn.x - d.x, 2) + pow(cn.y - d.y, 2));
 	load += cn.demand;
 
-	if (duration > d.max_duration_per_vehicle) punishment += 500;
-	if (load > d.max_load_per_vehicle) punishment += 500;
+	if (duration > d.max_duration_per_vehicle) punishment += 1000;
+	if (load > d.max_load_per_vehicle) punishment += 1000;
 	fitness = duration + punishment;
 	return fitness;
 }
@@ -305,8 +305,8 @@ void Population::fitness_individual_initalization(std::vector<int> *individual, 
 		duration += sqrt(pow(cn.x - d.x, 2) + pow(cn.y - d.y, 2));
 		load += cn.demand;
 
-		if (duration > d.max_duration_per_vehicle) punishment += 500;
-		if (load > d.max_load_per_vehicle) punishment += 500;
+		if (duration > d.max_duration_per_vehicle && d.max_duration_per_vehicle != 0) punishment += 1000;
+		if (load > d.max_load_per_vehicle && d.max_load_per_vehicle != 0) punishment += 1000;
 
 		double fitness = duration + punishment;
 		fitness_vehicle[index_individual][i] = fitness;
@@ -337,18 +337,17 @@ void Population::mutate_swap_internally_vehicle(std::vector<int> *individual, in
 	}
 
 }
-void Population::insert_mutation_in_population(std::set<int>* parent_index) {
-	std::vector<int>* individual;
-	for (auto it = parent_index->begin(); it != parent_index->end(); it++) {
-		//std::cout << *it << std::endl;
-		individual = population[*it];
-		//print_vehicles_customer_queue(*it, 0, 0);
-		//std::cout << "fitness before" << get_fitness_individual(*it) << std::endl;
-		mutate_swap_internally_vehicle(individual, *it);
-		population[n_individuals + n_offspring] = individual;
-		fitness_individual_initalization(individual, n_offspring + n_individuals);
-		//std::cout << "fitness after" << get_fitness_individual(n_individuals + n_offspring) << std::endl;
-		n_offspring++;
+void Population::insert_mutation_in_offspring(int n_mutate) {
+	int mutated = 0;
+	int offspring_index = n_parents;
+	while (mutated < n_mutate) {
+		int mutate = (rand() % 100);
+		if (mutate < n_mutate) {
+			mutate_insert_between_vehicle(population[offspring_index]);
+			mutated++;
+		}
+		offspring_index++;
+		if (offspring_index = this->n_parents + this->n_offspring) offspring_index = n_parents;
 	}
 
 }
@@ -370,7 +369,7 @@ void Population::remove_not_selected_members(std::set<int>* selected_index) { //
 	std::vector<int> offspring_selected;
 	std::vector<int> original_not_selected;
 
-	std::cout << "Individuals: " << n_individuals << ", size of selected: " << selected_index->size() << std::endl;
+	//std::cout << "Individuals: " << n_individuals << ", size of selected: " << selected_index->size() << std::endl;
 	//std::cout << "Originals removed: ";
 	for (int i = 0; i < n_individuals + n_offspring; i++) {
 		if (selected_index->find(i) == selected_index->end()) {
@@ -411,7 +410,16 @@ void Population::mutate_insert_between_vehicle(std::vector<int> *individual) {
 		random_vehicle_B = rand() % n_vehicles*n_depots;
 	} while (random_vehicle_B == random_vehicle_A);
 
-	int random_loci_A = rand() % individual[random_vehicle_A].size();
+	if (individual[random_vehicle_B].size() == 0) {
+		if (individual[random_vehicle_A].size() == 0) return;
+		int temp = random_vehicle_B;
+		random_vehicle_B = random_vehicle_A;
+		random_vehicle_A = temp;
+	}
+	
+	int random_loci_A;
+	if (individual[random_vehicle_A].size() == 0)  random_loci_A = 0;
+	else random_loci_A = rand() % individual[random_vehicle_A].size();
 	int random_loci_B = rand() % individual[random_vehicle_B].size();
 
 	std::vector<int>::iterator it_A, it_B;
@@ -440,22 +448,35 @@ void Population::recombination_BCRC(std::vector<int> *parent_A, std::vector<int>
 	// Remove customers in vehicle_A_customer_buffer from offspring_B, and vica versa
 	vehicle_A_customer_buffer = offspring_A[random_vehicle_A_index];
 	vehicle_B_customer_buffer = offspring_B[random_vehicle_B_index];
-	static int i = 0;
-	if (i == 0) {
-		print_individual(n_individuals + n_offspring - 1);
-		std::cout << std::endl << "n_individuals: " << n_individuals << ", n_offspring: " << n_offspring << std::endl;
-		i++;
-	}
 
+	fitness_individual_initalization(offspring_A, n_offspring + n_individuals - 2);
+	fitness_individual_initalization(offspring_B, n_offspring + n_individuals - 1);
+	//std::cout << "Fitness before recombination, A: " << fitness_individual[n_offspring + n_individuals - 2] << ", B: " << fitness_individual[n_offspring + n_individuals - 2] << std::endl;
+
+	/*std::cout << std::endl;
+	std::cout << "Vehicle to be removed from A: " << random_vehicle_A_index << ", and B: " << random_vehicle_B_index << std::endl;
+	std::cout << std::endl;*/
+	/*static int i = 0;
+	if (i == 0) {
+		std::cout << "Vehicle to be removed from A: " << random_vehicle_A_index << ", and B: " << random_vehicle_B_index << std::endl;
+		std::cout << std::endl;
+		std::cout << "Offspring A:" << std::endl;
+		print_individual(n_individuals + n_offspring - 2);
+		std::cout << std::endl;
+		std::cout << "Offspring B:" << std::endl;
+		print_individual(n_individuals + n_offspring - 1);
+	}*/
+	/*
 	for (int vehicle_index = 0; vehicle_index < n_depots*n_vehicles; vehicle_index++) {
 		if (vehicle_B_customer_buffer.size() > 0 && offspring_A[vehicle_index].size() > 0) {
 			for (int customer_index = 0; customer_index < offspring_A[vehicle_index].size(); customer_index++) {
-				if (offspring_A[vehicle_index].size() >= customer_index) continue;
+				if (offspring_A[vehicle_index].size() <= customer_index) continue;
 				for (int customer_buffer_i = 0; customer_buffer_i < vehicle_B_customer_buffer.size(); customer_buffer_i++) {
 					if (offspring_A[vehicle_index][customer_index] == vehicle_B_customer_buffer[customer_buffer_i]) {
 						// Remove customer at customer_index from offspring_A[vehicle_index]
 						auto it = offspring_A[vehicle_index].begin() + customer_index;
 						offspring_A[vehicle_index].erase(it);
+						std::cout << "Her!" << std::endl;
 					}
 					//std::cout << "Løkke 1 " << vehicle_index << std::endl;
 				}
@@ -463,27 +484,74 @@ void Population::recombination_BCRC(std::vector<int> *parent_A, std::vector<int>
 		} // endif
 		if (vehicle_A_customer_buffer.size() > 0 && offspring_B[vehicle_index].size() > 0) {
 			for (int customer_index = 0; customer_index < offspring_B[vehicle_index].size(); customer_index++) {
-				if (offspring_B[vehicle_index].size() >= customer_index) continue;
+				if (offspring_B[vehicle_index].size() <= customer_index) continue;
 				for (int customer_buffer_i = 0; customer_buffer_i < vehicle_A_customer_buffer.size(); customer_buffer_i++) {
 					if (offspring_B[vehicle_index][customer_index] == vehicle_A_customer_buffer[customer_buffer_i]) {
 						// Remove customer at customer_index from offspring_B[vehicle_index]
 						auto it = offspring_B[vehicle_index].begin() + customer_index;
 						offspring_B[vehicle_index].erase(it);
+						std::cout << "Her!" << std::endl;
 					}
 					//std::cout << "Løkke 2 " << vehicle_index << std::endl;
 				}
 			} // endfor
 		} // endif
+	} */
+
+	for (int vehicle_index = 0; vehicle_index < n_depots*n_vehicles; vehicle_index++) {
+		if (vehicle_B_customer_buffer.size() > 0) {
+			int check_for_removal_index = 0;
+			while (check_for_removal_index < offspring_A[vehicle_index].size()) {
+				for (int remove_if_found_index = 0; remove_if_found_index < vehicle_B_customer_buffer.size(); remove_if_found_index++) {
+					if (offspring_A[vehicle_index][check_for_removal_index] == vehicle_B_customer_buffer[remove_if_found_index]) {
+						// Remove customer at customer_index from offspring_A[vehicle_index]
+						auto it = offspring_A[vehicle_index].begin() + check_for_removal_index;
+						offspring_A[vehicle_index].erase(it);
+						check_for_removal_index--;
+						break;
+					}
+					//std::cout << "Løkke 1 " << vehicle_index << std::endl;
+				}
+				check_for_removal_index++;
+			} // endfor
+		} // endif
+		if (vehicle_A_customer_buffer.size() > 0) {
+			int check_for_removal_index = 0;
+			while (check_for_removal_index < offspring_B[vehicle_index].size()) {
+				for (int remove_if_found_index = 0; remove_if_found_index < vehicle_A_customer_buffer.size(); remove_if_found_index++) {
+					if (offspring_B[vehicle_index][check_for_removal_index] == vehicle_A_customer_buffer[remove_if_found_index]) {
+						// Remove customer at customer_index from offspring_B[vehicle_index]
+						auto it = offspring_B[vehicle_index].begin() + check_for_removal_index;
+						offspring_B[vehicle_index].erase(it);
+						check_for_removal_index--;
+						break;
+					}
+					//std::cout << "Løkke 2 " << vehicle_index << std::endl;
+				}
+				check_for_removal_index++;
+			} // endfor
+		} // endif
 	}
 
+	/*if (i == 0) {
+		std::cout << std::endl;
+		std::cout << "Offspring A:" << std::endl;
+		print_individual(n_individuals + n_offspring - 2);
+		std::cout << std::endl;
+		std::cout << "Offspring B:" << std::endl;
+		print_individual(n_individuals + n_offspring - 1);
+	}*/
+
 	// For the CHOSEN depot, compute insertion of vehicle_A_customer_buffer customers into all "FEASIBLE" points in random_depot (only), in offspring_B, and vica versa
-	for (int removed_customer_A_i = 0; removed_customer_A_i < vehicle_A_customer_buffer.size(); removed_customer_A_i++) {
-		double lowest_cost_of_insertion = DBL_MAX;
-		double fitness_of_insertion = 0;
-		double fitness_pre_insertion = 0;
-		double cost_of_insertion = 0;
-		int index_of_best_insertion = 0;
-		int vehicle_of_best_insertion = 0;
+	double lowest_cost_of_insertion = DBL_MAX;
+	double fitness_of_insertion = 0;
+	double fitness_pre_insertion = 0;
+	double cost_of_insertion = 0;
+	int index_of_best_insertion = 0;
+	int vehicle_of_best_insertion = 0;
+	int removed_customer_A_i = 0;
+	int best_removed_customer_A_i = -1;
+	while (removed_customer_A_i < vehicle_A_customer_buffer.size()) {
 
 		for (int vehicle_index = n_vehicles * random_depot; vehicle_index < n_vehicles*random_depot + n_vehicles; vehicle_index++) {
 			for (int offspring_customer_B_i = 0; offspring_customer_B_i < offspring_B[vehicle_index].size() + 1; offspring_customer_B_i++) { // Need to check insertion costs for empty vehicles, and insertion at the end of the route
@@ -497,21 +565,45 @@ void Population::recombination_BCRC(std::vector<int> *parent_A, std::vector<int>
 				if (cost_of_insertion < lowest_cost_of_insertion) {
 					lowest_cost_of_insertion = cost_of_insertion;
 					index_of_best_insertion = offspring_customer_B_i;
+					best_removed_customer_A_i = removed_customer_A_i;
 					vehicle_of_best_insertion = vehicle_index;
+					//std::cout << "Lowest insertion: " << lowest_cost_of_insertion << ", with in removed_index: " << removed_customer_A_i << ", vehicle: " << vehicle_index << std::endl;
 				}
 				offspring_B[vehicle_index].erase(it);
 			}
 		}
-		auto it = offspring_B[vehicle_of_best_insertion].begin() + index_of_best_insertion;
-		offspring_B[vehicle_of_best_insertion].insert(it, vehicle_A_customer_buffer[removed_customer_A_i]);
+		if (removed_customer_A_i == vehicle_A_customer_buffer.size() - 1) {
+			//std::cout << "\nNow inserting in B: " << vehicle_A_customer_buffer[best_removed_customer_A_i] << std::endl << std::endl;
+			//std::cout << "V: " << vehicle_of_best_insertion << ", I: " << index_of_best_insertion << ", LC: " << lowest_cost_of_insertion << std::endl;
+			auto it = offspring_B[vehicle_of_best_insertion].begin() + index_of_best_insertion;
+			offspring_B[vehicle_of_best_insertion].insert(it, vehicle_A_customer_buffer[best_removed_customer_A_i]);
+
+			//std::cout << best_removed_customer_A_i << std::endl;
+
+			//std::cout << "\nNow removing from A_buffer: " << best_removed_customer_A_i << std::endl << std::endl;
+			auto it2 = vehicle_A_customer_buffer.begin() + best_removed_customer_A_i;
+			vehicle_A_customer_buffer.erase(it2);
+
+			removed_customer_A_i = 0;
+			lowest_cost_of_insertion = DBL_MAX;
+			fitness_of_insertion = 0;
+			fitness_pre_insertion = 0;
+			cost_of_insertion = 0;
+			index_of_best_insertion = 0;
+			vehicle_of_best_insertion = 0;
+		}
+		else removed_customer_A_i++;
 	}
-	for (int removed_customer_B_i = 0; removed_customer_B_i < vehicle_B_customer_buffer.size(); removed_customer_B_i++) {
-		double lowest_cost_of_insertion = DBL_MAX;
-		double fitness_of_insertion = 0;
-		double fitness_pre_insertion = 0;
-		double cost_of_insertion = 0;
-		int index_of_best_insertion = 0;
-		int vehicle_of_best_insertion = 0;
+	lowest_cost_of_insertion = DBL_MAX;
+	fitness_of_insertion = 0;
+	fitness_pre_insertion = 0;
+	cost_of_insertion = 0;
+	index_of_best_insertion = 0;
+	vehicle_of_best_insertion = 0;
+	int insert_removed_customer_B_i_next = -1;
+	int removed_customer_B_i = 0;
+	int best_removed_customer_B_i = -1;
+	while(removed_customer_B_i < vehicle_B_customer_buffer.size()) {
 
 		for (int vehicle_index = n_vehicles * random_depot; vehicle_index < n_vehicles*random_depot + n_vehicles; vehicle_index++) {
 			for (int offspring_customer_A_i = 0; offspring_customer_A_i < offspring_A[vehicle_index].size() + 1; offspring_customer_A_i++) { // Need to check insertion costs for empty vehicles, and insertion at the end of the route
@@ -527,23 +619,51 @@ void Population::recombination_BCRC(std::vector<int> *parent_A, std::vector<int>
 				if (cost_of_insertion < lowest_cost_of_insertion) {
 					lowest_cost_of_insertion = cost_of_insertion;
 					index_of_best_insertion = offspring_customer_A_i;
+					best_removed_customer_B_i = removed_customer_B_i;
 					vehicle_of_best_insertion = vehicle_index;
+					//std::cout << "Lowest insertion: " << lowest_cost_of_insertion << ", with in removed_index: " << removed_customer_B_i << ", vehicle: " << vehicle_index << std::endl;
 				}
 				offspring_A[vehicle_index].erase(it);
 			}
 		}
-		auto it = offspring_A[vehicle_of_best_insertion].begin() + index_of_best_insertion;
-		offspring_A[vehicle_of_best_insertion].insert(it, vehicle_B_customer_buffer[removed_customer_B_i]);
+		if (removed_customer_B_i == vehicle_B_customer_buffer.size() - 1) {
+			//std::cout << "\nNow inserting in A: " << vehicle_B_customer_buffer[best_removed_customer_B_i] << std::endl << std::endl;
+			//std::cout << "V: " << vehicle_of_best_insertion << ", I: " << index_of_best_insertion << ", LC: " << lowest_cost_of_insertion << std::endl;
+			auto it = offspring_A[vehicle_of_best_insertion].begin() + index_of_best_insertion;
+			offspring_A[vehicle_of_best_insertion].insert(it, vehicle_B_customer_buffer[best_removed_customer_B_i]);
+
+			//std::cout << best_removed_customer_A_i << std::endl;
+
+			//std::cout << "\nNow removing from B_buffer: " << best_removed_customer_B_i << std::endl << std::endl;
+			auto it2 = vehicle_B_customer_buffer.begin() + best_removed_customer_B_i;
+			vehicle_B_customer_buffer.erase(it2);
+
+			removed_customer_B_i = 0;
+			lowest_cost_of_insertion = DBL_MAX;
+			fitness_of_insertion = 0;
+			fitness_pre_insertion = 0;
+			cost_of_insertion = 0;
+			index_of_best_insertion = 0;
+			vehicle_of_best_insertion = 0;
+		}
+		else removed_customer_B_i++;
 	}
 	fitness_individual_initalization(offspring_A, n_offspring + n_individuals - 2);
 	fitness_individual_initalization(offspring_B, n_offspring + n_individuals - 1);
 
-	static int j = 0;
-	if (j == 0) {
+	/*if (i == 0) {
+		std::cout << std::endl;
+		std::cout << "Offspring A:" << std::endl;
+		print_individual(n_individuals + n_offspring - 2);
+		std::cout << std::endl;
+		std::cout << "Offspring B:" << std::endl;
 		print_individual(n_individuals + n_offspring - 1);
-		std::cout << std::endl << "n_individuals: " << n_individuals << ", n_offspring: " << n_offspring << std::endl;
-		j++;
-	}
+		std::cin.get();
+		exit(1);
+		i++;
+	}*/
+
+	//std::cout << "Fitness after recombination, A: " << fitness_individual[n_offspring + n_individuals - 2] << ", B: " << fitness_individual[n_offspring + n_individuals - 2] << std::endl << std::endl;
 
 	validate_individual(n_individuals + n_offspring - 1);
 	validate_individual(n_individuals + n_offspring - 2);
@@ -560,7 +680,7 @@ bool operator<(const fitness_index &right, const fitness_index &left) {
 void Population::selection_ellitisme(int n_ellitisme, std::set<int>& survival_index, selection_on selection_type) {
 	std::set<fitness_index> temp;
 	int n_individ;
-	if (selection_type == population_selection) {
+	if (selection_type == parent_selection) {
 		n_individ = this->n_individuals;
 	}
 	else {
@@ -594,11 +714,11 @@ void Population::selection_ellitisme(int n_ellitisme, std::set<int>& survival_in
 			}
 			/*for (auto it = temp.begin(); it != temp.end(); it++) {
 				std::cout << "F: " << it->fitness << std::endl;
-			}
-			std::cout << std::endl;*/
-			u_b = (temp.begin())->fitness;
+			}*/
+			u_b = (temp.rbegin())->fitness;
 		}
 	}
+	//std::cout << "This fitness is: " << this->best_fitness << std::endl;
 	this->best_fitness = l_b;
 
 	for (auto it = temp.begin(); it != temp.end(); it++) {
@@ -609,11 +729,18 @@ void Population::selection_ellitisme(int n_ellitisme, std::set<int>& survival_in
 void Population::selection_SUS(int n_pointers, std::set<int>& survival_index, selection_on selection_type) {
 
 	int n_individ;
-	if (selection_type == population_selection) {
+	int individ_start;
+	if (selection_type == parent_selection) {
 		n_individ = this->n_individuals;
+		individ_start = 0;
 	}
-	else {
+	else if (selection_type == offspring_selection) {
+		n_individ = this->n_offspring;
+		individ_start = this->n_individuals;
+	}
+	else if (selection_type == population_selection) {
 		n_individ = this->n_offspring + this->n_individuals;
+		individ_start = 0;
 	}
 
 	// make wheel
@@ -621,7 +748,7 @@ void Population::selection_SUS(int n_pointers, std::set<int>& survival_index, se
 	double n_valid_individuals = n_individ - survival_index.size();
 	wheel_piece_t* wheel = new wheel_piece_t[n_valid_individuals]; // n = number of population taken care of
 	int index_wheel = 0;
-	for (int i = 0; i < n_individ; i++) {
+	for (int i = individ_start; i < n_individ; i++) {
 		if (survival_index.find(i) == survival_index.end()) {
 			sum_valid_fitness += fitness_individual[i];
 			wheel[index_wheel] = wheel_piece_t(0, 0, i);
