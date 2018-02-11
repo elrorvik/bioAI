@@ -51,7 +51,8 @@ public:
 	void fitness_population_initalization();
 	void mutate_swap_internally_vehicle(std::vector<int> *individual, int index);
 	void mutate_insert_between_vehicle(std::vector<int> *individual);
-	void recombination_BCRC(std::vector<int> *parent_A, std::vector<int> *parent_B);
+	void recombination_BCRC_greedier(std::vector<int> *parent_A, std::vector<int> *parent_B);
+	void recombination_BCRC_greedy(std::vector<int> *parent_A, std::vector<int> *parent_B);
 
 	void set_n_offspring(int num);
 	void selection_SUS(int n_pointers, std::set<int>& survival_index, selection_on selection_type);
