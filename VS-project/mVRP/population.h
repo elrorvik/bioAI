@@ -27,13 +27,14 @@ private:
 public:
 	void remove_not_selected_members(std::set<int>* selected_index);
 	void fitness_individual_initalization(std::vector<int> *individual, int index_individual);
-	void insert_mutation_in_offspring(int n_mutate);
+	void insert_mutation_in_offspring(double insert_in_vehicle_percentage, double optimize_vehicle_percentage, double swap_between_vehicle_percentage);
 	void insert_volatile_mutation_in_offspring(int n_mutate, int volatility);
 	void insert_greedy_recombination_in_population_random_pairing(std::set<int>* parent_index);
 	void insert_greedier_recombination_in_population_random_pairing(std::set<int>* parent_index);
 	void insert_recombination_in_population_deterministic_pairing(std::set<int>* parent_index);
 	Population(int n_vehicles, int n_customers, int n_depots, int n_individuals, int n_ellitisme, std::set<customer> &customers, std::set<depot> &depots);
 	void initialize_population_random();
+	void initialize_population_k_mean();
 	~Population();
 	customer get_customer(int index);
 	void print_population();
@@ -44,6 +45,7 @@ public:
 	double get_fitness_individual(int individual_index);
 	double get_fitness_individual(std::vector<int> *individual);
 	double get_fitness_vehicle(int depot_number, std::vector<int> vehicle);
+	void set_fitness_vehicle(int individual_index, int vehicle_index);
 	customer get_customer(int individual_index, int depot_index, int vehicle_index, int customer_index_in_queue);
 	int get_customer_index(int individual_index, int depot_index, int vehicle_index, int customer_index_in_queue);
 	void print_vehicles_customer_queue(int individual_index, int vehicle_index, int depot_index);
@@ -51,7 +53,9 @@ public:
 
 	void fitness_population_initalization();
 	void mutate_swap_internally_vehicle(std::vector<int> *individual, int index);
-	void mutate_insert_between_vehicle(std::vector<int> *individual);
+	void mutate_swap_between_vehicle(std::vector<int> *individual, int index);
+	void mutate_swap_between_depot(std::vector<int> *individual, int index);
+	void mutate_optimize_vehicle(std::vector<int> *individual, int individual_index, int vehicle_index);
 	void recombination_BCRC_greedier(std::vector<int> *parent_A, std::vector<int> *parent_B);
 	void recombination_BCRC_greedy(std::vector<int> *parent_A, std::vector<int> *parent_B);
 
@@ -78,3 +82,5 @@ struct fitness_index {
 
 bool operator<(const fitness_index &right, const fitness_index &left);
 
+
+int random_number(int modula);

@@ -5,7 +5,10 @@
 
 
 int main(int num_args, char** arg_strings) {
-	srand(time(0));
+	time_t now;
+	time(&now);
+	srand((unsigned int)now);
+
 	GA_mVRP();
 
 	system("pause");
