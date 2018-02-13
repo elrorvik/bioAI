@@ -22,13 +22,13 @@ bool operator<(const customer &right, const customer &left) {
 }
 
 void GA_mVRP() {
-	std::string filename = "..\\..\\testing_data\\data_files\\p01";
+	std::string filename = "..\\..\\testing_data\\data_files\\p03";
 	std::set<customer> customers;
 	std::set<depot> depots;
 	int n_vehicles;
 	int n_customers;
 	int n_depots;
-	int n_individuals = 200;
+	int n_individuals = 100;
 	double parent_percentage = 0.02;
 	double survivor_elitism_percentage = 1;
 	double parent_elitism_percentage = 1;
@@ -48,11 +48,12 @@ void GA_mVRP() {
 	population.initialize_population_k_mean();
 	population.fitness_population_initalization();
 
-	int improvement_in_fitness = 5000;
+	int improvement_in_fitness = 2000;
 	double best_fitness = DBL_MAX;
 	int generation = 0;
-	int n_generations = 5000;
+	int n_generations = 2000;
 	double second_generation_best_fitness = 0;
+	int n_generations_without_improvement = 0;
 	
 	while (improvement_in_fitness > 0 && generation < n_generations) {
 		// apply recombination on parent_index
@@ -72,7 +73,21 @@ void GA_mVRP() {
 
 
 		// apply mutation on offspring
-		population.insert_mutation_in_offspring(0.1, 0.01, 0.3);
+		int era = 100;
+		double swap_between_vehicle_percentage = 0;
+		double inverse_internally_vehicle_percentage = 0.3;
+		double customer_best_globally_percentage = 0.02*static_cast<int>(generation / (era/2));
+		if (n_generations_without_improvement >= 4*era) {
+			//swap_between_vehicle_percentage = 0;
+			inverse_internally_vehicle_percentage = 0.2;
+		}
+		else if (n_generations_without_improvement >= era) {
+			int n_eras_without_improvement = static_cast<int>(n_generations_without_improvement / era);
+			//swap_between_vehicle_percentage += 0*n_eras_without_improvement;
+			inverse_internally_vehicle_percentage -= 0.02*n_eras_without_improvement;
+		}
+
+		population.insert_mutation_in_offspring(0.1, swap_between_vehicle_percentage, inverse_internally_vehicle_percentage, customer_best_globally_percentage);
 		/*int n_volatile_mutate = 0;
 		if (static_cast<int>(n_offspring*0.05) > 0) {
 			n_volatile_mutate = (rand() % static_cast<int>(n_offspring*0.05)) + static_cast<int>(n_offspring*0.05);
@@ -95,10 +110,12 @@ void GA_mVRP() {
 		double current_best_fitness = population.get_best_fitness();
 		if (current_best_fitness >= best_fitness) {
 			improvement_in_fitness--;
+			n_generations_without_improvement++;
 		}
 		else {
 			best_fitness = current_best_fitness;
-			improvement_in_fitness = 1000;
+			improvement_in_fitness = 4000;
+			n_generations_without_improvement = 0;
 		}
 		if (generation == 0) {
 			second_generation_best_fitness = best_fitness;
@@ -107,6 +124,7 @@ void GA_mVRP() {
 		generation++;
 	}
 
+	population.write_result_to_file("solution.txt");
 	std::cout << std::endl << std::endl << "Second generation best fitness: " << second_generation_best_fitness << ", best fitness at termination: " << best_fitness << std::endl;
 	//population.print_population();
 
