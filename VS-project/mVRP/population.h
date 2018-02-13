@@ -11,6 +11,7 @@ private:
 	std::vector<int> ** population;
 	double ** fitness_vehicle;
 	double *fitness_individual;
+	std::vector<int> * customers_available_by_depot;
 	int n_vehicles;
 	int n_customers;
 	int n_depots;
@@ -35,7 +36,7 @@ public:
 	Population(int n_vehicles, int n_customers, int n_depots, int n_individuals, int n_ellitisme, std::set<customer> &customers, std::set<depot> &depots);
 	void initialize_population_random();
 	void initialize_population_k_mean();
-	void initialize_depot_radius();
+	void initialize_depot_customer_availability();
 	~Population();
 	customer get_customer(int index);
 	void print_population();

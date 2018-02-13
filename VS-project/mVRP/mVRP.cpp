@@ -47,6 +47,7 @@ void GA_mVRP() {
 	Population population(n_vehicles, n_customers, n_depots, n_individuals, n_parents, customers, depots);
 	population.initialize_population_k_mean();
 	population.fitness_population_initalization();
+	population.initialize_depot_customer_availability();
 
 	int improvement_in_fitness = 2000;
 	double best_fitness = DBL_MAX;

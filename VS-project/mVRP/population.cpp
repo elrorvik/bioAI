@@ -118,17 +118,25 @@ void Population::initialize_population_k_mean() {
 	}
 }
 
-void Population::initialize_depot_radius() {
-	double internal_radius;
-	for (int depot_index = 0; depot_index < n_depots; depot_index++) {
-		int n_customers_in_depot = 0;
-		for (int vehicle_index = 0; vehicle_index < n_vehicles; vehicle_index++) {
-			for (int customer_index = 0; customer_index < population[0][vehicle_index + n_vehicles * depot_index].size(); customer_index++) {
-				internal_radius += distance(depots[depot_index], customers[population[0][vehicle_index + n_vehicles * depot_index][customer_index]]);
-				n_customers_in_depot++;
+void Population::initialize_depot_customer_availability() {
+	double bound = 2;
+	customers_available_by_depot = new std::vector<int>[n_depots];
+
+	for (int i = 0; i < n_depots; i++) {
+		customers_available_by_depot[i].reserve(n_customers);
+	}
+
+	for (int customer_index = 0; customer_index < n_customers; customer_index++) {
+		double min_depot_distance = DBL_MAX;
+		for (int depot_index = 0; depot_index < n_depots; depot_index++) {
+			double d = distance(customers[customer_index], depots[depot_index]);
+			if (d < min_depot_distance) min_depot_distance = d;
+		}
+		for (int depot_index = 0; depot_index < n_depots; depot_index++) {
+			if ((distance(customers[customer_index], depots[depot_index]) - min_depot_distance) / min_depot_distance <= bound) {
+				customers_available_by_depot[depot_index].push_back(customer_index);
 			}
 		}
-		internal_radius /= n_customers_in_depot;
 	}
 }
 
