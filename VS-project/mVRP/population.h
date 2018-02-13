@@ -11,7 +11,6 @@ private:
 	std::vector<int> ** population;
 	double ** fitness_vehicle;
 	double *fitness_individual;
-	std::vector<int> * customers_available_by_depot;
 	int n_vehicles;
 	int n_customers;
 	int n_depots;
@@ -28,7 +27,8 @@ private:
 public:
 	void remove_not_selected_members(std::set<int>* selected_index);
 	void fitness_individual_initalization(std::vector<int> *individual, int index_individual);
-	void insert_mutation_in_offspring(double insert_in_vehicle_percentage, double swap_between_vehicle_percentage, double inverse_internally_vehicle_percentage, double customer_best_globally_percentage);
+	void insert_intra_mutation_in_offspring(double inverse_intra_vehicle_perc, double swap_intra_depot_perc, double customer_intra_depot_optimally_perc);
+	void insert_inter_mutation_in_offspring(double insert_inter_depot_perc, double include_neighbours_perc);
 	void insert_volatile_mutation_in_offspring(int n_mutate, int volatility);
 	void insert_greedy_recombination_in_population_random_pairing(std::set<int>* parent_index);
 	void insert_greedier_recombination_in_population_random_pairing(std::set<int>* parent_index);
@@ -55,12 +55,14 @@ public:
 
 	void fitness_population_initalization();
 	void mutate_swap_internally_vehicle(std::vector<int> *individual, int index);
+	int mutate_swap_intra_depot(std::vector<int> *individual, int index);
+	int mutate_insert_inter_depot(std::vector<int> *individual, int index, double include_neighbour_perc);
 	void mutate_swap_between_vehicle(std::vector<int> *individual, int index);
 	void mutate_swap_between_depot(std::vector<int> *individual, int index);
 	//void mutate_optimize_vehicle(std::vector<int> *individual, int individual_index, int vehicle_index);
-	void mutate_inverse_internally_vehicle(std::vector<int> *individual, int individual_index);
+	void mutate_inverse_intra_vehicle(std::vector<int> *individual, int individual_index);
 	void mutate_trim_bloated_vehicle(std::vector<int> *individual, int individual_index);
-	void mutate_customer_best_globally(std::vector<int> *individual, int individ_index);
+	void mutate_customer_intra_depot_optimally(std::vector<int> *individual, int individ_index);
 	void mutate_route_segment_best_globally(std::vector<int> *individual, int individ_index);
 	void recombination_BCRC_greedier(std::vector<int> *parent_A, std::vector<int> *parent_B);
 	void recombination_BCRC_greedy(std::vector<int> *parent_A, std::vector<int> *parent_B);

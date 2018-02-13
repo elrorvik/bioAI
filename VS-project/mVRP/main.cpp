@@ -2,6 +2,7 @@
 #include "mVRP.h"
 #include "visualization.h"
 #include <ctime> 
+#include <string>
 
 
 int main(int num_args, char** arg_strings) {
@@ -9,13 +10,12 @@ int main(int num_args, char** arg_strings) {
 	time(&now);
 	srand((unsigned int)now);
 
-	std::cout << "p01 optimal value: " << 576.87 << std::endl;
-	std::cout << "5% target: " << 576.87+ 576.87*0.05 << std::endl;
-	std::cout << "10% target: " << 576.87 + 576.87*0.1 << std::endl;
-
-	std::cin.get();
-
-	GA_mVRP();
+	int n_individuals = 100;
+	double parent_percentage = 0.02;
+	double survivor_elitism_percentage = 1;
+	double parent_elitism_percentage = 1;
+	std::string filename = "..\\..\\testing_data\\data_files\\p03";
+	GA_mVRP(n_individuals, parent_percentage, survivor_elitism_percentage, parent_elitism_percentage, filename);
 
 	system("pause");
 	return 0;

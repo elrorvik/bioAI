@@ -120,24 +120,21 @@ void Population::initialize_population_k_mean() {
 
 void Population::initialize_depot_customer_availability() {
 	double bound = 2;
-	customers_available_by_depot = new std::vector<int>[n_depots];
-
-	for (int i = 0; i < n_depots; i++) {
-		customers_available_by_depot[i].reserve(n_customers);
-	}
 
 	for (int customer_index = 0; customer_index < n_customers; customer_index++) {
+		customers[customer_index].depot_available.reserve(n_depots);
 		double min_depot_distance = DBL_MAX;
 		for (int depot_index = 0; depot_index < n_depots; depot_index++) {
 			double d = distance(customers[customer_index], depots[depot_index]);
 			if (d < min_depot_distance) min_depot_distance = d;
 		}
 		for (int depot_index = 0; depot_index < n_depots; depot_index++) {
-			if ((distance(customers[customer_index], depots[depot_index]) - min_depot_distance) / min_depot_distance <= bound) {
-				customers_available_by_depot[depot_index].push_back(customer_index);
-			}
+			customers[customer_index].depot_available.push_back((distance(customers[customer_index], depots[depot_index]) - min_depot_distance) / min_depot_distance <= bound);
+			//std::cout << customers[customer_index].depot_available[depot_index] << " ";
 		}
+		//std::cout << std::endl;
 	}
+	//std::cin.get();
 }
 
 double distance(const customer &c, const depot &d) {
@@ -361,6 +358,233 @@ int random_number(int modula) { // Random fix to a random problem
 	return rand() % modula;
 }
 
+int Population::mutate_swap_intra_depot(std::vector<int> *individual, int index) {
+	std::cout << " mutation mother fucker " << std::endl;
+	print_individual(index);
+
+	int random_depot = rand() % n_depots;
+	int found_vehicles = 0;
+	for (int i = 0; i < n_vehicles; i++) {
+		if (individual[random_depot + i].size() != 0) {
+			found_vehicles++;
+		}
+	}
+	if (found_vehicles == 0) {
+		return 0;
+	}
+
+	int random_vehicle_B;
+	int random_vehicle_A = rand() % (n_vehicles);
+	do {
+		random_vehicle_B = rand() % (n_vehicles);
+	} while (random_vehicle_B == random_vehicle_A || individual[random_vehicle_B].size() == 0);
+
+	if (individual[get_depot_vehicle_index(random_vehicle_A, random_depot)].size() > individual[get_depot_vehicle_index(random_vehicle_B, random_depot)].size()) {
+		int temp = random_vehicle_B;
+		random_vehicle_B = random_vehicle_A;
+		random_vehicle_A = temp;
+	}
+	std::cout << " random depot " << random_depot << std::endl;
+	std::cout << " random vehicle A" << random_vehicle_A << " random vehicle B " << random_vehicle_B << std::endl;
+	//int biggest_size = individual[random_vehicle_B].size();
+	int biggest_size = 1;
+	int n_swapped;
+	if (biggest_size == 1) n_swapped = 1;
+	else n_swapped = (rand() % (biggest_size - 1)) + 1;
+
+	// Choose swap points
+	int random_loci_A;
+	int random_loci_B;
+	if (individual[get_depot_vehicle_index(random_vehicle_A, random_depot)].size() == 0) random_loci_A = 0;
+	else random_loci_A = rand() % (individual[get_depot_vehicle_index(random_vehicle_A, random_depot)].size());
+
+	if (individual[get_depot_vehicle_index(random_vehicle_B, random_depot)].size() == n_swapped) random_loci_B = 0;
+	else random_loci_B = rand() % (individual[get_depot_vehicle_index(random_vehicle_B, random_depot)].size() - n_swapped);
+
+	std::cout << " loci A " << random_loci_A << " loci B " << random_loci_B << std::endl;
+	/*std::cout << "Start. Pre-padding:" << std::endl;
+
+	std::cout << "Vehicle A" << std::endl;
+	for (int i = 0; i < individual[random_vehicle_A].size(); i++) {
+	std::cout << individual[random_vehicle_A][i] << std::endl;
+	}
+	std::cout << "Vehicle B" << std::endl;
+	for (int i = 0; i < individual[random_vehicle_B].size(); i++) {
+	std::cout << individual[random_vehicle_B][i] << std::endl;
+	}*/
+
+	int n_padding = 0;
+	if (individual[get_depot_vehicle_index(random_vehicle_A, random_depot)].size() <= random_loci_A + n_swapped) {
+		n_padding = random_loci_A + n_swapped - individual[get_depot_vehicle_index(random_vehicle_A, random_depot)].size();
+		for (int i = 0; i < n_padding; i++) {
+			individual[get_depot_vehicle_index(random_vehicle_A, random_depot)].push_back(-1);
+		}
+	}
+	std::vector<int>::iterator it_A, it_B, it_B_end;
+	it_A = individual[get_depot_vehicle_index(random_vehicle_A, random_depot)].begin() + random_loci_A;
+	it_B = individual[get_depot_vehicle_index(random_vehicle_B, random_depot)].begin() + random_loci_B;
+	it_B_end = it_B + n_swapped;
+
+	/*std::cout << "random_loci_A: " << random_loci_A << std::endl;
+	std::cout << "random_loci_B: " << random_loci_B << std::endl;
+	std::cout << "n_swapped: " << n_swapped << std::endl;
+
+	std::cout << "Vehicle A" << std::endl;
+	for (int i = 0; i < individual[random_vehicle_A].size(); i++) {
+	std::cout << individual[random_vehicle_A][i] << std::endl;
+	}
+	std::cout << "Vehicle B" << std::endl;
+	for (int i = 0; i < individual[random_vehicle_B].size(); i++) {
+	std::cout << individual[random_vehicle_B][i] << std::endl;
+	}*/
+
+	while (it_B != it_B_end) {
+		std::swap(*it_A, *it_B);
+		++it_A; ++it_B;
+	}
+
+	/*std::cout << "Vehicle A" << std::endl;
+	for (int i = 0; i < individual[random_vehicle_A].size(); i++) {
+	std::cout << individual[random_vehicle_A][i] << std::endl;
+	}
+	std::cout << "Vehicle B" << std::endl;
+	for (int i = 0; i < individual[random_vehicle_B].size(); i++) {
+	std::cout << individual[random_vehicle_B][i] << std::endl;
+	}*/
+
+	if (n_padding > 0) {
+		int end_index = random_loci_B + n_swapped;
+		int i = random_loci_B;
+		while (i <  end_index) {
+			if (individual[get_depot_vehicle_index(random_vehicle_B, random_depot)][i] == -1) {
+				auto it = individual[get_depot_vehicle_index(random_vehicle_B, random_depot)].begin() + i;
+				individual[get_depot_vehicle_index(random_vehicle_B, random_depot)].erase(it);
+				end_index--;
+			}
+			else i++;
+		}
+	}
+
+	/*std::cout << "Vehicle A" << std::endl;
+	for (int i = 0; i < individual[random_vehicle_A].size(); i++) {
+	std::cout << individual[random_vehicle_A][i] << std::endl;
+	}
+	std::cout << "Vehicle B" << std::endl;
+	for (int i = 0; i < individual[random_vehicle_B].size(); i++) {
+	std::cout << individual[random_vehicle_B][i] << std::endl;
+	}*/
+
+	/*std::cout << get_fitness_individual(index) << std::endl;
+	set_fitness_vehicle(index, random_vehicle_A);
+	set_fitness_vehicle(index, random_vehicle_B);
+	std::cout << get_fitness_individual(index) << std::endl;
+	fitness_individual_initalization(individual, index);
+	std::cout << get_fitness_individual(index) << std::endl;
+	std::cin.get();*/
+	print_individual(index);
+	fitness_individual_initalization(individual, index);
+}
+
+int Population::mutate_insert_inter_depot(std::vector<int> *individual, int index, double include_neighbour_percentage) {
+	std::cout << " mutation mother fucker " << std::endl;
+	print_individual(index);
+
+	int random_depot_A = rand() % n_depots;
+	int found_vehicles = 0;
+	for (int i = 0; i < n_vehicles; i++) {
+		if (individual[random_depot_A + i].size() != 0) {
+			found_vehicles++;
+		}
+	}
+	if (found_vehicles == 0) {
+		return 0;
+	}
+
+	int random_vehicle_A;
+	do {
+		random_vehicle_A = (rand() % n_vehicles) + n_vehicles * random_depot_A;
+	} while (individual[random_vehicle_A].size() == 0);
+	int random_loci_A = rand() % individual[random_vehicle_A].size();
+
+
+	int random_depot_B;
+	do {
+		random_depot_B = rand() % n_depots;
+	} while (!customers[individual[random_vehicle_A][random_loci_A]].depot_available[random_depot_B] && random_depot_B != random_depot_A);
+	int random_vehicle_B = (rand() % n_vehicles) + n_vehicles * random_depot_B;
+	int random_loci_B;
+	if (individual[random_vehicle_B].size() == 0) random_loci_B = 0;
+	else random_loci_B = rand() % individual[random_vehicle_B].size() + 1; // includes individual[random_vehicle_B].end()
+
+	std::cout << " random depot A " << random_depot_A << std::endl;
+	std::cout << " random other depot B " << random_depot_B << std::endl;
+	std::cout << " loci A " << random_loci_A << " loci B " << random_loci_B << std::endl;
+	//std::cout << "Start. Pre-padding:" << std::endl;
+
+	std::cout << "Vehicle A" << std::endl;
+	for (int i = 0; i < individual[random_vehicle_A].size(); i++) {
+	std::cout << individual[random_vehicle_A][i] << std::endl;
+	}
+	std::cout << "Vehicle B" << std::endl;
+	for (int i = 0; i < individual[random_vehicle_B].size(); i++) {
+	std::cout << individual[random_vehicle_B][i] << std::endl;
+	}
+	auto itB = individual[random_vehicle_B].begin() + random_loci_B;
+	individual[random_vehicle_B].insert(itB, individual[random_vehicle_A][random_loci_A]);
+	double chance_outcome = (rand() % 1000) / 1000.0;
+	std::cout << std::endl << "Outcome:" << std::endl;
+	std::cout << static_cast<double>(chance_outcome) << std::endl;
+	std::cout << chance_outcome << std::endl << std::endl;
+	bool included_next = false;
+	bool included_prev = false;
+	if (individual[random_vehicle_A].size() > random_loci_A + 1 && include_neighbour_percentage > chance_outcome) {
+		if (customers[individual[random_vehicle_A][random_loci_A + 1]].depot_available[random_depot_B]) {
+			itB = individual[random_vehicle_B].begin() + random_loci_B + 1;
+			individual[random_vehicle_B].insert(itB, individual[random_vehicle_A][random_loci_A + 1]);
+			included_next = true;
+		}
+	}
+	chance_outcome = (rand() % 1000) / 1000;
+	if (random_loci_A - 1 > -1 && include_neighbour_percentage > chance_outcome) {
+		if (customers[individual[random_vehicle_A][random_loci_A - 1]].depot_available[random_depot_B]) {
+			itB = individual[random_vehicle_B].begin() + random_loci_B;
+			individual[random_vehicle_B].insert(itB, individual[random_vehicle_A][random_loci_A - 1]);
+			included_prev = true;
+		}
+	}
+
+	std::vector<int>::iterator itA;
+	if (included_next) {
+		itA = individual[random_vehicle_A].begin() + random_loci_A + 1;
+		individual[random_vehicle_A].erase(itA);
+		std::cout << "including next" << std::endl;
+	}
+	itA = individual[random_vehicle_A].begin() + random_loci_A;
+	individual[random_vehicle_A].erase(itA);
+	if (included_prev) {
+		itA = individual[random_vehicle_A].begin() + random_loci_A - 1;
+		individual[random_vehicle_A].erase(itA);
+		std::cout << "including prev" << std::endl;
+	}
+
+
+	std::cout << "random_loci_A: " << random_loci_A << std::endl;
+	std::cout << "random_loci_B: " << random_loci_B << std::endl;
+
+	std::cout << "Vehicle A" << std::endl;
+	for (int i = 0; i < individual[random_vehicle_A].size(); i++) {
+	std::cout << individual[random_vehicle_A][i] << std::endl;
+	}
+	std::cout << "Vehicle B" << std::endl;
+	for (int i = 0; i < individual[random_vehicle_B].size(); i++) {
+	std::cout << individual[random_vehicle_B][i] << std::endl;
+	}
+	std::cout << std::endl;
+	fitness_individual_initalization(individual, index);
+	print_individual(index);
+	std::cin.get();
+}
+
 void Population::mutate_swap_between_vehicle(std::vector<int> *individual, int index) {
 	int random_vehicle_B;
 	int random_vehicle_A = rand() % (n_vehicles*n_depots);
@@ -534,7 +758,7 @@ void Population::mutate_swap_between_depot(std::vector<int> *individual, int ind
 	fitness_individual_initalization(individual, individual_index);
 }*/
 
-void Population::mutate_inverse_internally_vehicle(std::vector<int> *individual, int individual_index) {
+void Population::mutate_inverse_intra_vehicle(std::vector<int> *individual, int individual_index) {
 	//print_individual(individual);
 	int random_vehicle = random_number(n_vehicles*n_depots);
 
@@ -571,7 +795,7 @@ void Population::mutate_trim_bloated_vehicle(std::vector<int> *individual, int i
 
 }
 
-void Population::mutate_customer_best_globally(std::vector<int> *individual, int individ_index) {
+void Population::mutate_customer_intra_depot_optimally(std::vector<int> *individual, int individ_index) {
 	//std::cout << get_fitness_individual(individ_index) << std::endl;
 	//print_individual(individual);
 	int random_vehicle_index = random_number(n_vehicles*n_depots);
@@ -710,8 +934,8 @@ void Population::mutate_route_segment_best_globally(std::vector<int> *individual
 
 }
 
-void Population::insert_mutation_in_offspring(double insert_in_vehicle_percentage, double swap_between_vehicle_percentage, double inverse_internally_vehicle_percentage, double customer_best_globally_percentage) {
-	double total_percentages = insert_in_vehicle_percentage + swap_between_vehicle_percentage + inverse_internally_vehicle_percentage;
+void Population::insert_intra_mutation_in_offspring(double inverse_intra_vehicle_perc, double swap_intra_depot_perc, double customer_intra_depot_optimally_perc) {
+	double total_percentages = inverse_intra_vehicle_perc + swap_intra_depot_perc + customer_intra_depot_optimally_perc;
 	if (total_percentages > 1) {
 		std::cout << "Total mutation percentages larger than 1" << std::endl;
 		std::cin.get();
@@ -719,18 +943,31 @@ void Population::insert_mutation_in_offspring(double insert_in_vehicle_percentag
 	}
 	for (int i = 0; i < n_offspring; i++) {
 		int offspring_index = n_individuals + i;
-		double percentage_outcome = static_cast<double>(rand() % static_cast<int>( 1000 ) ) / 1000;
-		if (percentage_outcome < insert_in_vehicle_percentage) {
-			mutate_swap_internally_vehicle(population[offspring_index], offspring_index);
+		double percentage_outcome = static_cast<double>(rand() % 1000) / 1000;
+		if (percentage_outcome < inverse_intra_vehicle_perc) {
+			mutate_inverse_intra_vehicle(population[offspring_index], offspring_index);
 		}
-		else if (percentage_outcome < insert_in_vehicle_percentage + swap_between_vehicle_percentage) {
-			mutate_swap_between_vehicle(population[offspring_index], offspring_index);
+		else if (percentage_outcome < swap_intra_depot_perc + inverse_intra_vehicle_perc) {
+			mutate_swap_intra_depot(population[offspring_index], offspring_index);
 		}
-		else if (percentage_outcome < insert_in_vehicle_percentage + swap_between_vehicle_percentage + inverse_internally_vehicle_percentage) {
-			mutate_inverse_internally_vehicle(population[offspring_index], offspring_index);
+		else if (percentage_outcome < customer_intra_depot_optimally_perc + swap_intra_depot_perc + inverse_intra_vehicle_perc) {
+			mutate_customer_intra_depot_optimally(population[offspring_index], offspring_index);
 		}
-		else if (insert_in_vehicle_percentage + swap_between_vehicle_percentage + inverse_internally_vehicle_percentage + customer_best_globally_percentage) {
-			mutate_customer_best_globally(population[offspring_index], offspring_index);
+	}
+}
+
+void Population::insert_inter_mutation_in_offspring(double insert_inter_depot_perc, double include_neighbours_perc) {
+	double total_percentages = insert_inter_depot_perc;
+	if (total_percentages > 1) {
+		std::cout << "Total mutation percentages larger than 1" << std::endl;
+		std::cin.get();
+		exit(1);
+	}
+	for (int i = 0; i < n_offspring; i++) {
+		int offspring_index = n_individuals + i;
+		double percentage_outcome = static_cast<double>(rand() % 1000) / 1000;
+		if (percentage_outcome < insert_inter_depot_perc) {
+			mutate_insert_inter_depot(population[offspring_index], offspring_index, include_neighbours_perc);
 		}
 	}
 }
@@ -751,10 +988,10 @@ void Population::insert_recombination_in_population_deterministic_pairing(std::s
 	for (auto it = parent_index->begin(); it != parent_index->end();) { // Iterate it twice without going past end
 		it++;
 		if (it == parent_index->end()) continue;
-		std::cout << "parent_index: " << *it-1 << std::endl;
-		std::cout << "parent_index: " << *it << std::endl;
+		//std::cout << "parent_index: " << *it-1 << std::endl;
+		//std::cout << "parent_index: " << *it << std::endl;
 		individual_A = population[*it - 1];
-		individual_B = population[*it];		for (int i = 0; i < 16; i++) {			std::cout << std::endl;			for (int j = 0; j < individual_A[i].size(); j++) {				std::cout << individual_A[i][j] << std::endl;			}		}		recombination_BCRC_greedy(individual_A, individual_B);		print_individual(*it - 1);		print_individual(*it);		it++;
+		individual_B = population[*it];		for (int i = 0; i < 16; i++) {			std::cout << std::endl;			for (int j = 0; j < individual_A[i].size(); j++) {				std::cout << individual_A[i][j] << std::endl;			}		}		recombination_BCRC_greedy(individual_A, individual_B);		//print_individual(*it - 1);		//print_individual(*it);		it++;
 	}
 }
 
