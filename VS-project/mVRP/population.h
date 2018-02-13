@@ -27,7 +27,7 @@ private:
 public:
 	void remove_not_selected_members(std::set<int>* selected_index);
 	void fitness_individual_initalization(std::vector<int> *individual, int index_individual);
-	void insert_mutation_in_offspring(double insert_in_vehicle_percentage, double optimize_vehicle_percentage, double swap_between_vehicle_percentage, double inverse_internally_vehicle_percentage, double customer_best_globally_percentage);
+	void insert_mutation_in_offspring(double insert_in_vehicle_percentage, double swap_between_vehicle_percentage, double inverse_internally_vehicle_percentage, double customer_best_globally_percentage);
 	void insert_volatile_mutation_in_offspring(int n_mutate, int volatility);
 	void insert_greedy_recombination_in_population_random_pairing(std::set<int>* parent_index);
 	void insert_greedier_recombination_in_population_random_pairing(std::set<int>* parent_index);

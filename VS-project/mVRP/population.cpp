@@ -702,8 +702,8 @@ void Population::mutate_route_segment_best_globally(std::vector<int> *individual
 
 }
 
-void Population::insert_mutation_in_offspring(double insert_in_vehicle_percentage, double optimize_vehicle_percentage, double swap_between_vehicle_percentage, double inverse_internally_vehicle_percentage, double customer_best_globally_percentage) {
-	double total_percentages = insert_in_vehicle_percentage + optimize_vehicle_percentage + swap_between_vehicle_percentage + inverse_internally_vehicle_percentage;
+void Population::insert_mutation_in_offspring(double insert_in_vehicle_percentage, double swap_between_vehicle_percentage, double inverse_internally_vehicle_percentage, double customer_best_globally_percentage) {
+	double total_percentages = insert_in_vehicle_percentage + swap_between_vehicle_percentage + inverse_internally_vehicle_percentage;
 	if (total_percentages > 1) {
 		std::cout << "Total mutation percentages larger than 1" << std::endl;
 		std::cin.get();
@@ -715,17 +715,13 @@ void Population::insert_mutation_in_offspring(double insert_in_vehicle_percentag
 		if (percentage_outcome < insert_in_vehicle_percentage) {
 			mutate_swap_internally_vehicle(population[offspring_index], offspring_index);
 		}
-		else if (percentage_outcome < insert_in_vehicle_percentage + optimize_vehicle_percentage) {
-			int random_vehicle = random_number(n_vehicles*n_depots);
-			mutate_optimize_vehicle(population[offspring_index], offspring_index, random_vehicle);
-		}
-		else if (percentage_outcome < insert_in_vehicle_percentage + optimize_vehicle_percentage + swap_between_vehicle_percentage) {
+		else if (percentage_outcome < insert_in_vehicle_percentage + swap_between_vehicle_percentage) {
 			mutate_swap_between_vehicle(population[offspring_index], offspring_index);
 		}
-		else if (percentage_outcome < insert_in_vehicle_percentage + optimize_vehicle_percentage + swap_between_vehicle_percentage + inverse_internally_vehicle_percentage) {
+		else if (percentage_outcome < insert_in_vehicle_percentage + swap_between_vehicle_percentage + inverse_internally_vehicle_percentage) {
 			mutate_inverse_internally_vehicle(population[offspring_index], offspring_index);
 		}
-		else if (insert_in_vehicle_percentage + optimize_vehicle_percentage + swap_between_vehicle_percentage + inverse_internally_vehicle_percentage + customer_best_globally_percentage) {
+		else if (insert_in_vehicle_percentage + swap_between_vehicle_percentage + inverse_internally_vehicle_percentage + customer_best_globally_percentage) {
 			mutate_customer_best_globally(population[offspring_index], offspring_index);
 		}
 	}
