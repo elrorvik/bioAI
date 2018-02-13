@@ -124,7 +124,7 @@ void GA_mVRP() {
 		generation++;
 	}
 
-	population.write_result_to_file("solution.txt");
+	population.write_result_to_file("..\\..\\solution.txt");
 	std::cout << std::endl << std::endl << "Second generation best fitness: " << second_generation_best_fitness << ", best fitness at termination: " << best_fitness << std::endl;
 	//population.print_population();
 
