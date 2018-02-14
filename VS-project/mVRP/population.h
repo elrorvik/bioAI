@@ -27,8 +27,8 @@ private:
 public:
 	void remove_not_selected_members(std::set<int>* selected_index);
 	void fitness_individual_initalization(std::vector<int> *individual, int index_individual);
-	void insert_intra_mutation_in_offspring(double inverse_intra_vehicle_perc, double swap_intra_depot_perc, double customer_intra_depot_optimally_perc);
-	void insert_inter_mutation_in_offspring(double insert_inter_depot_perc, double include_neighbours_perc);
+	int insert_intra_mutation_in_offspring(double inverse_intra_vehicle_perc, double swap_intra_depot_perc, double customer_intra_depot_optimally_perc);
+	int insert_inter_mutation_in_offspring(double insert_inter_depot_perc, double include_neighbours_perc);
 	void insert_volatile_mutation_in_offspring(int n_mutate, int volatility);
 	void insert_greedy_recombination_in_population_random_pairing(std::set<int>* parent_index, double recombination_rate);
 	void insert_greedier_recombination_in_population_random_pairing(std::set<int>* parent_index);

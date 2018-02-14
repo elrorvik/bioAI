@@ -134,7 +134,7 @@ void Population::initialize_depot_customer_availability() {
 			}
 			//std::cout << customers[customer_index].depot_available[depot_index] << " ";
 		}
-		//std::cout << std::endl;
+		std::cout << std::endl;
 	}
 	//std::cin.get();
 }
@@ -947,7 +947,7 @@ void Population::mutate_route_segment_best_globally(std::vector<int> *individual
 
 }
 
-void Population::insert_intra_mutation_in_offspring(double inverse_intra_vehicle_perc, double swap_intra_depot_perc, double customer_intra_depot_optimally_perc) {
+int Population::insert_intra_mutation_in_offspring(double inverse_intra_vehicle_perc, double swap_intra_depot_perc, double customer_intra_depot_optimally_perc) {
 	double total_percentages = inverse_intra_vehicle_perc + swap_intra_depot_perc + customer_intra_depot_optimally_perc;
 	if (total_percentages > 1) {
 		std::cout << "Total mutation percentages larger than 1" << std::endl;
@@ -969,7 +969,7 @@ void Population::insert_intra_mutation_in_offspring(double inverse_intra_vehicle
 	}
 }
 
-void Population::insert_inter_mutation_in_offspring(double insert_inter_depot_perc, double include_neighbours_perc) {
+int Population::insert_inter_mutation_in_offspring(double insert_inter_depot_perc, double include_neighbours_perc) {
 	double total_percentages = insert_inter_depot_perc;
 	if (total_percentages > 1) {
 		std::cout << "Total mutation percentages larger than 1" << std::endl;
@@ -983,6 +983,7 @@ void Population::insert_inter_mutation_in_offspring(double insert_inter_depot_pe
 			mutate_insert_inter_depot(population[offspring_index], offspring_index, include_neighbours_perc);
 		}
 	}
+	return 99;
 }
 
 void Population::insert_volatile_mutation_in_offspring(int n_mutate, int volatility) {

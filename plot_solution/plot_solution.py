@@ -62,7 +62,7 @@ def draw_route(depot,customer,route,subplot_num):
         d = depot[route[i][0]-1]
         temp = [];
         for j in range(0,len(route[i][1])):
-            #print(route[i][1][j])
+            print(route[i][1][j])
             if(route[i][1][j] == 0):
                temp.append([int(d[0]),int(d[1])])
             else:
@@ -70,7 +70,7 @@ def draw_route(depot,customer,route,subplot_num):
                temp.append([int(c[0]),int(c[1])])
         
         data = np.array(temp)
-        #print(data)
+        print(data)
         #print(route[i][0])
         plt.subplot(subplot_num)
         plt.plot(data[:, 0], data[:, 1],linestyle='--', marker='o')
@@ -88,7 +88,7 @@ def print_route(solution_name,info_name,subplot_num):
     draw_route(depot_xy,customer_xy,route,subplot_num)
             
 
-solution_name="..//solution.txt"
+solution_name="..//solution_after_improvement.txt"
 info_name="..//testing_data//data_files//p03"
 print_route(solution_name,info_name,211)
 solution_name="..//testing_data//solution_files//p03.res"
