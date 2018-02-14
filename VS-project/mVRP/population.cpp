@@ -139,7 +139,7 @@ void Population::initialize_depot_customer_availability() {
 			}
 			//std::cout << customers[customer_index].depot_available[depot_index] << " ";
 		}
-		std::cout << std::endl;
+		//std::cout << std::endl;
 	}
 	//std::cin.get();
 }
@@ -369,14 +369,16 @@ int Population::mutate_swap_intra_depot(std::vector<int> *individual, int index)
 	//std::cout << " mutation mother fucker " << std::endl;
 	//print_individual(index);
 
+	validate_individual(index);
+
 	int random_depot = rand() % n_depots;
 	int found_vehicles = 0;
 	for (int i = 0; i < n_vehicles; i++) {
-		if (individual[random_depot + i].size() != 0) {
+		if (individual[random_depot*n_vehicles + i].size() != 0) {
 			found_vehicles++;
 		}
 	}
-	if (found_vehicles == 0) {
+	if (found_vehicles < 2) {
 		return 0;
 	}
 
@@ -384,7 +386,7 @@ int Population::mutate_swap_intra_depot(std::vector<int> *individual, int index)
 	int random_vehicle_A = rand() % (n_vehicles);
 	do {
 		random_vehicle_B = rand() % (n_vehicles);
-	} while (random_vehicle_B == random_vehicle_A || individual[random_vehicle_B].size() == 0);
+	} while (random_vehicle_B == random_vehicle_A || individual[get_depot_vehicle_index(random_vehicle_B, random_depot)].size() == 0);
 
 	if (individual[get_depot_vehicle_index(random_vehicle_A, random_depot)].size() > individual[get_depot_vehicle_index(random_vehicle_B, random_depot)].size()) {
 		int temp = random_vehicle_B;
@@ -427,6 +429,8 @@ int Population::mutate_swap_intra_depot(std::vector<int> *individual, int index)
 			individual[get_depot_vehicle_index(random_vehicle_A, random_depot)].push_back(-1);
 		}
 	}
+
+	
 	std::vector<int>::iterator it_A, it_B, it_B_end;
 	it_A = individual[get_depot_vehicle_index(random_vehicle_A, random_depot)].begin() + random_loci_A;
 	it_B = individual[get_depot_vehicle_index(random_vehicle_B, random_depot)].begin() + random_loci_B;
@@ -504,11 +508,11 @@ void Population::mutate_insert_inter_depot(std::vector<int> *individual, int ind
 	do {
 		random_depot_A = rand() % n_depots;
 		for (int i = 0; i < n_vehicles; i++) {
-			if (individual[random_depot_A + i].size() != 0) {
+			if (individual[random_depot_A*n_vehicles + i].size() != 0) {
 				found_vehicles++;
 			}
 		}
-	} while (found_vehicles == 0);
+	} while (found_vehicles < 1);
 
 	int random_vehicle_A;
 	int random_loci_A;

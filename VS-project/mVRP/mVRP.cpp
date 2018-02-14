@@ -87,7 +87,7 @@ void GA_mVRP(int n_individuals, double parent_percentage, double survivor_elitis
 		double insert_inter_depot_perc = 1 * inter_mutation_rate;
 		insert_inter_depot_perc = insert_inter_depot_perc * exponential_decay(generation, decay_rate) - insert_inter_depot_perc * 0.1;
 		//if (n_generations_without_improvement >= 10) 0.8;
-		double include_neighbour_perc = 0.2;
+		double include_neighbour_perc = 0;
 
 		int mutation_method = 0;
 		if (generation % era != 0) mutation_method = population.insert_intra_mutation_in_offspring(inverse_intra_vehicle_perc, swap_intra_depot_perc, customer_intra_depot_optimally_perc);

@@ -16,8 +16,8 @@ int main(int num_args, char** arg_strings) {
 	double intra_mutation_rate = 0.25;
 	double inter_mutation_rate = 0.4;
 	double recombination_rate = 0.60;
-	std::string data_filename = "..\\..\\testing_data\\data_files\\p03";
-	std::string solution_filename = "..\\..\\testing_data\\solution_files\\p03.res";
+	std::string data_filename = "..\\..\\testing_data\\data_files\\p10";
+	std::string solution_filename = "..\\..\\testing_data\\solution_files\\p10.res";
 	GA_mVRP(n_individuals, parent_percentage, survivor_elitism_percentage, parent_elitism_percentage, intra_mutation_rate, inter_mutation_rate, recombination_rate, data_filename, solution_filename);
 
 	system("pause");
