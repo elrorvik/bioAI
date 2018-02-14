@@ -29,6 +29,10 @@ for (int i = 0; i < n_individuals * 2; i++)
 {
 	this->population[i] = new std::vector<int>[n_vehicles * n_depots];
 	this->fitness_vehicle[i] = new double[n_vehicles*n_depots];
+
+	for (int j = 0; j < n_vehicles*n_depots; j++) {
+		population[i][j].reserve(n_customers);
+	}
 }
 
 int  index = 0;
@@ -116,6 +120,7 @@ void Population::initialize_population_k_mean() {
 			}
 		}
 	}
+	delete[] customer_closest_depot;
 }
 
 void Population::initialize_depot_customer_availability() {
@@ -1611,7 +1616,6 @@ void Population::write_result_to_file(std::string filename) {
 		}
 	}
 	outfile.close();
-
 }
 
 void Population::get_duration_load_vehicle(int depot_number, std::vector<int> vehicle, double & load_pointer, double & duration_pointer) {
