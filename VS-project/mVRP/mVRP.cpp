@@ -77,7 +77,7 @@ void GA_mVRP(int n_individuals, double parent_percentage, double survivor_elitis
 		// apply mutation on offspring by percentages
 		int era = 5;
 		//if (n_generations_without_improvement >= 10) era = 2;
-		int decay_rate = 90;
+		int decay_rate = 40;
 		double inverse_intra_vehicle_perc = 0.33*intra_mutation_rate;
 		double swap_intra_depot_perc = 0.33*intra_mutation_rate;
 		double customer_intra_depot_optimally_perc = 0.33*intra_mutation_rate;
@@ -122,7 +122,7 @@ void GA_mVRP(int n_individuals, double parent_percentage, double survivor_elitis
 		}*/
 
 		// give update, and iterate
-		std::cout << "Nr. generation: " << generation << ", best fitness: " << best_fitness << std::endl;
+		std::cout << "Nr. generation: " << generation << ", best fitness: " << best_fitness << " : " << best_fitness/static_cast<double>(fitness_solution) << "%" << std::endl;
 
 		static bool minimum_reached = false;
 		if (!minimum_reached && best_fitness < minimum_score) {

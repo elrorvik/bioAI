@@ -119,7 +119,7 @@ void Population::initialize_population_k_mean() {
 }
 
 void Population::initialize_depot_customer_availability() {
-	double bound = 2;
+	double bound = 1.5;
 
 	for (int customer_index = 0; customer_index < n_customers; customer_index++) {
 		customers[customer_index].depot_available.reserve(n_depots);
@@ -1625,7 +1625,7 @@ void Population::get_duration_load_vehicle(int depot_number, std::vector<int> ve
 	double load = 0;
 	double fitness = 0;
 	double punishment = 0;
-
+		
 	customer c = get_customer(vehicle[0]);
 	customer cn = c;
 	depot d = depots[depot_number];
