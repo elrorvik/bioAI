@@ -11,7 +11,7 @@ struct customer {
     int y = 0;
     int duration = 0;
     int demand = 0;
-	std::vector<bool> depot_available;
+	std::vector<int> depot_available;
 
 	customer(int index, int x, int y, int duration, int demand) : index(index), x(x), y(y), duration(duration), demand(demand) {};
 	customer() :index(invalid_city), x(0), y(0), duration(0), demand(0) {};
@@ -35,5 +35,4 @@ struct depot{
 bool operator<(const depot &right, const depot &left);
 
 
-void GA_mVRP(int n_individuals, double parent_percentage, double survivor_elitism_percentage, double parent_elitism_percentage, std::string filename);
-
+void GA_mVRP(int n_individuals, double parent_percentage, double survivor_elitism_percentage, double parent_elitism_percentage, double intra_mutation_rate, double inter_mutation_rate, double recombination_rate, std::string filename);

@@ -30,9 +30,9 @@ public:
 	void insert_intra_mutation_in_offspring(double inverse_intra_vehicle_perc, double swap_intra_depot_perc, double customer_intra_depot_optimally_perc);
 	void insert_inter_mutation_in_offspring(double insert_inter_depot_perc, double include_neighbours_perc);
 	void insert_volatile_mutation_in_offspring(int n_mutate, int volatility);
-	void insert_greedy_recombination_in_population_random_pairing(std::set<int>* parent_index);
+	void insert_greedy_recombination_in_population_random_pairing(std::set<int>* parent_index, double recombination_rate);
 	void insert_greedier_recombination_in_population_random_pairing(std::set<int>* parent_index);
-	void insert_recombination_in_population_deterministic_pairing(std::set<int>* parent_index);
+	void insert_recombination_in_population_deterministic_pairing(std::set<int>* parent_index, double recombination_rate);
 	Population(int n_vehicles, int n_customers, int n_depots, int n_individuals, int n_ellitisme, std::set<customer> &customers, std::set<depot> &depots);
 	void initialize_population_random();
 	void initialize_population_k_mean();
@@ -56,7 +56,7 @@ public:
 	void fitness_population_initalization();
 	void mutate_swap_internally_vehicle(std::vector<int> *individual, int index);
 	int mutate_swap_intra_depot(std::vector<int> *individual, int index);
-	int mutate_insert_inter_depot(std::vector<int> *individual, int index, double include_neighbour_perc);
+	void mutate_insert_inter_depot(std::vector<int> *individual, int index, double include_neighbour_perc);
 	void mutate_swap_between_vehicle(std::vector<int> *individual, int index);
 	void mutate_swap_between_depot(std::vector<int> *individual, int index);
 	//void mutate_optimize_vehicle(std::vector<int> *individual, int individual_index, int vehicle_index);
@@ -65,7 +65,7 @@ public:
 	void mutate_customer_intra_depot_optimally(std::vector<int> *individual, int individ_index);
 	void mutate_route_segment_best_globally(std::vector<int> *individual, int individ_index);
 	void recombination_BCRC_greedier(std::vector<int> *parent_A, std::vector<int> *parent_B);
-	void recombination_BCRC_greedy(std::vector<int> *parent_A, std::vector<int> *parent_B);
+	void recombination_BCRC_greedy(std::vector<int> *parent_A, std::vector<int> *parent_B, double recombination_rate);
 
 	void set_n_offspring(int num);
 	void selection_SUS(int n_pointers, std::set<int>& survival_index, selection_on selection_type);

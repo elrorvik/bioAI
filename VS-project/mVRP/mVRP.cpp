@@ -21,7 +21,7 @@ bool operator<(const customer &right, const customer &left) {
 	return (right.index < left.index);
 }
 
-void GA_mVRP(int n_individuals, double parent_percentage, double survivor_elitism_percentage, double parent_elitism_percentage, std::string filename) {
+void GA_mVRP(int n_individuals, double parent_percentage, double survivor_elitism_percentage, double parent_elitism_percentage, double intra_mutation_rate, double inter_mutation_rate, double recombination_rate, std::string filename) {
 	std::set<customer> customers;
 	std::set<depot> depots;
 	int n_vehicles;
@@ -60,7 +60,7 @@ void GA_mVRP(int n_individuals, double parent_percentage, double survivor_elitis
 		std::set<int> parent_index;
 		population.selection_ellitisme(n_parents_elitism, parent_index, parent_selection);
 		population.selection_SUS(n_parents_sus, parent_index, parent_selection);
-		population.insert_greedy_recombination_in_population_random_pairing(&parent_index);
+		population.insert_greedy_recombination_in_population_random_pairing(&parent_index, recombination_rate);
 
 		/*std::set<int> parent_index_2;
 		int n_elitism_2 = 0;
@@ -72,13 +72,13 @@ void GA_mVRP(int n_individuals, double parent_percentage, double survivor_elitis
 
 
 		// apply mutation on offspring by percentages
-		int era = 10;
-		double intra_percentage = 0.25;
-		double inter_percentage = 0.25;
-		double inverse_intra_vehicle_perc = 0.33*intra_percentage;
-		double swap_intra_depot_perc = 0.33*intra_percentage;
-		double customer_intra_depot_optimally_perc = 0.33*intra_percentage;
-		double insert_inter_depot_perc = 1 * inter_percentage;
+		int era = 5;
+		if (n_generations_without_improvement >= 10) era = 2;
+		double inverse_intra_vehicle_perc = 0.33*inter_mutation_rate;
+		double swap_intra_depot_perc = 0.33*inter_mutation_rate;
+		double customer_intra_depot_optimally_perc = 0.33*inter_mutation_rate;
+		double insert_inter_depot_perc = 1 * inter_mutation_rate;
+		if (n_generations_without_improvement >= 10) 0.8;
 		double include_neighbour_perc = 0.2;
 
 		if (generation % era != 0) population.insert_intra_mutation_in_offspring(inverse_intra_vehicle_perc, swap_intra_depot_perc, customer_intra_depot_optimally_perc);
