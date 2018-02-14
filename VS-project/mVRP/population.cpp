@@ -123,8 +123,8 @@ void Population::initialize_population_k_mean() {
 	delete[] customer_closest_depot;
 }
 
-void Population::initialize_depot_customer_availability() {
-	double bound = 1.5;
+void Population::initialize_depot_customer_availability(double depot_availability_bound) {
+	double bound = depot_availability_bound;
 
 	for (int customer_index = 0; customer_index < n_customers; customer_index++) {
 		customers[customer_index].depot_available.reserve(n_depots);

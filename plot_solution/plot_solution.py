@@ -88,10 +88,10 @@ def print_route(solution_name,info_name,subplot_num):
     draw_route(depot_xy,customer_xy,route,subplot_num)
             
 
-solution_name="..//minimum_solution.txt"
-info_name="..//testing_data//data_files//p03"
+solution_name="..//solution.txt"
+info_name="..//testing_data//data_files//p10"
 print_route(solution_name,info_name,211)
-solution_name="..//testing_data//solution_files//p03.res"
+solution_name="..//testing_data//solution_files//p10.res"
 print_route(solution_name,info_name,212)
 plt.show()
 

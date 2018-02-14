@@ -21,7 +21,7 @@ bool operator<(const customer &right, const customer &left) {
 	return (right.index < left.index);
 }
 
-void GA_mVRP(int n_individuals, double parent_percentage, double survivor_elitism_percentage, double parent_elitism_percentage, double intra_mutation_rate, double inter_mutation_rate, double recombination_rate, int mutation_decay_rate, int inter_depot_mutation_era, double include_neighbours_inter_depot_perc, double depot_availability_bound, std::string data_filename, std::string solution_filename) {
+void GA_mVRP(int n_individuals, double parent_percentage, double survivor_elitism_percentage, double parent_elitism_percentage, double intra_mutation_rate, double inter_mutation_rate, double recombination_rate, int mutation_decay_rate, int inter_depot_mutation_era, double include_neighbours_inter_depot_perc, double depot_availability_bound, int n_generations, std::string data_filename, std::string solution_filename) {
 	std::set<customer> customers;
 	std::set<depot> depots;
 	int n_vehicles;
@@ -51,15 +51,15 @@ void GA_mVRP(int n_individuals, double parent_percentage, double survivor_elitis
 	Population population(n_vehicles, n_customers, n_depots, n_individuals, n_parents, customers, depots);
 	population.initialize_population_k_mean();
 	population.fitness_population_initalization();
-	population.initialize_depot_customer_availability();
+	population.initialize_depot_customer_availability(depot_availability_bound);
 
-	int improvement_in_fitness = 2000;
+	int improvement_in_fitness = n_generations;
 	double best_fitness = DBL_MAX;
 	int generation = 0;
-	int n_generations = 2000;
 	double second_generation_best_fitness = 0;
 	int n_generations_without_improvement = 0;
 	
+	int i = 0;
 	while (improvement_in_fitness > 0 && generation < n_generations) {
 		// apply recombination on parent_index
 		std::set<int> parent_index;
@@ -124,7 +124,6 @@ void GA_mVRP(int n_individuals, double parent_percentage, double survivor_elitis
 		// give update, and iterate
 		std::cout << "Nr. generation: " << generation << ", best fitness: " << best_fitness << " : " << best_fitness/static_cast<double>(fitness_solution) << "%" << std::endl;
 
-		int i = 0;
 		if (i == 0 && best_fitness < within30percent) {
 			std::cout << "30% within best solution reached" << std::endl;
 			population.write_result_to_file("..\\..\\30percent_solution.txt");
@@ -151,7 +150,7 @@ void GA_mVRP(int n_individuals, double parent_percentage, double survivor_elitis
 	}
 	std::cout << std::endl << std::endl << "Second generation best fitness: " << second_generation_best_fitness << ", best fitness at termination: " << best_fitness << std::endl;
 	//population.print_population();
-
+	population.write_result_to_file("..\\..\\solution.txt");
 }
 
 double exponential_decay(int index, int time_constant) {

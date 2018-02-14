@@ -36,7 +36,7 @@ public:
 	Population(int n_vehicles, int n_customers, int n_depots, int n_individuals, int n_ellitisme, std::set<customer> &customers, std::set<depot> &depots);
 	void initialize_population_random();
 	void initialize_population_k_mean();
-	void initialize_depot_customer_availability();
+	void initialize_depot_customer_availability(double depot_availability_bound);
 	~Population();
 	customer get_customer(int index);
 	void print_population();
