@@ -486,8 +486,8 @@ int Population::mutate_swap_intra_depot(std::vector<int> *individual, int index)
 }
 
 int Population::mutate_insert_inter_depot(std::vector<int> *individual, int index, double include_neighbour_percentage) {
-	std::cout << " mutation mother fucker " << std::endl;
-	print_individual(index);
+	/*std::cout << " mutation mother fucker " << std::endl;
+	print_individual(index);*/
 
 	int random_depot_A = rand() % n_depots;
 	int found_vehicles = 0;
@@ -516,25 +516,25 @@ int Population::mutate_insert_inter_depot(std::vector<int> *individual, int inde
 	if (individual[random_vehicle_B].size() == 0) random_loci_B = 0;
 	else random_loci_B = rand() % individual[random_vehicle_B].size() + 1; // includes individual[random_vehicle_B].end()
 
-	std::cout << " random depot A " << random_depot_A << std::endl;
+	/*std::cout << " random depot A " << random_depot_A << std::endl;
 	std::cout << " random other depot B " << random_depot_B << std::endl;
-	std::cout << " loci A " << random_loci_A << " loci B " << random_loci_B << std::endl;
+	std::cout << " loci A " << random_loci_A << " loci B " << random_loci_B << std::endl;*/
 	//std::cout << "Start. Pre-padding:" << std::endl;
 
-	std::cout << "Vehicle A" << std::endl;
+	/*std::cout << "Vehicle A" << std::endl;
 	for (int i = 0; i < individual[random_vehicle_A].size(); i++) {
 	std::cout << individual[random_vehicle_A][i] << std::endl;
 	}
 	std::cout << "Vehicle B" << std::endl;
 	for (int i = 0; i < individual[random_vehicle_B].size(); i++) {
 	std::cout << individual[random_vehicle_B][i] << std::endl;
-	}
+	}*/
 	auto itB = individual[random_vehicle_B].begin() + random_loci_B;
 	individual[random_vehicle_B].insert(itB, individual[random_vehicle_A][random_loci_A]);
 	double chance_outcome = (rand() % 1000) / 1000.0;
-	std::cout << std::endl << "Outcome:" << std::endl;
+	/*std::cout << std::endl << "Outcome:" << std::endl;
 	std::cout << static_cast<double>(chance_outcome) << std::endl;
-	std::cout << chance_outcome << std::endl << std::endl;
+	std::cout << chance_outcome << std::endl << std::endl;*/
 	bool included_next = false;
 	bool included_prev = false;
 	if (individual[random_vehicle_A].size() > random_loci_A + 1 && include_neighbour_percentage > chance_outcome) {
@@ -557,18 +557,18 @@ int Population::mutate_insert_inter_depot(std::vector<int> *individual, int inde
 	if (included_next) {
 		itA = individual[random_vehicle_A].begin() + random_loci_A + 1;
 		individual[random_vehicle_A].erase(itA);
-		std::cout << "including next" << std::endl;
+		//std::cout << "including next" << std::endl;
 	}
 	itA = individual[random_vehicle_A].begin() + random_loci_A;
 	individual[random_vehicle_A].erase(itA);
 	if (included_prev) {
 		itA = individual[random_vehicle_A].begin() + random_loci_A - 1;
 		individual[random_vehicle_A].erase(itA);
-		std::cout << "including prev" << std::endl;
+		//std::cout << "including prev" << std::endl;
 	}
 
 
-	std::cout << "random_loci_A: " << random_loci_A << std::endl;
+	/*std::cout << "random_loci_A: " << random_loci_A << std::endl;
 	std::cout << "random_loci_B: " << random_loci_B << std::endl;
 
 	std::cout << "Vehicle A" << std::endl;
@@ -579,10 +579,10 @@ int Population::mutate_insert_inter_depot(std::vector<int> *individual, int inde
 	for (int i = 0; i < individual[random_vehicle_B].size(); i++) {
 	std::cout << individual[random_vehicle_B][i] << std::endl;
 	}
-	std::cout << std::endl;
+	std::cout << std::endl;*/
 	fitness_individual_initalization(individual, index);
-	print_individual(index);
-	std::cin.get();
+	/*print_individual(index);
+	std::cin.get();*/
 }
 
 void Population::mutate_swap_between_vehicle(std::vector<int> *individual, int index) {
@@ -701,11 +701,11 @@ void Population::set_fitness_vehicle(int individual_index, int vehicle_index) {
 	fitness_vehicle[individual_index][vehicle_index] = get_fitness_vehicle(static_cast<int>(vehicle_index/n_depots), population[individual_index][vehicle_index]);
 	
 	//std::cout << "After udate of vehicle fitness:" << std::endl;
-	std::cout << fitness_individual[individual_index] << std::endl;
-	std::cout << fitness_vehicle[individual_index][vehicle_index] << std::endl;
+	//std::cout << fitness_individual[individual_index] << std::endl;
+	//std::cout << fitness_vehicle[individual_index][vehicle_index] << std::endl;
 
-	/*fitness_individual[individual_index] += fitness_vehicle[individual_index][vehicle_index];
-	std::cout << "After udate of individual:" << std::endl;
+	fitness_individual[individual_index] += fitness_vehicle[individual_index][vehicle_index];
+	/*std::cout << "After udate of individual:" << std::endl;
 	std::cout << fitness_individual[individual_index] << std::endl;
 	std::cin.get();*/
 }
@@ -895,7 +895,7 @@ void Population::mutate_route_segment_best_globally(std::vector<int> *individual
 	//print_individual(individual);
 	int random_vehicle_index = random_number(n_vehicles*n_depots);
 	int costumer_index = random_number(individual[random_vehicle_index].size());
-	std::cout << "costumer index" << costumer_index << std::endl;
+	//std::cout << "costumer index" << costumer_index << std::endl;
 	auto it = individual[random_vehicle_index].begin();
 	individual[random_vehicle_index].erase(costumer_index + it);
 
@@ -921,15 +921,15 @@ void Population::mutate_route_segment_best_globally(std::vector<int> *individual
 		}
 	}
 
-	for (auto it = cost.begin(); it != cost.end(); ++it) {
+	/*for (auto it = cost.begin(); it != cost.end(); ++it) {
 		std::cout << it->fitness << " place" << it->vehicle_i + n_vehicles * it->depot_i << std::endl;
-	}
+	}*/
 
 	int index = get_depot_vehicle_index(cost.begin()->vehicle_i, cost.begin()->depot_i);
 	individual[index].insert(individual[index].begin() + cost.begin()->it_diff, costumer_index);
 	fitness_population_initalization();
 	//print_individual(individual);
-	std::cout << "Best fitness" << get_fitness_individual(individ_index) << std::endl;
+	//std::cout << "Best fitness" << get_fitness_individual(individ_index) << std::endl;
 
 
 }
@@ -991,7 +991,7 @@ void Population::insert_recombination_in_population_deterministic_pairing(std::s
 		//std::cout << "parent_index: " << *it-1 << std::endl;
 		//std::cout << "parent_index: " << *it << std::endl;
 		individual_A = population[*it - 1];
-		individual_B = population[*it];		for (int i = 0; i < 16; i++) {			std::cout << std::endl;			for (int j = 0; j < individual_A[i].size(); j++) {				std::cout << individual_A[i][j] << std::endl;			}		}		recombination_BCRC_greedy(individual_A, individual_B);		//print_individual(*it - 1);		//print_individual(*it);		it++;
+		individual_B = population[*it];		/*for (int i = 0; i < 16; i++) {			std::cout << std::endl;			for (int j = 0; j < individual_A[i].size(); j++) {				std::cout << individual_A[i][j] << std::endl;			}		}*/		recombination_BCRC_greedy(individual_A, individual_B);		//print_individual(*it - 1);		//print_individual(*it);		it++;
 	}
 }
 
@@ -1068,8 +1068,8 @@ void Population::remove_not_selected_members(std::set<int>* selected_index) { //
 	}
 	//std::cout << std::endl;
 
-	if (offspring_selected.size() != original_not_selected.size())
-		std::cout << "Different size: " << offspring_selected.size() << " " << original_not_selected.size() << std::endl;
+	/*if (offspring_selected.size() != original_not_selected.size())
+		std::cout << "Different size: " << offspring_selected.size() << " " << original_not_selected.size() << std::endl;*/
 	std::vector<int>* individual;
 	for (int i = 0; i < offspring_selected.size(); i++) {
 		int new_index = original_not_selected[i];
@@ -1412,12 +1412,12 @@ void Population::recombination_BCRC_greedy(std::vector<int> *parent_A, std::vect
 	fitness_individual_initalization(offspring_A, n_offspring + n_individuals - 2);
 	fitness_individual_initalization(offspring_B, n_offspring + n_individuals - 1);
 
-	static int j = 0;
+	/*static int j = 0;
 	if (j == 0) {
 		print_individual(n_individuals + n_offspring - 1);
 		std::cout << std::endl << "n_individuals: " << n_individuals << ", n_offspring: " << n_offspring << std::endl;
 		j++;
-	}
+	}*/
 
 	validate_individual(n_individuals + n_offspring - 1);
 	validate_individual(n_individuals + n_offspring - 2);

@@ -1,4 +1,4 @@
-#include <iostream>
+/*#include <iostream>
 #include <GL/glew.h>
 #include <GL/glut.h>
 
@@ -34,4 +34,4 @@ void foo(int num_args, char** arg_strings) {
 
 	std::cin.get();
 	return;
-}
+}/*
