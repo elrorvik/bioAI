@@ -1613,3 +1613,33 @@ void Population::write_result_to_file(std::string filename) {
 	outfile.close();
 
 }
+
+void Population::get_duration_load_vehicle(int depot_number, std::vector<int> vehicle, double & load_pointer, double & duration_pointer) {
+	if (vehicle.size() == 0) {
+		load_pointer = 0;
+		duration_pointer = 0;
+		return;
+	}
+
+	double duration = 0;
+	double load = 0;
+	double fitness = 0;
+	double punishment = 0;
+
+	customer c = get_customer(vehicle[0]);
+	customer cn = c;
+	depot d = depots[depot_number];
+
+	duration += sqrt(pow(c.x - d.x, 2) + pow(c.y - d.y, 2));
+	for (int j = 1; j < vehicle.size(); j++) {
+		c = cn;
+		cn = get_customer(vehicle[j]);
+		duration += sqrt(pow(cn.x - c.x, 2) + pow(cn.y - c.y, 2));
+		duration += c.duration;
+		load += c.demand;
+	}
+	duration += sqrt(pow(cn.x - d.x, 2) + pow(cn.y - d.y, 2));
+	load += cn.demand;
+	duration_pointer = duration;
+	load_pointer = load;
+}

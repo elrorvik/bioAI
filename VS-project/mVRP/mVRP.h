@@ -35,6 +35,6 @@ struct depot{
 bool operator<(const depot &right, const depot &left);
 
 
-void GA_mVRP(int n_individuals, double parent_percentage, double survivor_elitism_percentage, double parent_elitism_percentage, double intra_mutation_rate, double inter_mutation_rate, double recombination_rate, std::string filename);
+void GA_mVRP(int n_individuals, double parent_percentage, double survivor_elitism_percentage, double parent_elitism_percentage, double intra_mutation_rate, double inter_mutation_rate, double recombination_rate, std::string data_filename, std::string solution_filename);
 
 double exponential_decay(int index, int time_constant);

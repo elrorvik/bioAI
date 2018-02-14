@@ -21,7 +21,7 @@ bool operator<(const customer &right, const customer &left) {
 	return (right.index < left.index);
 }
 
-void GA_mVRP(int n_individuals, double parent_percentage, double survivor_elitism_percentage, double parent_elitism_percentage, double intra_mutation_rate, double inter_mutation_rate, double recombination_rate, std::string filename) {
+void GA_mVRP(int n_individuals, double parent_percentage, double survivor_elitism_percentage, double parent_elitism_percentage, double intra_mutation_rate, double inter_mutation_rate, double recombination_rate, std::string data_filename, std::string solution_filename) {
 	std::set<customer> customers;
 	std::set<depot> depots;
 	int n_vehicles;
@@ -33,7 +33,10 @@ void GA_mVRP(int n_individuals, double parent_percentage, double survivor_elitis
 	int n_survivor_elitism = static_cast<int>(survivor_elitism_percentage*n_individuals);
 	int n_survivor_sus = n_individuals - n_survivor_elitism;
 
-	read_data(filename, customers, depots, n_vehicles, n_customers, n_depots);
+	read_data(data_filename, customers, depots, n_vehicles, n_customers, n_depots);
+	int fitness_solution = read_best_fitness_solution(solution_filename);
+	int full_score = fitness_solution * 1.05;
+	int minimum_score = fitness_solution * 1.10;
 
 	/*std::cout << "p01 optimal value: " << 576.87 << std::endl;
 	std::cout << "5% target: " << 576.87 + 576.87*0.05 << std::endl;
@@ -74,10 +77,10 @@ void GA_mVRP(int n_individuals, double parent_percentage, double survivor_elitis
 		// apply mutation on offspring by percentages
 		int era = 5;
 		//if (n_generations_without_improvement >= 10) era = 2;
-		int decay_rate = 50;
-		double inverse_intra_vehicle_perc = 0.33*inter_mutation_rate;
-		double swap_intra_depot_perc = 0.33*inter_mutation_rate;
-		double customer_intra_depot_optimally_perc = 0.33*inter_mutation_rate;
+		int decay_rate = 90;
+		double inverse_intra_vehicle_perc = 0.33*intra_mutation_rate;
+		double swap_intra_depot_perc = 0.33*intra_mutation_rate;
+		double customer_intra_depot_optimally_perc = 0.33*intra_mutation_rate;
 		inverse_intra_vehicle_perc += inverse_intra_vehicle_perc * exponential_decay(generation, decay_rate) - inverse_intra_vehicle_perc * 0.33;
 		swap_intra_depot_perc += swap_intra_depot_perc * exponential_decay(generation, decay_rate) - swap_intra_depot_perc * 0.33;
 		customer_intra_depot_optimally_perc += customer_intra_depot_optimally_perc * exponential_decay(generation, decay_rate) - customer_intra_depot_optimally_perc * 0.33;
@@ -120,6 +123,19 @@ void GA_mVRP(int n_individuals, double parent_percentage, double survivor_elitis
 
 		// give update, and iterate
 		std::cout << "Nr. generation: " << generation << ", best fitness: " << best_fitness << std::endl;
+
+		static bool minimum_reached = false;
+		if (!minimum_reached && best_fitness < minimum_score) {
+			std::cout << "10% within best solution reached" << std::endl;
+			population.write_result_to_file("..\\..\\minimum_solution.txt");
+			minimum_reached = true;
+		}
+		if (best_fitness < full_score) {
+			std::cout << "full_score_reached!" << std::endl;
+			break;
+		}
+
+
 		generation++;
 	}
 
