@@ -21,7 +21,7 @@ bool operator<(const customer &right, const customer &left) {
 	return (right.index < left.index);
 }
 
-void GA_mVRP(int n_individuals, double parent_percentage, double survivor_elitism_percentage, double parent_elitism_percentage, double intra_mutation_rate, double inter_mutation_rate, double recombination_rate, std::string data_filename, std::string solution_filename) {
+void GA_mVRP(int n_individuals, double parent_percentage, double survivor_elitism_percentage, double parent_elitism_percentage, double intra_mutation_rate, double inter_mutation_rate, double recombination_rate, int mutation_decay_rate, int inter_depot_mutation_era, double include_neighbours_inter_depot_perc, double depot_availability_bound, std::string data_filename, std::string solution_filename) {
 	std::set<customer> customers;
 	std::set<depot> depots;
 	int n_vehicles;
@@ -35,8 +35,10 @@ void GA_mVRP(int n_individuals, double parent_percentage, double survivor_elitis
 
 	read_data(data_filename, customers, depots, n_vehicles, n_customers, n_depots);
 	int fitness_solution = read_best_fitness_solution(solution_filename);
-	int full_score = fitness_solution * 1.05;
-	int minimum_score = fitness_solution * 1.10;
+	double within05percent = fitness_solution * 1.05;
+	double within10percent = fitness_solution * 1.10;
+	double within20percent = fitness_solution * 1.20;
+	double within30percent = fitness_solution * 1.30;
 
 	/*std::cout << "p01 optimal value: " << 576.87 << std::endl;
 	std::cout << "5% target: " << 576.87 + 576.87*0.05 << std::endl;
@@ -77,21 +79,19 @@ void GA_mVRP(int n_individuals, double parent_percentage, double survivor_elitis
 		// apply mutation on offspring by percentages
 		int era = 5;
 		//if (n_generations_without_improvement >= 10) era = 2;
-		int decay_rate = 40;
 		double inverse_intra_vehicle_perc = 0.33*intra_mutation_rate;
 		double swap_intra_depot_perc = 0.33*intra_mutation_rate;
 		double customer_intra_depot_optimally_perc = 0.33*intra_mutation_rate;
-		inverse_intra_vehicle_perc += inverse_intra_vehicle_perc * exponential_decay(generation, decay_rate) - inverse_intra_vehicle_perc * 0.33;
-		swap_intra_depot_perc += swap_intra_depot_perc * exponential_decay(generation, decay_rate) - swap_intra_depot_perc * 0.33;
-		customer_intra_depot_optimally_perc += customer_intra_depot_optimally_perc * exponential_decay(generation, decay_rate) - customer_intra_depot_optimally_perc * 0.33;
+		inverse_intra_vehicle_perc += inverse_intra_vehicle_perc * exponential_decay(generation, mutation_decay_rate) - inverse_intra_vehicle_perc * 0.33;
+		swap_intra_depot_perc += swap_intra_depot_perc * exponential_decay(generation, mutation_decay_rate) - swap_intra_depot_perc * 0.33;
+		customer_intra_depot_optimally_perc += customer_intra_depot_optimally_perc * exponential_decay(generation, mutation_decay_rate) - customer_intra_depot_optimally_perc * 0.33;
 		double insert_inter_depot_perc = 1 * inter_mutation_rate;
-		insert_inter_depot_perc = insert_inter_depot_perc * exponential_decay(generation, decay_rate) - insert_inter_depot_perc * 0.1;
+		insert_inter_depot_perc = insert_inter_depot_perc * exponential_decay(generation, mutation_decay_rate) - insert_inter_depot_perc * 0.1;
 		//if (n_generations_without_improvement >= 10) 0.8;
-		double include_neighbour_perc = 0;
 
 		int mutation_method = 0;
-		if (generation % era != 0) mutation_method = population.insert_intra_mutation_in_offspring(inverse_intra_vehicle_perc, swap_intra_depot_perc, customer_intra_depot_optimally_perc);
-		else mutation_method = population.insert_inter_mutation_in_offspring(insert_inter_depot_perc, include_neighbour_perc);
+		if (generation % inter_depot_mutation_era != 0) mutation_method = population.insert_intra_mutation_in_offspring(inverse_intra_vehicle_perc, swap_intra_depot_perc, customer_intra_depot_optimally_perc);
+		else mutation_method = population.insert_inter_mutation_in_offspring(insert_inter_depot_perc, include_neighbours_inter_depot_perc);
 
 		// select survivors
 		std::set<int> selected_index;
@@ -124,22 +124,31 @@ void GA_mVRP(int n_individuals, double parent_percentage, double survivor_elitis
 		// give update, and iterate
 		std::cout << "Nr. generation: " << generation << ", best fitness: " << best_fitness << " : " << best_fitness/static_cast<double>(fitness_solution) << "%" << std::endl;
 
-		static bool minimum_reached = false;
-		if (!minimum_reached && best_fitness < minimum_score) {
-			std::cout << "10% within best solution reached" << std::endl;
-			population.write_result_to_file("..\\..\\minimum_solution.txt");
-			minimum_reached = true;
+		int i = 0;
+		if (i == 0 && best_fitness < within30percent) {
+			std::cout << "30% within best solution reached" << std::endl;
+			population.write_result_to_file("..\\..\\30percent_solution.txt");
+			i++;
 		}
-		if (best_fitness < full_score) {
-			std::cout << "full_score_reached!" << std::endl;
+		else if (i == 1 && best_fitness < within20percent) {
+			std::cout << "20% within best solution reached" << std::endl;
+			population.write_result_to_file("..\\..\\20percent_solution.txt");
+			i++;
+		}
+		else if (i == 2 && best_fitness < within10percent) {
+			std::cout << "10% within best solution reached" << std::endl;
+			population.write_result_to_file("..\\..\\10percent_solution.txt");
+			i++;
+		}
+		else if (best_fitness < within05percent) {
+			std::cout << "5% within best solution reached" << std::endl;
+			population.write_result_to_file("..\\..\\05percent_solution.txt");
 			break;
 		}
 
 
 		generation++;
 	}
-
-	population.write_result_to_file("..\\..\\solution.txt");
 	std::cout << std::endl << std::endl << "Second generation best fitness: " << second_generation_best_fitness << ", best fitness at termination: " << best_fitness << std::endl;
 	//population.print_population();
 

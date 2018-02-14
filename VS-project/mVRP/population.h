@@ -52,7 +52,7 @@ public:
 	int get_customer_index(int individual_index, int depot_index, int vehicle_index, int customer_index_in_queue);
 	void print_vehicles_customer_queue(int individual_index, int vehicle_index, int depot_index);
 	int get_vehicle_queue_size(int individual_index, int depot_index, int vehicle_index);
-	void get_duration_load_vehicle(int depot_number, std::vector<int> vehicle, double & load_pointer, double & duration_pointer);
+	void get_duration_load_vehicle(int depot_number, int vehicle_num, int individual_num, double & load_pointer, double & duration_pointer);
 
 	void fitness_population_initalization();
 	void mutate_swap_internally_vehicle(std::vector<int> *individual, int index);

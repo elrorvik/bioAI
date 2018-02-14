@@ -369,7 +369,7 @@ int Population::mutate_swap_intra_depot(std::vector<int> *individual, int index)
 	//std::cout << " mutation mother fucker " << std::endl;
 	//print_individual(index);
 
-	validate_individual(index);
+	//validate_individual(index);
 
 	int random_depot = rand() % n_depots;
 	int found_vehicles = 0;
@@ -494,14 +494,14 @@ int Population::mutate_swap_intra_depot(std::vector<int> *individual, int index)
 	std::cin.get();*/
 	//print_individual(index);
 	fitness_individual_initalization(individual, index);
-	validate_individual(index);
+	//validate_individual(index);
 }
 
 void Population::mutate_insert_inter_depot(std::vector<int> *individual, int index, double include_neighbour_percentage) {
 	/*std::cout << " mutation mother fucker " << std::endl;
 	print_individual(index);*/
 
-	validate_individual(index);
+	//validate_individual(index);
 
 	int random_depot_A;
 	int found_vehicles = 0;
@@ -779,7 +779,7 @@ void Population::mutate_swap_between_depot(std::vector<int> *individual, int ind
 }*/
 
 void Population::mutate_inverse_intra_vehicle(std::vector<int> *individual, int individual_index) {
-	validate_individual(individual_index);
+	//validate_individual(individual_index);
 	//print_individual(individual);
 	int random_vehicle = random_number(n_vehicles*n_depots);
 
@@ -809,7 +809,7 @@ void Population::mutate_inverse_intra_vehicle(std::vector<int> *individual, int 
 	//set_fitness_vehicle(individual_index, random_vehicle);
 	//print_individual(individual);
 	fitness_individual_initalization(individual, individual_index);
-	validate_individual(individual_index);
+	//validate_individual(individual_index);
 }
 
 void Population::mutate_trim_bloated_vehicle(std::vector<int> *individual, int individual_index) {
@@ -859,7 +859,7 @@ void Population::mutate_customer_intra_depot_optimally(std::vector<int> *individ
 	int index = get_depot_vehicle_index(cost.begin()->vehicle_i, cost.begin()->depot_i);
 	individual[index].insert(individual[index].begin() + cost.begin()->it_diff, costumer_index);
 	fitness_individual_initalization(individual, individ_index);
-	validate_individual(index);
+	//validate_individual(index);
 	//print_individual(individual);
 	//std::cout << "Best fitness" <<  get_fitness_individual(individ_index) << std::endl;
 	//validate_individual(individ_index);
@@ -1299,8 +1299,8 @@ void Population::recombination_BCRC_greedier(std::vector<int> *parent_A, std::ve
 
 	//std::cout << "Fitness after recombination, A: " << fitness_individual[n_offspring + n_individuals - 2] << ", B: " << fitness_individual[n_offspring + n_individuals - 2] << std::endl << std::endl;
 
-	validate_individual(n_individuals + n_offspring - 1);
-	validate_individual(n_individuals + n_offspring - 2);
+	//validate_individual(n_individuals + n_offspring - 1);
+	//validate_individual(n_individuals + n_offspring - 2);
 }
 
 void Population::recombination_BCRC_greedy(std::vector<int> *parent_A, std::vector<int> *parent_B, double recombination_rate) {
@@ -1326,8 +1326,8 @@ void Population::recombination_BCRC_greedy(std::vector<int> *parent_A, std::vect
 	// If not recombination outcome, make offspring as exact copies
 	double recombination_outcome = (rand() % 1000) / 1000.0;
 	if (!(recombination_outcome < recombination_rate)) {
-		validate_individual(n_individuals + n_offspring - 1);
-		validate_individual(n_individuals + n_offspring - 2);
+		//validate_individual(n_individuals + n_offspring - 1);
+		//validate_individual(n_individuals + n_offspring - 2);
 		return;
 	}
 
@@ -1452,8 +1452,8 @@ void Population::recombination_BCRC_greedy(std::vector<int> *parent_A, std::vect
 		j++;
 	}*/
 
-	validate_individual(n_individuals + n_offspring - 1);
-	validate_individual(n_individuals + n_offspring - 2);
+	//validate_individual(n_individuals + n_offspring - 1);
+	//validate_individual(n_individuals + n_offspring - 2);
 }
 
 
@@ -1605,14 +1605,18 @@ void Population::write_result_to_file(std::string filename) {
 
 	std::ofstream outfile(filename, std::ofstream::binary);
 	//std::cout << best_fitness << std::endl;
-
+	this->best_fitness_index = 0;
 
 
 	outfile << this->best_fitness << "\n";
 	for (int depot_i = 0; depot_i < n_depots; depot_i++) {
 		for (int vehicle_i = 0; vehicle_i < n_vehicles; vehicle_i++) {
 			if (population[this->best_fitness_index][get_depot_vehicle_index(vehicle_i, depot_i)].size() == 0) continue;
-			outfile << depot_i + 1 << " " << vehicle_i + 1 << " \t " << 0 << " " << 0 << " \t " << 0 << " ";
+			double load;
+			double duration;
+			get_duration_load_vehicle(depot_i, vehicle_i, best_fitness_index, load, duration);
+			outfile << depot_i + 1 << " " << vehicle_i + 1 << " \t " << std::setprecision(5) << duration << " " << load;
+			outfile << " \t " << 0 << " ";
 			for (auto it = population[this->best_fitness_index][get_depot_vehicle_index(vehicle_i, depot_i)].begin(); it != population[best_fitness_index][get_depot_vehicle_index(vehicle_i, depot_i)].end(); it++) {
 				outfile << *it + 1 << " ";
 			}
@@ -1622,7 +1626,8 @@ void Population::write_result_to_file(std::string filename) {
 	outfile.close();
 }
 
-void Population::get_duration_load_vehicle(int depot_number, std::vector<int> vehicle, double & load_pointer, double & duration_pointer) {
+void Population::get_duration_load_vehicle(int depot_number, int vehicle_num, int individual_num, double & load_pointer, double & duration_pointer) {
+	std::vector<int> vehicle = population[individual_num][get_depot_vehicle_index(vehicle_num, depot_number)];
 	if (vehicle.size() == 0) {
 		load_pointer = 0;
 		duration_pointer = 0;
@@ -1633,7 +1638,7 @@ void Population::get_duration_load_vehicle(int depot_number, std::vector<int> ve
 	double load = 0;
 	double fitness = 0;
 	double punishment = 0;
-		
+
 	customer c = get_customer(vehicle[0]);
 	customer cn = c;
 	depot d = depots[depot_number];
