@@ -122,7 +122,7 @@ void GA_mVRP(int n_individuals, double parent_percentage, double survivor_elitis
 		}*/
 
 		// give update, and iterate
-		std::cout << "Nr. generation: " << generation << ", best fitness: " << best_fitness << " : " << best_fitness/static_cast<double>(fitness_solution) << "%" << std::endl;
+		std::cout << "Nr. generation: " << generation << ", best fitness: " << best_fitness << " : " << 100*best_fitness/static_cast<double>(fitness_solution) << "%" << std::endl;
 
 		if (i == 0 && best_fitness < within30percent) {
 			std::cout << "30% within best solution reached" << std::endl;

@@ -131,17 +131,18 @@ void Population::initialize_depot_customer_availability(double depot_availabilit
 		double min_depot_distance = DBL_MAX;
 		for (int depot_index = 0; depot_index < n_depots; depot_index++) {
 			double d = distance(customers[customer_index], depots[depot_index]);
+			std::cout << d << std::endl;
 			if (d < min_depot_distance) min_depot_distance = d;
 		}
 		for (int depot_index = 0; depot_index < n_depots; depot_index++) {
 			if ((distance(customers[customer_index], depots[depot_index]) - min_depot_distance) / min_depot_distance <= bound) {
 				customers[customer_index].depot_available.push_back(depot_index);
+				std::cout << "Adding: " << depot_index << " to customer " << customer_index << std::endl;
 			}
-			//std::cout << customers[customer_index].depot_available[depot_index] << " ";
 		}
-		//std::cout << std::endl;
+		std::cout << std::endl;
 	}
-	//std::cin.get();
+	std::cin.get();
 }
 
 double distance(const customer &c, const depot &d) {
