@@ -88,15 +88,14 @@ def print_route(solution_name,info_name,subplot_num):
     draw_route(depot_xy,customer_xy,route,subplot_num)
             
 
-
 solution_name = "..//05percent_solution.txt"
 #solution_name = "..//10percent_solution.txt"
 #solution_name = "..//20percent_solution.txt"
 #solution_name = "..//30percent_solution.txt"
 #solution_name="..//solution.txt"
-info_name="..//testing_data//data_files//p01"
+info_name = "..//Demo1_test//Data_File//1"
 print_route(solution_name,info_name,211)
-solution_name="..//testing_data//solution_files//p01.res"
+solution_name="..//Demo1_test//Solution_File//1.res"
 print_route(solution_name,info_name,212)
 plt.show()
 

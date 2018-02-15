@@ -23,7 +23,7 @@ bool operator<(const customer &right, const customer &left) {
 
 void GA_mVRP(int n_individuals, double parent_percentage, double survivor_elitism_percentage, double parent_elitism_percentage, double intra_mutation_rate, double inter_mutation_rate, double recombination_rate, int mutation_decay_rate, int inter_depot_mutation_era, double include_neighbours_inter_depot_perc, double depot_availability_bound, int n_generations, std::string data_filename, std::string solution_filename) {
 	std::set<customer> customers;
-	std::set<depot> depots;
+	std::vector<depot> depots;
 	int n_vehicles;
 	int n_customers;
 	int n_depots;

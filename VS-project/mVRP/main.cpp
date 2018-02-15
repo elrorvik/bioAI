@@ -23,18 +23,59 @@ int main(int num_args, char** arg_strings) {
 	double depot_availability_bound = 1.5;
 	int n_generations = 3000;*/
 
-	//p03 5%, 5 depots, 75 customers, 3 vehicles 
-	int n_individuals = 150;
+	//1
+	/*int n_individuals = 150;
 	double parent_percentage = 1;
 	double survivor_elitism_percentage = 0.1;
 	double parent_elitism_percentage = 0.01;
-	double intra_mutation_rate = 0.25;
-	double inter_mutation_rate = 0.4;
+	double intra_mutation_rate = 0.4;
+	double inter_mutation_rate = 0.25;
 	double recombination_rate = 0.60;
 	int mutation_decay_rate = 40;
 	int inter_depot_mutation_era = 5;
 	double include_neighbours_inter_depot_perc = 0;
-	double depot_availability_bound = 1.5;
+	double depot_availability_bound = 2;
+	int n_generations = 3000;*/
+
+	//2
+	/*int n_individuals = 150; // try 200
+	double parent_percentage = 1;
+	double survivor_elitism_percentage = 0.1;
+	double parent_elitism_percentage = 0.01;
+	double intra_mutation_rate = 0.3;
+	double inter_mutation_rate = 0.25;
+	double recombination_rate = 0.90;
+	int mutation_decay_rate = 300;
+	int inter_depot_mutation_era = 10;
+	double include_neighbours_inter_depot_perc = 0;
+	double depot_availability_bound = 2;
+	int n_generations = 3000;*/
+
+	//Best
+	/*int n_individuals = 200;
+	double parent_percentage = 1;
+	double survivor_elitism_percentage = 0.1;
+	double parent_elitism_percentage = 0.01;
+	double intra_mutation_rate = 0.3;
+	double inter_mutation_rate = 0.25;
+	double recombination_rate = 0.90;
+	int mutation_decay_rate = 300;
+	int inter_depot_mutation_era = 10;
+	double include_neighbours_inter_depot_perc = 0;
+	double depot_availability_bound = 2;
+	int n_generations = 3000;*/
+
+	int n_individuals = 250;
+	double parent_percentage = 1;
+	double survivor_elitism_percentage = 0.1;
+	double parent_elitism_percentage = 0.01;
+	double intra_mutation_rate = 0.3;
+	double inter_mutation_rate = 0.25;
+	double recombination_rate = 0.90;
+	int mutation_decay_rate = 500;
+	int inter_depot_mutation_era = 10;
+	double include_neighbours_inter_depot_perc = 0;
+	double depot_availability_bound = 2;
 	int n_generations = 3000;
 
 	//TODO: Make depot_availability_bound work
@@ -152,8 +193,9 @@ int main(int num_args, char** arg_strings) {
 	double depot_availability_bound = 0.8;
 	int n_generations = 3000;*/
 
-	std::string data_filename = "..\\..\\testing_data\\data_files\\1";
-	std::string solution_filename = "..\\..\\testing_data\\solution_files\\1.res";
+
+	std::string data_filename = "..\\..\\Demo1_test\\Data_File\\2";
+	std::string solution_filename = "..\\..\\Demo1_test\\Solution_File\\2.res";
 	GA_mVRP(n_individuals, parent_percentage, survivor_elitism_percentage, parent_elitism_percentage, intra_mutation_rate, inter_mutation_rate, recombination_rate, mutation_decay_rate, inter_depot_mutation_era, include_neighbours_inter_depot_perc, depot_availability_bound, n_generations, data_filename, solution_filename);
 
 	system("pause");

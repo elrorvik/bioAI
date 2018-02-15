@@ -21,6 +21,7 @@ struct customer {
 bool operator<(const customer &right, const customer &left);
 
 struct depot{
+	int index = 0;
     int max_duration_per_vehicle;
     int max_load_per_vehicle;
     int x;

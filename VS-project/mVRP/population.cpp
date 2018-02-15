@@ -11,7 +11,7 @@
 #include <fstream>
 
 
-Population::Population(int n_vehicles, int n_customers, int n_depots, int n_individuals, int n_ellitisme, std::set<customer> &customers, std::set<depot> &depots) {
+Population::Population(int n_vehicles, int n_customers, int n_depots, int n_individuals, int n_ellitisme, std::set<customer> &customers, std::vector<depot> &depots) {
 	this->population = new std::vector<int>*[n_individuals * 2];
 	//this->offspring = new std::vector<int>*[n_individuals];
 	this->fitness_vehicle = new double*[n_individuals * 2];
@@ -131,18 +131,24 @@ void Population::initialize_depot_customer_availability(double depot_availabilit
 		double min_depot_distance = DBL_MAX;
 		for (int depot_index = 0; depot_index < n_depots; depot_index++) {
 			double d = distance(customers[customer_index], depots[depot_index]);
-			std::cout << d << std::endl;
+			/*std::cout << d << std::endl;
+			std::cout << depots[depot_index].x << " x, " << depots[depot_index].y << " y." << std::endl;
+			std::cin.get();*/
 			if (d < min_depot_distance) min_depot_distance = d;
 		}
 		for (int depot_index = 0; depot_index < n_depots; depot_index++) {
+			/*std::cout << distance(customers[customer_index], depots[depot_index]) << " d" << std::endl;
+			std::cout << min_depot_distance << " min" << std::endl;
+			std::cout << (distance(customers[customer_index], depots[depot_index]) - min_depot_distance) / min_depot_distance << " <= " << bound << std::endl;*/
 			if ((distance(customers[customer_index], depots[depot_index]) - min_depot_distance) / min_depot_distance <= bound) {
 				customers[customer_index].depot_available.push_back(depot_index);
-				std::cout << "Adding: " << depot_index << " to customer " << customer_index << std::endl;
+				//std::cout << "Adding: " << depot_index << " to customer " << customer_index << std::endl;
 			}
 		}
-		std::cout << std::endl;
+		/*std::cin.get();
+		std::cout << std::endl;*/
 	}
-	std::cin.get();
+	//std::cin.get();
 }
 
 double distance(const customer &c, const depot &d) {
