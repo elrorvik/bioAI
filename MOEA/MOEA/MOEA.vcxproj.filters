@@ -18,10 +18,13 @@
     <ClInclude Include="file.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="parameters.h">
+    <ClInclude Include="population.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="population.h">
+    <ClInclude Include="fitness.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="global.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

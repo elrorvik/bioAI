@@ -1,32 +1,24 @@
 #pragma once
 #include<vector>
+#include <opencv2/highgui/highgui.hpp>
 
-struct RGB {
-	int R;
-	int G;
-	int B;
-};
+struct pos;
+struct node;
+struct RGB;
 
-struct node {
-	bool colored = 0;
-
-	bool up = 0;
-	bool down = 0;
-	bool left = 0;
-	bool right = 0;
-	int segment;
-};
-
-class Population
-{
+class Population{
 private:
-	RGB **image;
+	cv::Mat im;
 	node ***population;
-	std::vector<int> * segment_nr;
+	std::vector<pos> * segment_nr;
 	int n_segments;
 public:
-	Population() {};
+	Population();
 	~Population();
-	Population(int res_height, int res_width, int **pixels);
 	void initialize_k_means();
+	RGB get_RGB(int y, int x);
+	int get_im_w();
+	int get_im_h();
+	pos get_pixel_segment(int x, int y, int individual);
 };
+
