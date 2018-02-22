@@ -1,5 +1,6 @@
 #pragma once
 #include<vector>
+#include"parameters.h"
 
 struct RGB {
 	int R;
@@ -7,7 +8,7 @@ struct RGB {
 	int B;
 };
 
-enum node { self, up, down, left, right };
+enum node { SELF, UP, DOWN, RIGHT, LEFT };
 
 class Population
 {
@@ -17,5 +18,6 @@ private:
 public:
 	Population() {};
 	~Population();
-	void MST_Kruskal();
+	void Population(int res_height, int res_width, int **pixels);
+	void initialize_k_means();
 };
