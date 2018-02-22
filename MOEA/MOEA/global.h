@@ -1,8 +1,9 @@
 #pragma once
+#ifndef GLOBAL_H
+#define GLOBAL_H
 
-int N_IND;
-
-std::string img_path = "..//test_img//1//Test image.jpg";
+const int N_IND = 30;
+const std::string img_path  = "..//test_img//1//Test image.jpg";
 
 
 struct RGB {
@@ -26,3 +27,5 @@ struct node {
 	bool right = 0;
 	pos entry; // entry to segment
 };
+
+#endif 

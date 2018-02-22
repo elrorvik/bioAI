@@ -1,4 +1,7 @@
 #pragma once
+
+#ifndef POPULATION_H
+#define POPULATION_H
 #include<vector>
 #include <opencv2/highgui/highgui.hpp>
 
@@ -22,3 +25,4 @@ public:
 	pos get_pixel_segment(int x, int y, int individual);
 };
 
+#endif
