@@ -18,7 +18,8 @@ private:
 public:
 	Population();
 	~Population();
-	void initialize_k_means();
+	node** get_individual(int ind_index);
+	void initialize_population_PrimsMST();
 	RGB get_RGB(int y, int x);
 	int get_im_w();
 	int get_im_h();
