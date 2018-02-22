@@ -123,6 +123,7 @@
   <ItemGroup>
     <ClCompile Include="file.cpp" />
     <ClCompile Include="fitness.cpp" />
+    <ClCompile Include="global.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="population.cpp" />
   </ItemGroup>
