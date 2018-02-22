@@ -7,7 +7,14 @@ struct RGB {
 	int B;
 };
 
-enum node { SELF, UP, DOWN, RIGHT, LEFT };
+struct node {
+	bool colored = 0;
+
+	bool up = 0;
+	bool down = 0;
+	bool left = 0;
+	bool right = 0;
+};
 
 class Population
 {
