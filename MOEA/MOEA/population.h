@@ -1,6 +1,5 @@
 #pragma once
 #include<vector>
-#include"parameters.h"
 
 struct RGB {
 	int R;
