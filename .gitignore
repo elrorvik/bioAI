@@ -2,3 +2,9 @@
 *.db
 
 *.ipch
+
+MOEA/\.vs/MOEA/v15/\.suo
+
+*.filters
+
+*.vcxproj
