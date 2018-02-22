@@ -1,2 +1,20 @@
 
 MOEA/\.vs/MOEA/v15/
+
+*.db
+
+*.exe
+
+*.ilk
+
+*.pdb
+
+*.obj
+
+*.log
+
+*.tlog
+
+*.lastbuildstate
+
+*.idb
