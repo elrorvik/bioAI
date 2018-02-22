@@ -1,2 +1,2 @@
 #pragma once
-int N_IND;
+const int N_IND;

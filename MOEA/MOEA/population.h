@@ -18,6 +18,6 @@ private:
 public:
 	Population() {};
 	~Population();
-	void Population(int res_height, int res_width, int **pixels);
+	Population(int res_height, int res_width, int **pixels);
 	void initialize_k_means();
 };

@@ -6,9 +6,9 @@ Population::~Population() {
 
 }
 
-void Population::Population(int res_height, int res_width, int **pixels) {
+Population::Population(int res_height, int res_width, int **pixels) {
 	population = new node**[N_IND];
-	for (int ind_i = 0; ind_i < NPOP; ind_i++) {
+	for (int ind_i = 0; ind_i < N_IND; ind_i++) {
 		population[ind_i] = new node*[res_height];
 		for (int row_i = 0; row_i < res_height; row_i++) {
 			population[ind_i][row_i] = new node[res_width]{};
