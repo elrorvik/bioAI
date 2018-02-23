@@ -20,6 +20,7 @@ struct pos {
 	unsigned short y;
 	pos() : x(0), y(0) {};
 	pos(unsigned short x, unsigned short y) : x(x), y(y) {};
+	pos(int x, int y) : x(static_cast<unsigned short>(x)), y(static_cast<unsigned short>(y)) {};
 };
 
 struct node {
