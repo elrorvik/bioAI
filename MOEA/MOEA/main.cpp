@@ -3,12 +3,14 @@
 #include "population.h"
 #include <string>
 #include <iostream>
+#include <ctime>
 
 int main() {
-
+	srand(time(0));
 
 	
 	Population p;
+	//p.initialize_population_PrimsMST();
 
 
 	system("pause");
