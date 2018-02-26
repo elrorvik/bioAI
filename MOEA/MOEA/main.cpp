@@ -13,6 +13,20 @@ int main() {
 	p.initialize_population_PrimsMST_2();
 	//std::cout << p.get_im_h() *p.get_im_w() << std::endl;
 
+	/*p.initialize_population_test();
+	std::stack<pos> branch_points;
+	pos pos_i(0,0);
+	while(pos_i.x != static_cast<unsigned short>(-1)) {
+		std::cout << pos_i.x << ", " << pos_i.y << std::endl;
+		pos_i = p.traverse_ST(0, pos_i, branch_points);
+	}
+	std::cout << "---" << std::endl;
+	pos_i = pos(2, 1);
+	while (pos_i.x != static_cast<unsigned short>(-1)) {
+		std::cout << pos_i.x << ", " << pos_i.y << std::endl;
+		pos_i = p.traverse_ST(0, pos_i, branch_points);
+	}*/
+
 	system("pause");
 	return 1;
 }

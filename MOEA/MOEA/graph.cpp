@@ -1,4 +1,6 @@
 #include "graph.h"
+#include "population.h"
+#include "global.h"
 #include <vector>
 #include <list>
 #include<iostream>
@@ -6,6 +8,7 @@
 #include <list>
 #include <time.h>
 #include <functional>
+
 
 using namespace std;
 
@@ -89,4 +92,74 @@ vector<int> Graph::primMST(){
 	/*for (int i = 1; i < V; ++i)
 	printf("%d - %d\n", parent[i], i);*/
 	return parent;
+}
+
+pos traverse_ST(Population &p, int ind_index, pos entry, std::stack<pos> &branch_points) {
+	node* current = p.get_node(ind_index, entry);
+	current->color = !current->color;
+
+	int num_added = 0;
+	pos next_entry;
+	node* next = NULL;
+	if (current->up == 1) {
+		next = p.get_node(ind_index, entry + UP);
+		/*std::cout << "up ";
+		std::cout << current->up << std::endl;
+		std::cin.get();*/
+		if (next->color == !current->color) {
+			num_added++;
+			next_entry = entry + UP;
+		}
+	}
+	if (current->down == 1) {
+		next = p.get_node(ind_index, entry + DOWN);
+		/*std::cout << "down ";
+		std::cout << current->down << std::endl;
+		std::cin.get();*/
+		if (next->color == !current->color) {
+			if (num_added > 0) {
+				branch_points.push(next_entry);
+			}
+			num_added++;
+			next_entry = entry + DOWN;
+		}
+	}
+	if (current->left == 1) {
+		next = p.get_node(ind_index, entry + LEFT);
+		/*std::cout << "left ";
+		std::cout << current->left << std::endl;
+		std::cin.get();*/
+		if (next->color == !current->color) {
+			if (num_added > 0) {
+				branch_points.push(next_entry);
+			}
+			num_added++;
+			next_entry = entry + LEFT;
+		}
+	}
+	if (current->right == 1) {
+		next = p.get_node(ind_index, entry + RIGHT);
+		/*std::cout << "right ";
+		std::cout << current->right << std::endl;
+		std::cin.get();*/
+		if (next->color == !current->color) {
+			if (num_added > 0) {
+				branch_points.push(next_entry);
+			}
+			num_added++;
+			next_entry = entry + RIGHT;
+		}
+	}
+
+	if (num_added == 0) {
+		if (branch_points.size() > 0) {
+			next_entry = branch_points.top();
+			branch_points.pop();
+			next = p.get_node(ind_index, next_entry);
+		}
+		else {
+			return pos(-1, -1);
+		}
+	}
+	return next_entry;
 }

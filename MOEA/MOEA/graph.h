@@ -1,10 +1,10 @@
 #pragma once
 #include <list>
 #include <vector>
+#include <stack>
 using namespace std;
 
 # define INF 0x3f3f3f3f
-
 
 // iPair ==>  Integer Pair
 typedef pair<int,double> idPair;
@@ -23,3 +23,7 @@ public:
 	void addEdge(int u, int v, double w);  // function to add an edge to graph
 	vector<int> primMST(); // creating MST returning parents
 };
+
+class Population;
+struct pos;
+pos traverse_ST(Population &p, int ind_index, pos entry, stack<pos> &branch_points);

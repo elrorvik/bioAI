@@ -2,7 +2,8 @@
 #include <math.h>
 #include "global.h"
 #include "fitness.h"
-#include"population.h"
+#include "population.h"
+#include "graph.h"
 
 
 
@@ -13,7 +14,8 @@ double dist(RGB p1, RGB p2) {
 double overall_deviation(Population &p, int ind_index, node s_entry) {
 	std::stack<pos> branch_points;
 	pos pos_i;
-	pos_i = p.traverse_ST(ind_index, s_entry.entry, branch_points);
+	pos_i = traverse_ST(p, ind_index, s_entry.entry, branch_points);
+
 }
 
 

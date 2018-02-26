@@ -216,6 +216,37 @@ void Population::initialize_population_PrimsMST() {
 }
 
 
+void Population::initialize_population_test() {
+	population = new node**[1];
+	population[0] = new node*[3];
+	for (int i = 0; i < 3; i++) {
+		population[0][i] = new node[3];
+	}
+
+	//Segment 1
+	population[0][0][0].right = true;
+	population[0][1][0].left = true;
+
+	population[0][1][0].down = true;
+	population[0][1][1].up = true;
+
+	population[0][1][1].left = true;
+	population[0][0][1].right = true;
+
+	population[0][1][1].down = true;
+	population[0][1][2].up = true;
+
+	population[0][1][2].left = true;
+	population[0][0][2].right = true;
+
+	//Segment 2
+	population[0][2][0].down = true;
+	population[0][2][1].up = true;
+
+	population[0][2][1].down = true;
+	population[0][2][2].up = true;
+}
+
 
 
 /*void Population::read_image(Mat* img) {

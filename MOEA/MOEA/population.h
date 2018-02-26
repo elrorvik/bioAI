@@ -27,6 +27,7 @@ public:
 	int get_im_w();
 	int get_im_h();
 	pos get_pixel_segment(int x, int y, int individual);
+	void initialize_population_test();
 };
 
 #endif
