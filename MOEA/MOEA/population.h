@@ -13,7 +13,7 @@ class Population{
 private:
 	cv::Mat im;
 	node ***population;
-	std::vector<pos> * segment_nr;
+	std::vector<pos> * entry_s;
 	int n_segments;
 public:
 	Population();
