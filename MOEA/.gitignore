@@ -23,8 +23,3 @@ x64
 
 *.idb
 
-*.enc
-
-*.vcxproj
-
-*.vcxproj.filters
