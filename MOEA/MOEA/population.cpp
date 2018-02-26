@@ -3,7 +3,7 @@
 #include"fitness.h"
 #include"global.h"
 #include"population.h"
-
+#include <list>
 
 // opencv 
 #include <opencv2/highgui/highgui.hpp>
@@ -28,8 +28,8 @@ Population::Population() {
 	population = new node**[N_IND];
 	for (int ind_i = 0; ind_i < N_IND; ind_i++) {
 		population[ind_i] = new node*[im_w];
-		for (int row_i = 0; row_i < im_w; row_i++) {
-			population[ind_i][row_i] = new node[im_h]{};
+		for (int col_i = 0; col_i < im_w; col_i++) {
+			population[ind_i][col_i] = new node[im_h]{};
 		}
 	}
 	
@@ -55,15 +55,16 @@ RGB Population::get_RGB(pos pixel_pos) {
 }
 
 int Population::get_im_w() {
-	return this->im.rows;
+	return this->im.cols;
 }
 int Population::get_im_h() {
-	return this->im.cols;
+	return this->im.rows;
 }
 
 pos Population::get_pixel_segment(int x,int y, int individual) {
 	return this->population[individual][x][y].entry;
 }
+
 
 void Population::initialize_population_PrimsMST() {
 
@@ -88,7 +89,7 @@ void Population::initialize_population_PrimsMST() {
 	node **graph;
 	graph = new node*[3];
 	for (int i = 0; i < 3; i++) {
-		graph[i] = new node[3];
+	graph[i] = new node[3];
 	}
 	int height = 3;
 	int width = 3;*/
@@ -168,8 +169,8 @@ void Population::initialize_population_PrimsMST() {
 		unsigned int num_colored = 1;
 		while (num_colored < get_im_w()*get_im_h()) {
 			/*while (!minHeap.empty()) {
-				std::cout << minHeap.top().RGBdist << std::endl;
-				minHeap.pop();
+			std::cout << minHeap.top().RGBdist << std::endl;
+			minHeap.pop();
 			}*/
 			std::cout << minHeap.size() << std::endl;
 			direction add_edge = minHeap.top().e;
@@ -187,9 +188,9 @@ void Population::initialize_population_PrimsMST() {
 			// But insert is O(1) on average, O(log n) worst case... So does it even matter?
 			// It's defenitely taking way too long - so that's nothing to worry about. Something needs to improve
 			// An alternative would be to make a segment when an MST gets big enough. But some segments may be optimally massive.
-					// This may not be a problem however - because if two segments often get merged in mutations then it's fine
-					// It's still not ideal though. Best case that i see right now would be to make one good one the correct way
-					// then copy it into all other individuals - but it shouldn't take more time than like 2-10 minutes!
+			// This may not be a problem however - because if two segments often get merged in mutations then it's fine
+			// It's still not ideal though. Best case that i see right now would be to make one good one the correct way
+			// then copy it into all other individuals - but it shouldn't take more time than like 2-10 minutes!
 			// Though having run it - i can clearly see it struggling with removing tons and tons of edges that
 			// points to a node already added to the MST. Pruning would hopefully help - though alternatively i could ask
 			// someone who would know how to solve this...
@@ -212,6 +213,9 @@ void Population::initialize_population_PrimsMST() {
 	std::cin.get();
 }
 
+
+
+
 /*void Population::read_image(Mat* img) {
 
 	
@@ -219,3 +223,141 @@ void Population::initialize_population_PrimsMST() {
 	//cv::imshow("image", image);                   // Show our image inside it.	
 	//cv::waitKey(0);
 }*/
+
+using namespace std;
+
+# define INF 0x3f3f3f3f
+
+// iPair ==>  Integer Pair
+typedef pair<int, int> iPair;
+
+// This class represents a directed graph using
+// adjacency list representation
+class Graph
+{
+	int V;    // No. of vertices
+
+			  // In a weighted graph, we need to store vertex
+			  // and weight pair for every edge
+	list< pair<int, int> > *adj;
+
+public:
+	Graph(int V);  // Constructor
+
+				   // function to add an edge to graph
+	void addEdge(int u, int v, int w);
+
+	// Print MST using Prim's algorithm
+	void primMST();
+};
+
+// Allocates memory for adjacency list
+Graph::Graph(int V)
+{
+	this->V = V;
+	adj = new list<iPair>[V];
+}
+
+void Graph::addEdge(int u, int v, int w)
+{
+	adj[u].push_back(make_pair(v, w));
+	adj[v].push_back(make_pair(u, w));
+}
+
+// Prints shortest paths from src to all other vertices
+void Graph::primMST()
+{
+	// Create a priority queue to store vertices that
+	// are being preinMST. This is weird syntax in C++.
+	// Refer below link for details of this syntax
+	// http://geeksquiz.com/implement-min-heap-using-stl/
+	priority_queue< iPair, vector <iPair>, greater<iPair> > pq;
+
+	int src = 0; // Taking vertex 0 as source
+
+				 // Create a vector for keys and initialize all
+				 // keys as infinite (INF)
+	vector<int> key(V, INF);
+
+	// To store parent array which in turn store MST
+	vector<int> parent(V, -1);
+
+	// To keep track of vertices included in MST
+	vector<bool> inMST(V, false);
+
+	// Insert source itself in priority queue and initialize
+	// its key as 0.
+	pq.push(make_pair(0, src));
+	key[src] = 0;
+
+	/* Looping till priority queue becomes empty */
+	while (!pq.empty())
+	{
+		// The first vertex in pair is the minimum key
+		// vertex, extract it from priority queue.
+		// vertex label is stored in second of pair (it
+		// has to be done this way to keep the vertices
+		// sorted key (key must be first item
+		// in pair)
+		int u = pq.top().second;
+		pq.pop();
+
+		inMST[u] = true;  // Include vertex in MST
+
+						  // 'i' is used to get all adjacent vertices of a vertex
+		list< pair<int, int> >::iterator i;
+		for (i = adj[u].begin(); i != adj[u].end(); ++i)
+		{
+			// Get vertex label and weight of current adjacent
+			// of u.
+			int v = (*i).first;
+			int weight = (*i).second;
+
+			//  If v is not in MST and weight of (u,v) is smaller
+			// than current key of v
+			if (inMST[v] == false && key[v] > weight)
+			{
+				// Updating key of v
+				key[v] = weight;
+				pq.push(make_pair(key[v], v));
+				parent[v] = u;
+			}
+		}
+	}
+
+	// Print edges of MST using parent array
+	for (int i = 1; i < V; ++i)
+		printf("%d - %d\n", parent[i], i);
+}
+
+// Driver program to test methods of graph class
+void Population::initialize_population_PrimsMST_2()
+{
+	// create the graph given in above fugure
+	int V = get_im_w()*get_im_h();
+	Graph g(V);
+
+	;
+	for (int x = 0; x < get_im_w(); x++) {
+		for (int y = 0; y < get_im_h(); y++) {
+			if (x + 1 < get_im_w()) {
+				//std::cout << im.cols << " " << x <<" "  << x+1 <<std::endl;
+				//std::cout << im.rows << " " << y << std::endl;
+				g.addEdge(x*get_im_h() + y, (x+1)*get_im_h() + y, dist(get_RGB(pos(x, y)), get_RGB(pos(x+1, y))));
+			}
+			if (y + 1 < get_im_h()) {
+				//std::cout << im.cols << " " << x << std::endl;
+				//std::cout << im.rows << " " << y << " " <<y+1 <<std::endl;
+				g.addEdge(x*get_im_h() + y+1, (x)*get_im_h() + y, dist(get_RGB(pos(x, y)), get_RGB(pos(x, y+1))));
+			}
+		}
+	}
+	std::cout << "initilization " << std::endl;
+
+
+
+	//  making above shown graph
+	
+	g.primMST();
+
+}

@@ -10,8 +10,8 @@ int main() {
 
 	
 	Population p;
-	//p.initialize_population_PrimsMST();
-
+	p.test();
+	//std::cout << p.get_im_h() *p.get_im_w() << std::endl;
 
 	system("pause");
 	return 1;

@@ -3,7 +3,7 @@
 #ifndef GLOBAL_H
 #define GLOBAL_H
 
-const int N_IND = 30;
+const int N_IND = 1;
 const std::string img_path  = "..//test_img//1//Test image.jpg";
 
 enum direction { SELF, UP, DOWN, LEFT, RIGHT };
