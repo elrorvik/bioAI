@@ -4,6 +4,7 @@ Debug
 Release
 x64
 
+
 *.db
 
 *.exe
@@ -21,3 +22,9 @@ x64
 *.lastbuildstate
 
 *.idb
+
+*.enc
+
+*.vcxproj
+
+*.vcxproj.filters

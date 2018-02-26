@@ -4,6 +4,8 @@
 #include"global.h"
 #include"population.h"
 #include <list>
+#include <time.h>
+#include "graph.h"
 
 // opencv 
 #include <opencv2/highgui/highgui.hpp>
@@ -32,7 +34,7 @@ Population::Population() {
 			population[ind_i][col_i] = new node[im_h]{};
 		}
 	}
-	
+	entry_s = new std::vector<pos>[N_IND];
 	
 }
 
@@ -224,140 +226,137 @@ void Population::initialize_population_PrimsMST() {
 	//cv::waitKey(0);
 }*/
 
-using namespace std;
-
-# define INF 0x3f3f3f3f
-
-// iPair ==>  Integer Pair
-typedef pair<int, int> iPair;
-
-// This class represents a directed graph using
-// adjacency list representation
-class Graph
-{
-	int V;    // No. of vertices
-
-			  // In a weighted graph, we need to store vertex
-			  // and weight pair for every edge
-	list< pair<int, int> > *adj;
-
-public:
-	Graph(int V);  // Constructor
-
-				   // function to add an edge to graph
-	void addEdge(int u, int v, int w);
-
-	// Print MST using Prim's algorithm
-	void primMST();
-};
-
-// Allocates memory for adjacency list
-Graph::Graph(int V)
-{
-	this->V = V;
-	adj = new list<iPair>[V];
-}
-
-void Graph::addEdge(int u, int v, int w)
-{
-	adj[u].push_back(make_pair(v, w));
-	adj[v].push_back(make_pair(u, w));
-}
-
-// Prints shortest paths from src to all other vertices
-void Graph::primMST()
-{
-	// Create a priority queue to store vertices that
-	// are being preinMST. This is weird syntax in C++.
-	// Refer below link for details of this syntax
-	// http://geeksquiz.com/implement-min-heap-using-stl/
-	priority_queue< iPair, vector <iPair>, greater<iPair> > pq;
-
-	int src = 0; // Taking vertex 0 as source
-
-				 // Create a vector for keys and initialize all
-				 // keys as infinite (INF)
-	vector<int> key(V, INF);
-
-	// To store parent array which in turn store MST
-	vector<int> parent(V, -1);
-
-	// To keep track of vertices included in MST
-	vector<bool> inMST(V, false);
-
-	// Insert source itself in priority queue and initialize
-	// its key as 0.
-	pq.push(make_pair(0, src));
-	key[src] = 0;
-
-	/* Looping till priority queue becomes empty */
-	while (!pq.empty())
-	{
-		// The first vertex in pair is the minimum key
-		// vertex, extract it from priority queue.
-		// vertex label is stored in second of pair (it
-		// has to be done this way to keep the vertices
-		// sorted key (key must be first item
-		// in pair)
-		int u = pq.top().second;
-		pq.pop();
-
-		inMST[u] = true;  // Include vertex in MST
-
-						  // 'i' is used to get all adjacent vertices of a vertex
-		list< pair<int, int> >::iterator i;
-		for (i = adj[u].begin(); i != adj[u].end(); ++i)
-		{
-			// Get vertex label and weight of current adjacent
-			// of u.
-			int v = (*i).first;
-			int weight = (*i).second;
-
-			//  If v is not in MST and weight of (u,v) is smaller
-			// than current key of v
-			if (inMST[v] == false && key[v] > weight)
-			{
-				// Updating key of v
-				key[v] = weight;
-				pq.push(make_pair(key[v], v));
-				parent[v] = u;
-			}
-		}
-	}
-
-	// Print edges of MST using parent array
-	for (int i = 1; i < V; ++i)
-		printf("%d - %d\n", parent[i], i);
-}
 
 // Driver program to test methods of graph class
-void Population::initialize_population_PrimsMST_2()
-{
+void Population::initialize_population_PrimsMST_2(){
+
+	struct edge {
+		pos p1;
+		pos p2;
+		double RGBdist = 0;
+		edge(pos p1, pos p2, double RGBdist) : p1(p1), p2(p2), RGBdist(RGBdist) {};
+	};
+
+	struct edge_comparator {
+		bool operator()(edge e1, edge e2) {
+			return e1.RGBdist < e2.RGBdist;
+		}
+	};
+
+	time_t seconds = time(NULL);
+	
 	// create the graph given in above fugure
 	int V = get_im_w()*get_im_h();
 	Graph g(V);
+	
 
-	;
+	std::vector<int> check(get_im_w()*get_im_h(),0);
 	for (int x = 0; x < get_im_w(); x++) {
 		for (int y = 0; y < get_im_h(); y++) {
 			if (x + 1 < get_im_w()) {
 				//std::cout << im.cols << " " << x <<" "  << x+1 <<std::endl;
 				//std::cout << im.rows << " " << y << std::endl;
-				g.addEdge(x*get_im_h() + y, (x+1)*get_im_h() + y, dist(get_RGB(pos(x, y)), get_RGB(pos(x+1, y))));
+				g.addEdge(x*get_im_h() + y, (x + 1)*get_im_h() + y, dist(get_RGB(pos(x, y)), get_RGB(pos(x + 1, y))));
 			}
 			if (y + 1 < get_im_h()) {
 				//std::cout << im.cols << " " << x << std::endl;
 				//std::cout << im.rows << " " << y << " " <<y+1 <<std::endl;
-				g.addEdge(x*get_im_h() + y+1, (x)*get_im_h() + y, dist(get_RGB(pos(x, y)), get_RGB(pos(x, y+1))));
+				g.addEdge(x*get_im_h() + y + 1, (x)*get_im_h() + y, dist(get_RGB(pos(x, y)), get_RGB(pos(x, y + 1))));
 			}
 		}
 	}
 	std::cout << "initilization " << std::endl;
-
-
-
-	//  making above shown graph
+	std::cout << seconds- time(NULL) << std::endl;
+	seconds = time(NULL);
 	
-	g.primMST();
+	//  making above shown graph
+
+	std::vector<int> mst_parents = g.primMST(); // holdes parents of each edge
+
+	//std::cout << mst_parents.size() << " vs. size " << get_im_h()*get_im_w() << std::endl;
+
+	std::cout << "MST " << std::endl;
+	std::cout << seconds - time(NULL) << std::endl;
+	seconds = time(NULL);
+
+	/*for (int i = 1; i < get_im_h()*get_im_w(); ++i){
+		check[i] += 1;
+		if (mst_parents[i] == -1) {
+			std::cout << " something wrong " << std::endl;
+		}
+		check[mst_parents[i]] += 1;
+		if (check[i] > 4 || check[mst_parents[i]] > 4) {
+			std::cout << "vertex wrong" << std::endl;
+			printf("%d - %d\n", check[mst_parents[i]], check[i]);
+		}
+	}
+
+	for (int i = 1; i < get_im_h()*get_im_w(); ++i) {
+		if (check[i] == 0 ) {
+			std::cout << "vertex not in " << i <<std::endl;
+		}
+	}*/
+	
+	std::priority_queue<edge, std::vector<edge>, edge_comparator> que;
+	for (int i = 1; i < get_im_h()*get_im_w(); i++) {
+		int index = mst_parents[i];
+		int x1 = index / get_im_h();
+		int y1 = index - get_im_h()*x1;
+		pos p1(x1, y1);
+		//std::cout << " index " << index << std::endl;
+
+		index = i;
+		int x2 = index / get_im_h();
+		int y2 = index - get_im_h()*x2;
+		pos p2(x2, y2);
+		//std::cout << " index " << index << std::endl;
+		//std::cout << x1 << " " << x2 << " " << get_im_w() << std::endl;
+		//std::cout << y1 << " " << y2 << " " << get_im_h() << std::endl;
+		que.emplace(p1,p2, dist(get_RGB(p1), get_RGB(p2)));
+		if (x1 > x2) {
+			population[0][x1][y1].left= 1;
+			population[0][x2][y2].right = 1;
+		}else if (x1 < x2) {
+			population[0][x1][y1].right = 1;
+			population[0][x2][y2].left = 1;
+		}else if (y1 > y2) {
+			population[0][x1][y1].up = 1;
+			population[0][x2][y2].down = 1;
+		}
+		else {
+			population[0][x1][y1].down = 1;
+			population[0][x2][y2].up = 1;
+		}	
+	}
+	for (int i = 0; i < N_SEG; i++) {
+		edge temp = que.top();
+		que.pop();
+		int x1 = temp.p1.x;
+		int x2 = temp.p2.x;
+		int y1 = temp.p1.y;
+		int y2 = temp.p2.y;
+		entry_s[0].push_back(pos(x1, y1));
+		entry_s[0].push_back(pos(x2, y2));
+		if (x1 > x2) {
+			population[0][x1][y1].left = 0;
+			population[0][x2][y2].right = 0;
+		}
+		else if (x1 < x2) {
+			population[0][x1][y1].right = 0;
+			population[0][x2][y2].left = 0;
+		}
+		else if (y1 > y2) {
+			population[0][x1][y1].up = 0;
+			population[0][x2][y2].down = 0;
+		}
+		else {
+			population[0][x1][y1].down = 0;
+			population[0][x2][y2].up = 0;
+		}
+	}
+	
+	std::cout << "FINISHED " << std::endl;
+	std::cout << seconds - time(NULL) << std::endl;
+	seconds = time(NULL);
 
 }
