@@ -1,6 +1,7 @@
 #pragma once
 #ifndef FITNESS_H
 #define FITNESS_H
+#include<vector>
 struct RGB;
 struct node;
 struct pos;
