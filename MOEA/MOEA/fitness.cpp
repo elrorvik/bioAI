@@ -54,25 +54,25 @@ double edge_value_seg(Population &p, int ind_index, pos s_entry) {
 	while (pos_i.x != static_cast<unsigned short>(-1)) {
 		node *node_i = p.get_node(ind_index, pos_i);
 
-		if (node_i->up) {
+		if (pos_i.y > 0) {
 			node *node_j = p.get_node(ind_index, pos_i + UP);
 			if (node_i->entry.x != node_j->entry.x || node_i->entry.y != node_j->entry.y) { // Replace with proper func
 				fitness += dist(p.get_RGB(pos_i), p.get_RGB(pos_i + UP));
 			}
 		}
-		if (node_i->down) {
+		if (pos_i.y < p.get_im_h()) {
 			node *node_j = p.get_node(ind_index, pos_i + DOWN);
 			if (node_i->entry.x != node_j->entry.x || node_i->entry.y != node_j->entry.y) {
 				fitness += dist(p.get_RGB(pos_i), p.get_RGB(pos_i + DOWN));
 			}
 		}
-		if (node_i->left) {
+		if (pos_i.x > 0) {
 			node *node_j = p.get_node(ind_index, pos_i + LEFT);
 			if (node_i->entry.x != node_j->entry.x || node_i->entry.y != node_j->entry.y) {
 				fitness += dist(p.get_RGB(pos_i), p.get_RGB(pos_i + LEFT));
 			}
 		}
-		if (node_i->right) {
+		if (pos_i.x < p.get_im_w()) {
 			node *node_j = p.get_node(ind_index, pos_i + RIGHT);
 			if (node_i->entry.x != node_j->entry.x || node_i->entry.y != node_j->entry.y) {
 				fitness += dist(p.get_RGB(pos_i), p.get_RGB(pos_i + RIGHT));
@@ -85,10 +85,3 @@ double edge_value_seg(Population &p, int ind_index, pos s_entry) {
 	return -fitness; // fitness defined negative in order to turn a maximation problem into a minimation problem
 }
 
-double edge_value_ind(Population &p, int ind_index, const std::vector<pos> &entry_s) {
-	double fitness = 0;
-	for (int seg_i = 0; seg_i < entry_s.size(); seg_i++) {
-		fitness += edge_value_seg(p, ind_index, entry_s[seg_i]);
-	}
-	return fitness;
-}
