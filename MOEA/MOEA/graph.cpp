@@ -170,3 +170,4 @@ void remove_color(Population &p, int ind_index, pos entry, std::stack<pos> &bran
 		next = traverse_ST(p, ind_index, next, branch_points);
 	}
 }
+

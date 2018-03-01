@@ -4,10 +4,16 @@
 #define POPULATION_H
 #include<vector>
 #include <opencv2/highgui/highgui.hpp>
+#include <queue>
+#include <map>
 
 struct pos;
 struct node;
 struct RGB;
+struct edge;
+struct edge_comparator;
+
+typedef std::priority_queue<edge, std::vector<edge>, edge_comparator> edge_priority_que;
 
 class Population{
 private:
@@ -36,6 +42,9 @@ public:
 
 	void test_segment(pos& entry, int ind_index);
 	std::vector<pos>* edges_segment(int ind_index);
+	void create_segments(int ind_index, int segment_size, edge_priority_que& que, int n_segments, std::map<edge, int> &edgeChildren);
+	void initialize_n_children(int ind_index, std::map<edge, int> &edgeChildren);
+	int get_n_dependent_children(pos curr, pos next, int ind_index);
 };
 
 cv::Mat test_image();

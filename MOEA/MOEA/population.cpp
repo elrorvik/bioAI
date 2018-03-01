@@ -10,6 +10,53 @@
 // opencv 
 #include <opencv2/highgui/highgui.hpp>
 
+/*struct KeyDataHasher
+{
+	std::size_t operator () (const KeyData &key) const
+	{
+		// The following line is a stright forward implementation. But it can be
+		// hard to design a good hash function if KeyData is complex.
+
+		//return (key.id << 32 | key.age); // suppose size_t is 64-bit and int is 32-bit
+
+		// A commonly used way is to use boost
+		std::size_t seed = 0;
+		boost::hash_combine(seed, boost::hash_value(key.id));
+		boost::hash_combine(seed, boost::hash_value(key.age));
+		return seed;
+	}
+};*/
+/*
+struct hash<edge>
+{
+	std::size_t operator()(const edge& k) const
+	{
+		using std::size_t;
+		using std::hash;
+		using std::string;
+
+		return ((hash<int>()(k.p1.x)) ^ (hash<int>()(k.p1.y)) ^ (hash<int>()(k.p2.x)) ^ (hash<int>()(k.p2.y) )^ (hash<int>()(k.RGBdist)));
+	}
+};*/
+
+struct edge {
+	pos p1;
+	pos p2;
+	double RGBdist = 0;
+	int dependent_nodes = 0;
+	edge(pos p1, pos p2, double RGBdist) : p1(p1), p2(p2), RGBdist(RGBdist) {};
+	edge(pos p1, pos p2, double RGBdist, int n_nodes) : p1(p1), p2(p2), RGBdist(RGBdist), dependent_nodes(n_nodes) {};
+};
+
+struct edge_comparator {
+	bool operator()(edge e1, edge e2) {
+		return e1.RGBdist < e2.RGBdist;
+	}
+};
+
+bool operator<(edge e1, edge e2) {
+	return e1.RGBdist < e2.RGBdist;
+}
 
 Population::~Population() {
 
@@ -251,18 +298,7 @@ void Population::initialize_population_test() {
 // Driver program to test methods of graph class
 void Population::initialize_population_PrimsMST_2(){
 
-	struct edge {
-		pos p1;
-		pos p2;
-		double RGBdist = 0;
-		edge(pos p1, pos p2, double RGBdist) : p1(p1), p2(p2), RGBdist(RGBdist) {};
-	};
-
-	struct edge_comparator {
-		bool operator()(edge e1, edge e2) {
-			return e1.RGBdist < e2.RGBdist;
-		}
-	};
+	
 
 	time_t seconds = time(NULL);
 	
@@ -334,25 +370,20 @@ void Population::initialize_population_PrimsMST_2(){
 		set_dir_edge(p1, p2, 1);	
 
 	}
+
+	std::map<edge, int> edgeChildren;
+	initialize_n_children(0, edgeChildren);
+
+	std::cout << "initialization  children" << std::endl;
+	std::cout << seconds - time(NULL) << std::endl;
+	seconds = time(NULL);
+
+	int segment_size = 50;
+	int n_segments = N_SEG; // how many segments currently made
+	create_segments(0, segment_size, que, n_segments, edgeChildren);
+
+
 	
-	int n_segments = N_SEG;
-	while( n_segments > 0 && !que.empty()) {
-		edge temp = que.top();
-		que.pop();
-		set_dir_edge(temp.p1, temp.p2, 0);
-		int n_pixels_in_segment = get_n_segment(temp.p1, 0);
-		int n_pixels_in_segment_2 = get_n_segment(temp.p2, 0);
-		//std::cout << "n_pixels " << n_pixels_in_segment << "n_pixels_2 " << n_pixels_in_segment_2 << std::endl;
-		if (500 > n_pixels_in_segment || 500 > n_pixels_in_segment_2) {
-			set_dir_edge(temp.p1, temp.p2, 1);
-		}
-		else {
-			entry_s[0].push_back(temp.p1);
-			entry_s[0].push_back(temp.p2);
-			n_segments--;
-		}
-		//n_segments--;
-	}
 	//entry_s[0].push_back(pos(0,0)); // set first directory
 
 	std::cout << "entry_s size " << entry_s[0].size() << std::endl;
@@ -375,12 +406,10 @@ void Population::initialize_population_PrimsMST_2(){
 
 	std::cout << "total " << total_segment_size << "should be " << get_im_h()*get_im_w() << std::endl;
 
-
 	/*for (auto it = entry_s[0].begin(); it != entry_s[0].end();it++) {
 	test_segment(*it, 0);
 	}*/
 
-	
 	std::cout << "FINISHED " << std::endl;
 	std::cout << seconds - time(NULL) << std::endl;
 	seconds = time(NULL);
@@ -497,7 +526,7 @@ void Population::draw_segments(int ind_index) {
 			segment.at<cv::Vec3b>(next.y, next.x)[0] = color[count].b;
 			next = traverse_ST(*this, ind_index, next, branch_points);
 		}
-		std::cout << count << std::endl;
+		//std::cout << count << std::endl;
 		
 		count++;
 		if (count == 10) count = 0;
@@ -592,4 +621,66 @@ std::vector<pos>* Population::edges_segment(int ind_index) {
 		}
 	}
 	return segment;
+}
+
+void Population::create_segments(int ind_index, int segment_size, edge_priority_que& que, int n_segments, std::map<edge, int> &edgeChildren) {
+
+	while (n_segments > 0 && !que.empty()) {
+		edge temp = que.top();
+		que.pop();
+		set_dir_edge(temp.p1, temp.p2, 0);
+		int n_pixels_in_segment = get_n_segment(temp.p1, 0);
+		int n_pixels_in_segment_2 = get_n_segment(temp.p2, 0);
+		//std::cout << "n_pixels " << n_pixels_in_segment << "n_pixels_2 " << n_pixels_in_segment_2 << std::endl;
+		if (segment_size > n_pixels_in_segment || segment_size > n_pixels_in_segment_2) {
+			set_dir_edge(temp.p1, temp.p2, 1);
+		}
+		else {
+			entry_s[ind_index].push_back(temp.p1);
+			entry_s[ind_index].push_back(temp.p2);
+			n_segments--;
+		}
+		//n_segments--;
+	}
+}
+
+void Population::initialize_n_children(int ind_index, std::map<edge, int> &edgeChildren ) {
+
+	for (int x = 0; x < get_im_w(); x++) {
+		for (int y = 0; y < get_im_h(); y++) {
+			pos curr(x, y);
+			pos next(x, y);
+			if (population[ind_index][x][y].left > 0) {
+				next = curr + LEFT;
+				int min_pixels = get_n_dependent_children(curr, next,ind_index);
+				edgeChildren.insert({edge(curr, next, 0), min_pixels});
+			}
+			if (population[ind_index][x][y].right > 0) {
+				next = curr + RIGHT;
+				int min_pixels = get_n_dependent_children(curr, next,ind_index);
+				edgeChildren.insert({edge(curr, next, 0), min_pixels});
+			}
+			if (population[ind_index][x][y].up > 0) {
+				next = curr + UP;
+				int min_pixels = get_n_dependent_children(curr, next, ind_index);
+				edgeChildren.insert({edge(curr, next, 0), min_pixels});
+			}
+			if (population[ind_index][x][y].down > 0) {
+				next = curr + DOWN;
+				int min_pixels = get_n_dependent_children(curr, next, ind_index);
+				edgeChildren.insert({edge(curr, next, 0), min_pixels});
+			}
+		}
+		//std::cout << " row " << x<< std::endl;
+	}
+}
+
+int Population::get_n_dependent_children(pos curr, pos next, int ind_index) {
+	set_dir_edge(curr, next, 0);
+	int n_pix_seg = get_n_segment(curr, ind_index);
+	int n_pix_seg_2 = get_n_segment(next, ind_index);
+	int min_pixels = n_pix_seg < n_pix_seg_2 ? n_pix_seg : n_pix_seg_2;
+	set_dir_edge(curr, next, 1);
+	std::cout << min_pixels << std::endl;
+	return min_pixels;
 }
