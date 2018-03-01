@@ -239,12 +239,18 @@ void Population::initialize_population_test() {
 	population[0][1][2].left = true;
 	population[0][0][2].right = true;
 
+	//JOINING SEGMENT 1 AND 2:
+	population[0][1][1].right = true;
+	population[0][2][1].left = true;
+
+
 	//Segment 2
 	population[0][2][0].down = true;
 	population[0][2][1].up = true;
 
 	population[0][2][1].down = true;
 	population[0][2][2].up = true;
+	set_num_children(*this, 0, { 0, 0 });
 }
 
 
@@ -334,6 +340,8 @@ void Population::initialize_population_PrimsMST_2(){
 		set_dir_edge(p1, p2, 1);	
 
 	}
+
+	set_num_children(*this, 0, { 0, 0 });
 	
 	int n_segments = N_SEG;
 	while( n_segments > 0 && !que.empty()) {

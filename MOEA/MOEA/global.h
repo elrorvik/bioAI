@@ -35,6 +35,8 @@ struct node {
 	bool down = 0;
 	bool left = 0;
 	bool right = 0;
+	direction parent_dir = SELF;
+	unsigned int num_children = 0;
 	pos entry = pos(-1, -1); // entry to segment
 };
 

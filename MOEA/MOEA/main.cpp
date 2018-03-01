@@ -11,6 +11,7 @@ int main() {
 	
 	Population p;
 	p.initialize_population_PrimsMST_2();
+
 	//std::cout << p.get_im_h() *p.get_im_w() << std::endl;
 
 	/*p.initialize_population_test();
