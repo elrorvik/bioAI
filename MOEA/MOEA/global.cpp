@@ -57,3 +57,11 @@ void operator-(node &n, direction d) {
 		return;
 	}
 }
+
+bool operator==(pos& left, pos & right) {
+	return (left.x == right.x) && (left.y == right.y);
+}
+
+bool operator!=(pos& left, pos & right) {
+	return (left.x != right.x) && (left.y != right.y);
+}

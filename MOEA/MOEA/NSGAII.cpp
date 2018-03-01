@@ -22,6 +22,6 @@ std::vector<int> NSGAII(Population &p, const std::vector<pos> * entry_s) {
 			if (fitness_1[ind_index] > fitness_1[other_index] && fitness_2[ind_index] > fitness_2[other_index]) rank[ind_index]++;
 		}
 	}
-
-
+	std::vector<int> temp;
+	return temp;
 }

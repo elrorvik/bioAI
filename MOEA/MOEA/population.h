@@ -28,6 +28,16 @@ public:
 	int get_im_h();
 	pos get_pixel_segment(int x, int y, int individual);
 	void initialize_population_test();
+	void draw_segments(int ind_index);
+	int get_n_segment(pos& entry, int ind_index);
+
+	int set_segment_value(pos& entry, int ind_index);
+	void set_dir_edge(pos& p1, pos& p2, int on);
+
+	void test_segment(pos& entry, int ind_index);
+
 };
+
+cv::Mat test_image();
 
 #endif

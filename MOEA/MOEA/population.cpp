@@ -16,9 +16,9 @@ Population::~Population() {
 }
 
 Population::Population() {
-
+	
 	this->im = cv::imread(img_path, 1);   // Read the file
-
+	//this->im = test_image();
 	if (!im.data)                              // Check for invalid input
 	{
 		std::cout << "Could not open or find the image" << std::endl;
@@ -340,54 +340,241 @@ void Population::initialize_population_PrimsMST_2(){
 		int x2 = index / get_im_h();
 		int y2 = index - get_im_h()*x2;
 		pos p2(x2, y2);
-		//std::cout << " index " << index << std::endl;
-		//std::cout << x1 << " " << x2 << " " << get_im_w() << std::endl;
-		//std::cout << y1 << " " << y2 << " " << get_im_h() << std::endl;
 		que.emplace(p1,p2, dist(get_RGB(p1), get_RGB(p2)));
-		if (x1 > x2) {
-			population[0][x1][y1].left= 1;
-			population[0][x2][y2].right = 1;
-		}else if (x1 < x2) {
-			population[0][x1][y1].right = 1;
-			population[0][x2][y2].left = 1;
-		}else if (y1 > y2) {
-			population[0][x1][y1].up = 1;
-			population[0][x2][y2].down = 1;
-		}
-		else {
-			population[0][x1][y1].down = 1;
-			population[0][x2][y2].up = 1;
-		}	
+		//std::cout << x1 << " " << y1 << " to " << x2 << " " << y2 << std::endl;
+		set_dir_edge(p1, p2, 1);	
+		//int num_edges_1 = population[0][p1.x][p1.y].left + population[0][p1.x][p1.y].right + population[0][p1.x][p1.y].up + population[0][p1.x][p1.y].down;
+		//int num_edges_2 = population[0][p2.x][p2.y].left + population[0][p2.x][p2.y].right + population[0][p2.x][p2.y].up + population[0][p2.x][p2.y].down;
+		//std::cout << "num 1 " << num_edges_1 << " num 2 " << num_edges_2 << std::endl;
 	}
-	for (int i = 0; i < N_SEG; i++) {
+	
+	int n_segments = N_SEG;
+	while( n_segments > 0 && !que.empty()) {
 		edge temp = que.top();
 		que.pop();
-		int x1 = temp.p1.x;
-		int x2 = temp.p2.x;
-		int y1 = temp.p1.y;
-		int y2 = temp.p2.y;
-		entry_s[0].push_back(pos(x1, y1));
-		entry_s[0].push_back(pos(x2, y2));
-		if (x1 > x2) {
-			population[0][x1][y1].left = 0;
-			population[0][x2][y2].right = 0;
-		}
-		else if (x1 < x2) {
-			population[0][x1][y1].right = 0;
-			population[0][x2][y2].left = 0;
-		}
-		else if (y1 > y2) {
-			population[0][x1][y1].up = 0;
-			population[0][x2][y2].down = 0;
+		set_dir_edge(temp.p1, temp.p2, 0);
+		int n_pixels_in_segment = get_n_segment(temp.p1, 0);
+		int n_pixels_in_segment_2 = get_n_segment(temp.p2, 0);
+		get_n_segment(temp.p1, 0);
+		get_n_segment(temp.p2, 0);
+		//std::cout << "n_pixels " << n_pixels_in_segment << "n_pixels_2 " << n_pixels_in_segment_2 << std::endl;
+		if (2000 > n_pixels_in_segment || 2000 > n_pixels_in_segment_2) {
+			set_dir_edge(temp.p1, temp.p2, 1);
 		}
 		else {
-			population[0][x1][y1].down = 0;
-			population[0][x2][y2].up = 0;
+			entry_s[0].push_back(temp.p1);
+			entry_s[0].push_back(temp.p2);
+			n_segments--;
 		}
+		//n_segments--;
 	}
+	//entry_s[0].push_back(pos(0,0)); // set first directory
+
+	std::cout << "entry_s size " << entry_s[0].size() << std::endl;
+	int total_segment_size = 0;
+	for (auto it = entry_s[0].begin(); it != entry_s[0].end();) {
+		//std::cout << " check " << it->x << " " << it->y << std::endl;
+		int segment_size = set_segment_value(*it, 0);
+		if (segment_size == 0) {
+			it = entry_s[0].erase(it);
+			//std::cout << " zero in size" << std::endl;
+			continue;
+		}
+		else {
+			std::cout <<"segment " << it->x << " " << it->y << " " << segment_size << std::endl;
+			it++;
+		}
+		total_segment_size += segment_size;
+
+	}
+
+	std::cout << "total " << total_segment_size << "should be " << get_im_h()*get_im_w() << std::endl;
+
+
+	/*for (auto it = entry_s[0].begin(); it != entry_s[0].end();it++) {
+	test_segment(*it, 0);
+	}*/
+
 	
 	std::cout << "FINISHED " << std::endl;
 	std::cout << seconds - time(NULL) << std::endl;
 	seconds = time(NULL);
+	draw_segments(0);
+}
 
+void Population::set_dir_edge(pos& parent, pos& child, int on) {
+	int x1 = parent.x;
+	int x2 = child.x;
+	int y1 = parent.y;
+	int y2 = child.y;
+	if (x1 > x2) {
+		population[0][x1][y1].left = on;
+		population[0][x2][y2].right = on;
+	}
+	else if (x1 < x2) {
+		population[0][x1][y1].right = on;
+		population[0][x2][y2].left = on;
+	}
+	else if (y1 > y2) {
+		population[0][x1][y1].up = on;
+		population[0][x2][y2].down = on;
+	}
+	else {
+		population[0][x1][y1].down = on;
+		population[0][x2][y2].up = on;
+	}
+}
+
+int Population::set_segment_value(pos& entry, int ind_index) {
+	stack<pos> branch_points;
+
+	pos invalid_pos(-1, -1);
+	if (population[ind_index][entry.x][entry.y].entry != invalid_pos) {
+		//std::cout << "You taken by " << entry.x << " " << entry.y << std::endl;
+		return 0;
+	}
+	else {
+		//std::cout << "you not taken " << std::endl;
+		population[ind_index][entry.x][entry.y].entry = entry;
+		pos next = traverse_ST(*this, ind_index, entry, branch_points);
+		int count = 1;
+		while (next.x != static_cast<unsigned short>(-1)) {
+			population[ind_index][next.x][next.y].entry = entry;
+			next = traverse_ST(*this, ind_index, next, branch_points);
+			count++;
+		}
+		return count;
+	}
+}
+
+int Population::get_n_segment(pos& entry, int ind_index) {
+	stack<pos> branch_points;
+
+	pos invalid_pos(-1, -1);
+	if (population[ind_index][entry.x][entry.y].entry != invalid_pos) {
+		//std::cout << " taken by " << entry.x << " " << entry.y << std::endl;
+		return 0;
+	}
+	else {
+		pos next = traverse_ST(*this, ind_index, entry, branch_points);
+		int count = 1;
+		while (next.x != static_cast<unsigned short>(-1)) {
+			count++;
+			next = traverse_ST(*this, ind_index, next, branch_points);
+		}
+		return count;
+	}
+}
+
+void Population::test_segment(pos& entry, int ind_index) {
+	stack<pos> branch_points;
+
+	pos invalid_pos(-1, -1);
+
+	std::vector<int> temp(get_im_h()*get_im_w(), 0);
+	pos next = traverse_ST(*this, ind_index, entry, branch_points);
+	while (next.x != static_cast<unsigned short>(-1)) {
+		temp[next.x*get_im_h() + next.y] += 1;
+		if (temp[next.x*get_im_h() + next.y] > 1) std::cout << "visited more " << std::endl;
+		next = traverse_ST(*this, ind_index, next, branch_points);
+	}
+}
+
+void Population::draw_segments(int ind_index) {
+	cv::Mat segment(get_im_h(), get_im_w(), CV_8UC3, cv::Scalar(255, 255, 255));
+	if (N_SEG - 1 > 20) return;
+	std::vector<RGB> color;
+	color.push_back(RGB(0, 255, 0));
+	color.push_back(RGB(255, 255, 0));
+	color.push_back(RGB(255, 0, 0));
+	color.push_back(RGB(255, 0, 255));
+	color.push_back(RGB(255, 255, 255));
+	color.push_back(RGB(0, 255, 255));
+	color.push_back(RGB(0, 0, 255));
+	color.push_back(RGB(120, 120, 120));
+	color.push_back(RGB(0, 120, 120));
+	color.push_back(RGB(0, 0, 120));
+	color.push_back(RGB(0, 255, 0));
+	color.push_back(RGB(255, 255, 0));
+	color.push_back(RGB(255, 0, 0));
+	color.push_back(RGB(255, 0, 255));
+	color.push_back(RGB(255, 255, 255));
+	color.push_back(RGB(0, 255, 255));
+	color.push_back(RGB(0, 0, 255));
+	color.push_back(RGB(120, 120, 120));
+	color.push_back(RGB(0, 120, 120));
+	color.push_back(RGB(0, 0, 120));
+	std::cout << " test imshow " << std::endl;
+	int count = 0;
+	for (auto it = entry_s[ind_index].begin(); it != entry_s[ind_index].end(); it++) {
+		segment.at<cv::Vec3b>(it->y, it->x)[2] = color[count].r;
+		segment.at<cv::Vec3b>(it->y, it->x)[1] = color[count].g;
+		segment.at<cv::Vec3b>(it->y, it->x)[0] = color[count].b;
+		stack<pos> branch_points;
+		pos next = traverse_ST(*this, ind_index, *it, branch_points);
+
+		while (next.x != static_cast<unsigned short>(-1)) {
+			segment.at<cv::Vec3b>(next.y, next.x)[2] = color[count].r;
+			segment.at<cv::Vec3b>(next.y, next.x)[1] = color[count].g;
+			segment.at<cv::Vec3b>(next.y, next.x)[0] = color[count].b;
+			next = traverse_ST(*this, ind_index, next, branch_points);
+		}
+		std::cout << count << std::endl;
+		count++;
+	}
+	//std::cout << "show image" << std::endl;
+	cv::namedWindow("image", 1);
+	//std::cout << "show image" << std::endl;
+	cv::imshow("image", segment);                   
+	cv::waitKey(0);
+}
+
+cv::Mat test_image() {
+	int size = 4;
+	cv::Mat im(size, size, CV_8UC3, cv::Scalar(255, 255, 255));
+
+	for (int x = 0; x < size/2.0; x++) {
+		for (int y = 0; y < size; y++) {
+			im.at<cv::Vec3b>(y, x)[2] = 0;
+			im.at<cv::Vec3b>(y, x)[1] = 0;
+			im.at<cv::Vec3b>(y, x)[0] = 0;
+		}
+		
+	}
+
+	/*for (int x = 0; x < 45; x++) {
+		for (int y = 0; y < 45; y++) {
+			im.at<cv::Vec3b>(y, x)[2] = 0;
+			im.at<cv::Vec3b>(y, x)[1] = 0;
+			im.at<cv::Vec3b>(y, x)[0] = 0;
+		}
+	}
+
+	for (int x = 45; x < 90; x++) {
+		for (int y = 45; y < 90; y++) {
+			im.at<cv::Vec3b>(y, x)[2] = 0;
+			im.at<cv::Vec3b>(y, x)[1] = 0;
+			im.at<cv::Vec3b>(y, x)[0] = 0;
+		}
+	}*/
+
+
+
+	/*im.at<cv::Vec3b>(0, 0)[2] = 0;
+	im.at<cv::Vec3b>(0, 0)[1] = 0;
+	im.at<cv::Vec3b>(0, 0)[0] = 0;
+
+	im.at<cv::Vec3b>(1, 0)[2] = 0;
+	im.at<cv::Vec3b>(1, 0)[1] = 0;
+	im.at<cv::Vec3b>(1, 0)[0] = 0;
+
+	im.at<cv::Vec3b>(2, 0)[2] = 0;
+	im.at<cv::Vec3b>(2, 0)[1] = 0;
+	im.at<cv::Vec3b>(2, 0)[0] = 0;*/
+
+	cv::namedWindow("image", 1);
+	//std::cout << "show image" << std::endl;
+	cv::imshow("image", im);
+	cv::waitKey(0);
+	return im;
 }

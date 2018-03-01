@@ -4,8 +4,13 @@
 #define GLOBAL_H
 
 const int N_IND = 1;
-const int N_SEG = 8;
-const std::string img_path  = "..//test_img//1//Test image.jpg";
+const int N_SEG = 10;
+//const std::string img_path  = "..//test_img//86016//Test image.jpg"; // circle
+const std::string img_path = "..//test_img//147091//Test image.jpg"; // three
+
+//const std::string img_path = "..//2000px-Checkerboard_pattern_2.png";
+//const std::string img_path = "..//test_2.jpg";
+//const std::string img_path = "..//test_3.png";
 
 enum direction { SELF, UP, DOWN, LEFT, RIGHT };
 
@@ -30,12 +35,16 @@ struct node {
 	bool down = 0;
 	bool left = 0;
 	bool right = 0;
-	pos entry; // entry to segment
+	pos entry = pos(-1, -1); // entry to segment
 };
 
 pos operator+(pos coord, direction dir);
 
 void operator+(node &n, direction d);
 void operator-(node &n, direction d);
+
+bool operator==(pos& left, pos & right); 
+
+bool operator!=(pos& left, pos & right);
 
 #endif 
