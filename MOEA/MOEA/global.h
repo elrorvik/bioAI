@@ -4,7 +4,7 @@
 #define GLOBAL_H
 
 const int N_IND = 1;
-const int N_SEG = 10;
+const int N_SEG = 100;
 //const std::string img_path  = "..//test_img//86016//Test image.jpg"; // circle
 const std::string img_path = "..//test_img//147091//Test image.jpg"; // three
 

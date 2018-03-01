@@ -163,3 +163,10 @@ pos traverse_ST(Population &p, int ind_index, pos entry, std::stack<pos> &branch
 	}
 	return next_entry;
 }
+
+void remove_color(Population &p, int ind_index, pos entry, std::stack<pos> &branch_points) {
+	pos next = traverse_ST(p, ind_index, entry, branch_points);
+	while (next.x != static_cast<unsigned short>(-1)) {
+		next = traverse_ST(p, ind_index, next, branch_points);
+	}
+}

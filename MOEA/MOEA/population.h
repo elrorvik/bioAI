@@ -35,7 +35,7 @@ public:
 	void set_dir_edge(pos& p1, pos& p2, int on);
 
 	void test_segment(pos& entry, int ind_index);
-
+	std::vector<pos>* edges_segment(int ind_index);
 };
 
 cv::Mat test_image();

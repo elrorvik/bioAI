@@ -4,7 +4,7 @@
 #include"global.h"
 #include<utility>
 #include<algorithm>
-
+/*
 std::vector<int> NSGAII(Population &p, const std::vector<pos> * entry_s) {
 	
 	int rank[N_IND]{}; // TODO: Make sure N_IND is the number of parents + children in this case
@@ -24,4 +24,4 @@ std::vector<int> NSGAII(Population &p, const std::vector<pos> * entry_s) {
 	}
 	std::vector<int> temp;
 	return temp;
-}
+}*/

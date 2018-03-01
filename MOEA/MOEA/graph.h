@@ -27,3 +27,4 @@ public:
 class Population;
 struct pos;
 pos traverse_ST(Population &p, int ind_index, pos entry, stack<pos> &branch_points);
+void remove_color(Population &p, int ind_index, pos entry, std::stack<pos> &branch_points);

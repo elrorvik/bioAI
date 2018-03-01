@@ -248,16 +248,6 @@ void Population::initialize_population_test() {
 }
 
 
-
-/*void Population::read_image(Mat* img) {
-
-	
-	//cv::namedWindow("image", 1);
-	//cv::imshow("image", image);                   // Show our image inside it.	
-	//cv::waitKey(0);
-}*/
-
-
 // Driver program to test methods of graph class
 void Population::initialize_population_PrimsMST_2(){
 
@@ -334,18 +324,15 @@ void Population::initialize_population_PrimsMST_2(){
 		int x1 = index / get_im_h();
 		int y1 = index - get_im_h()*x1;
 		pos p1(x1, y1);
-		//std::cout << " index " << index << std::endl;
 
 		index = i;
 		int x2 = index / get_im_h();
 		int y2 = index - get_im_h()*x2;
 		pos p2(x2, y2);
 		que.emplace(p1,p2, dist(get_RGB(p1), get_RGB(p2)));
-		//std::cout << x1 << " " << y1 << " to " << x2 << " " << y2 << std::endl;
+		
 		set_dir_edge(p1, p2, 1);	
-		//int num_edges_1 = population[0][p1.x][p1.y].left + population[0][p1.x][p1.y].right + population[0][p1.x][p1.y].up + population[0][p1.x][p1.y].down;
-		//int num_edges_2 = population[0][p2.x][p2.y].left + population[0][p2.x][p2.y].right + population[0][p2.x][p2.y].up + population[0][p2.x][p2.y].down;
-		//std::cout << "num 1 " << num_edges_1 << " num 2 " << num_edges_2 << std::endl;
+
 	}
 	
 	int n_segments = N_SEG;
@@ -355,10 +342,8 @@ void Population::initialize_population_PrimsMST_2(){
 		set_dir_edge(temp.p1, temp.p2, 0);
 		int n_pixels_in_segment = get_n_segment(temp.p1, 0);
 		int n_pixels_in_segment_2 = get_n_segment(temp.p2, 0);
-		get_n_segment(temp.p1, 0);
-		get_n_segment(temp.p2, 0);
 		//std::cout << "n_pixels " << n_pixels_in_segment << "n_pixels_2 " << n_pixels_in_segment_2 << std::endl;
-		if (2000 > n_pixels_in_segment || 2000 > n_pixels_in_segment_2) {
+		if (500 > n_pixels_in_segment || 500 > n_pixels_in_segment_2) {
 			set_dir_edge(temp.p1, temp.p2, 1);
 		}
 		else {
@@ -443,6 +428,7 @@ int Population::set_segment_value(pos& entry, int ind_index) {
 			next = traverse_ST(*this, ind_index, next, branch_points);
 			count++;
 		}
+		remove_color(*this, ind_index, entry, branch_points);
 		return count;
 	}
 }
@@ -462,6 +448,7 @@ int Population::get_n_segment(pos& entry, int ind_index) {
 			count++;
 			next = traverse_ST(*this, ind_index, next, branch_points);
 		}
+		remove_color(*this, ind_index, entry, branch_points);
 		return count;
 	}
 }
@@ -478,22 +465,13 @@ void Population::test_segment(pos& entry, int ind_index) {
 		if (temp[next.x*get_im_h() + next.y] > 1) std::cout << "visited more " << std::endl;
 		next = traverse_ST(*this, ind_index, next, branch_points);
 	}
+	remove_color(*this, ind_index, entry, branch_points);
 }
 
 void Population::draw_segments(int ind_index) {
 	cv::Mat segment(get_im_h(), get_im_w(), CV_8UC3, cv::Scalar(255, 255, 255));
-	if (N_SEG - 1 > 20) return;
+
 	std::vector<RGB> color;
-	color.push_back(RGB(0, 255, 0));
-	color.push_back(RGB(255, 255, 0));
-	color.push_back(RGB(255, 0, 0));
-	color.push_back(RGB(255, 0, 255));
-	color.push_back(RGB(255, 255, 255));
-	color.push_back(RGB(0, 255, 255));
-	color.push_back(RGB(0, 0, 255));
-	color.push_back(RGB(120, 120, 120));
-	color.push_back(RGB(0, 120, 120));
-	color.push_back(RGB(0, 0, 120));
 	color.push_back(RGB(0, 255, 0));
 	color.push_back(RGB(255, 255, 0));
 	color.push_back(RGB(255, 0, 0));
@@ -520,7 +498,9 @@ void Population::draw_segments(int ind_index) {
 			next = traverse_ST(*this, ind_index, next, branch_points);
 		}
 		std::cout << count << std::endl;
+		
 		count++;
+		if (count == 10) count = 0;
 	}
 	//std::cout << "show image" << std::endl;
 	cv::namedWindow("image", 1);
@@ -577,4 +557,39 @@ cv::Mat test_image() {
 	cv::imshow("image", im);
 	cv::waitKey(0);
 	return im;
+}
+
+// NOT TESTED
+std::vector<pos>* Population::edges_segment(int ind_index) {
+	std::vector<pos>* segment = new std::vector<pos>[entry_s->size()];
+
+	for (int x = 0; x < get_im_w(); x++) {
+		for (int y = 0; y < get_im_h(); y++) {
+			if (x + 1 < get_im_w()) {
+				if (population[ind_index][x][y].entry != population[ind_index][x + 1][y].entry) {
+					segment[x*get_im_h() + y].push_back(pos(x, y));
+					continue;
+				}
+			}
+			if( x - 1 > 0){
+				if (population[ind_index][x][y].entry != population[ind_index][x - 1][y].entry) {
+					segment[x*get_im_h() + y].push_back(pos(x, y));
+					continue;
+				}
+			}
+			if (y + 1 < get_im_h()) {
+				if (population[ind_index][x][y].entry != population[ind_index][x][y + 1].entry) {
+					segment[x*get_im_h() + y].push_back(pos(x, y));
+					continue;
+				}
+			}
+			if (y - 1 > 0) {
+				if (population[ind_index][x][y].entry != population[ind_index][y - 1][y].entry) {
+					segment[x*get_im_h() + y].push_back(pos(x, y));
+					continue;
+				}
+			}
+		}
+	}
+	return segment;
 }
