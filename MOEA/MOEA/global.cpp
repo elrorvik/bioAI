@@ -58,8 +58,15 @@ void operator-(node &n, direction d) {
 	}
 }
 
-bool operator==(pos& left, pos & right) {
+bool operator==(pos& left, pos& right) {
 	return (left.x == right.x) && (left.y == right.y);
+}
+
+pos operator+(pos& left, pos& right) {
+	pos temp;
+	temp.x = left.x + right.x;
+	temp.y = left.y + right.y;
+	return temp;
 }
 
 bool operator!=(pos& left, pos & right) {

@@ -155,7 +155,6 @@ pos traverse_ST(Population &p, int ind_index, pos entry, std::stack<pos> &branch
 		if (branch_points.size() > 0) {
 			next_entry = branch_points.top();
 			branch_points.pop();
-			next = p.get_node(ind_index, next_entry);
 		}
 		else {
 			return pos(-1, -1);
@@ -168,6 +167,90 @@ void remove_color(Population &p, int ind_index, pos entry, std::stack<pos> &bran
 	pos next = traverse_ST(p, ind_index, entry, branch_points);
 	while (next.x != static_cast<unsigned short>(-1)) {
 		next = traverse_ST(p, ind_index, next, branch_points);
+	}
+}
+
+
+void set_num_children(Population &p, int ind_index, pos entry) {
+	std::stack<pos> branch_points;
+	pos prev(entry.x, entry.y);
+	pos next;
+	pos r_next;
+	//p.get_node(ind_index, entry)->entry = entry;
+
+	int counted_children;
+	int last_num_branch_points = 0;
+	bool backtrack_and_count_children = false;
+	while (prev.x != -1) {
+		if (!backtrack_and_count_children) {
+			// Traverse and set parent
+			next = traverse_ST(p, ind_index, next, branch_points);
+
+			// Set entry while you are at it
+			node *n_next = p.get_node(ind_index, next);
+			/*if (next.x != static_cast<unsigned short>(-1)) {
+				n_next->entry = entry;
+			}*/
+
+			node *n_prev = p.get_node(ind_index, prev); // TODO; fix
+
+			// Handle node found with no other children than itself
+			if (last_num_branch_points > branch_points.size() || next.x == static_cast<unsigned short>(-1)) {
+				backtrack_and_count_children = true;
+				r_next = prev;
+				counted_children = 1;
+				continue;
+			}
+
+			// Set parent
+			if (prev.x < next.x) n_next->parent_dir = LEFT;
+			if (prev.x > next.x) n_next->parent_dir = RIGHT;
+			if (prev.y < next.y) n_next->parent_dir = UP;
+			if (prev.y > next.y) n_next->parent_dir = DOWN;
+
+			prev = next;
+			last_num_branch_points = branch_points.size();
+		}
+		else {
+			// Set num_children
+			node *n_r_next = p.get_node(ind_index, r_next);
+			if (n_r_next->num_children > 0) n_r_next->num_children -= 1; // Don't count self twice
+			n_r_next->num_children += counted_children;
+			counted_children = n_r_next->num_children + 1;
+
+
+			// Check for untraversed branch
+			if (n_r_next->up)
+				if(p.get_node(ind_index, r_next + UP)->color != n_r_next->color) backtrack_and_count_children = false;
+			if (n_r_next->down)
+				if(p.get_node(ind_index, r_next + DOWN)->color != n_r_next->color) backtrack_and_count_children = false;
+			if (n_r_next->right)
+				if(p.get_node(ind_index, r_next + RIGHT)->color != n_r_next->color) backtrack_and_count_children = false;
+			if (n_r_next->left)
+				if(p.get_node(ind_index, r_next + LEFT)->color != n_r_next->color) backtrack_and_count_children = false;
+			if (backtrack_and_count_children && n_r_next->parent_dir == SELF) break;
+
+			if(backtrack_and_count_children) { // Iterate backtracker 
+				pos parent = r_next + n_r_next->parent_dir;
+				r_next = parent;
+			}
+			else { // Else exit backtracking
+
+				// Continue where we left off
+				prev = r_next;
+
+				// Set parent
+				node *n_next = p.get_node(ind_index, next);
+				if (prev.x < next.x) n_next->parent_dir = LEFT;
+				if (prev.x > next.x) n_next->parent_dir = RIGHT;
+				if (prev.y < next.y) n_next->parent_dir = UP;
+				if (prev.y > next.y) n_next->parent_dir = DOWN;
+
+				prev = next;
+				last_num_branch_points = branch_points.size();
+
+			}
+		}
 	}
 }
 

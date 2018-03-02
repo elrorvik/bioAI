@@ -35,16 +35,19 @@ public:
 	pos get_pixel_segment(int x, int y, int individual);
 	void initialize_population_test();
 	void draw_segments(int ind_index);
+	void draw_segments_contour(int ind_index);
 	int get_n_segment(pos& entry, int ind_index);
+	int check_if_edge(pos curr, int ind_index);
 
 	int set_segment_value(pos& entry, int ind_index);
-	void set_dir_edge(pos& p1, pos& p2, int on);
+	void set_dir_edge(pos& parent, pos& child, int on, int ind_index);
 
 	void test_segment(pos& entry, int ind_index);
 	std::vector<pos>* edges_segment(int ind_index);
-	void create_segments(int ind_index, int segment_size, edge_priority_que& que, int n_segments, std::map<edge, int> &edgeChildren);
+	void create_segments(int ind_index, int segment_size, edge_priority_que& que, int n_segments);
 	void initialize_n_children(int ind_index, std::map<edge, int> &edgeChildren);
 	int get_n_dependent_children(pos curr, pos next, int ind_index);
+	void change_parents_n_segment(pos& parent, pos& child, int ind_index);
 };
 
 cv::Mat test_image();
