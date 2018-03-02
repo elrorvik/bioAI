@@ -38,6 +38,11 @@ double overall_deviation_seg(Population &p, int ind_index, pos s_entry) {
 }
 
 double overall_deviation_ind(Population &p, int ind_index, const std::vector<pos> &entry_s) {
+	// Testing:
+	// static int i = 0;
+	// double test_list[11] = { 1.1, 3.7, 7.1, 0.3, 4.5, 9.9, 4.3, 4.8, 8.3, 10.3, 0.1 };
+	// return test_list[i++];*/
+
 	double fitness = 0;
 	for (int seg_i = 0; seg_i < entry_s.size(); seg_i++) {
 		fitness += overall_deviation_seg(p, ind_index, entry_s[seg_i]);
@@ -83,5 +88,18 @@ double edge_value_seg(Population &p, int ind_index, pos s_entry) {
 	}
 
 	return -fitness; // fitness defined negative in order to turn a maximation problem into a minimation problem
+}
+
+double edge_value_ind(Population &p, int ind_index, const std::vector<pos> &entry_s) {
+	// Testing
+	// static int i = 0;
+	// double test_list[11] = { -1.3, -3.2, -7.0, -0.9, -4.9, -9.2, -4.0, -13.0, -8.8, -10.9, -20.0 };
+	// return test_list[i++];
+
+	/*double fitness = 0;
+	for (int seg_i = 0; seg_i < entry_s.size(); seg_i++) {
+	fitness += edge_value_seg(p, ind_index, entry_s[seg_i]);
+	}
+	return fitness;*/
 }
 

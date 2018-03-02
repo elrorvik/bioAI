@@ -4,6 +4,7 @@
 #include<vector>
 
 struct Population;
-std::vector<int> NSGAII(Population &p);
+struct pos;
+std::vector<int> NSGAII(Population &p, const std::vector<pos> * entry_s, int n_pop);
 
 #endif
