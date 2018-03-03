@@ -22,7 +22,8 @@ private:
 	node ***population;
 	std::vector<pos> * entry_s;
 	int n_segments;
-	std::vector<active_edge_t> edge_candidates;
+	int n_pop;
+	std::vector<active_edge_t> *edge_candidates;
 public:
 	Population();
 	~Population();
@@ -33,6 +34,8 @@ public:
 	void initialize_population_test();
 	void test_segment(pos& entry, int ind_index);
 
+	void MOEA_next_generation();
+
 	node* get_node(int ind_index, pos node_pos);
 	RGB get_RGB(int y, int x);
 	RGB get_RGB(pos pixel_pos);
@@ -41,6 +44,8 @@ public:
 	int get_parent_segment_size(pos& parent, int ind_index);
 	pos get_pixel_segment(int x, int y, int individual);
 	int get_n_segment(pos& entry, int ind_index);
+
+	std::vector<active_edge_t>& get_edge_candidates(int ind_index);
 
 	void draw_segments(int ind_index);
 	void draw_segments_contour(int ind_index);

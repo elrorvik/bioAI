@@ -1,6 +1,8 @@
 #include<iostream>
 #include<queue>
 #include"fitness.h"
+#include "selection.h"
+#include "var_operators.h"
 #include"global.h"
 #include"population.h"
 #include <list>
@@ -393,6 +395,27 @@ void Population::initialize_individual_PrimsMST(int ind_index){
 	cv::waitKey(0);
 }
 
+/*void Population::MOEA_next_generation() {
+
+	// Select parents:
+	std::vector<int> parents = rank_tournament_selection(*this, entry_s, n_pop, 10, N_PARENTS);
+	for (int i = 0; i < N_PARENTS; i++) {
+
+		double crossover_outcome = (rand() % 1000) / 1000.0;
+		population[n_pop++] = population[parents[i++]];
+		if (i >= N_PARENTS) continue;
+		population[n_pop++] = population[parents[i]];
+		if (crossover_outcome < CROSSOVER_RATE) {
+			edge_candidates[n_pop - 2] = crossover_uniform_list_representation(*this, parents[i - 1], parents[i]);
+			edge_candidates[n_pop - 1] = crossover_uniform_list_representation(*this, parents[i - 1], parents[i]);
+		}
+
+		
+
+	}
+
+}*/
+
 void Population::set_dir_edge(pos& parent, pos& child, int on, int ind_index) {
 	int x1 = parent.x;
 	int x2 = child.x;
@@ -483,6 +506,10 @@ int Population::get_parent_segment_size(pos& parent, int ind_index) {
 		next = pos(next.x, next.y) + population[ind_index][next.x][next.y].parent_dir;
 	}	
 	return population[ind_index][next.x][next.y].num_children;
+}
+
+std::vector<active_edge_t>& Population::get_edge_candidates(int ind_index) {
+	return edge_candidates[ind_index];
 }
 
 void Population::test_segment(pos& entry, int ind_index) {
@@ -673,7 +700,7 @@ int Population::create_segments(int ind_index, int segment_size, edge_priority_q
 			//std::cout << " get_n " << min_pixels << std::endl;
 			entry_s[ind_index].push_back(child);
 			entry_s[ind_index].push_back(parent);
-			edge_candidates.push_back({ temp, true });
+			edge_candidates[ind_index].push_back({ temp, true });
 			n_segments--;
 		}
 	}

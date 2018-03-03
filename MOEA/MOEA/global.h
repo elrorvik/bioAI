@@ -8,6 +8,7 @@ const int N_SEG = 100;
 const int N_SEG_TYPES = 2;
 const int SEGMENT_SIZE[N_SEG_TYPES] = { 1000,10000 };
 const int N_PIX_SEGMENT[N_SEG_TYPES] = { 100,60 };
+
 //const std::string img_path  = "..//test_img//86016//Test image.jpg"; // circle
 //const std::string img_path = "..//test_img//147091//Test image.jpg"; // three
 //const std::string img_path  = "..//test_img//160068//Test image.jpg"; // Leopart
@@ -22,6 +23,10 @@ const std::string img_path  = "..//test_img//178054//Test image.jpg"; // ørken
 //const std::string img_path = "..//2000px-Checkerboard_pattern_2.png";
 //const std::string img_path = "..//test_2.jpg";
 //const std::string img_path = "..//test_3.png";
+
+const double CROSSOVER_RATE = 0.5;
+const double MUTATION_RATE = 0.4;
+const int N_PARENTS = 6;
 
 enum direction { SELF, UP, DOWN, LEFT, RIGHT };
 
