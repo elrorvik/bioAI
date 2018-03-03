@@ -413,10 +413,10 @@ void Population::initialize_population() {
 		edge_candidates[i] = edge_candidates[init_index];
 	}
 	//draw_segments(0);
-	draw_segments_contour(0);
-	draw_segments_contour(N_IND - 1);
+	//draw_segments_contour(0);
+	//draw_segments_contour(N_IND - 1);
 	//draw_segments_contour(20);
-	cv::waitKey(0);
+	//cv::waitKey(0);
 }
 
 void Population::MOEA_next_generation() {

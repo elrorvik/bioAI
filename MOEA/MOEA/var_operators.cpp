@@ -1,7 +1,6 @@
 #include "var_operators.h"
 #include "global.h"
 #include "population.h"
-#include<vector>
 
 std::vector<active_edge_t> crossover_uniform_list_representation(Population &p, int parent_A, int parent_B) {
 	std::vector<active_edge_t> parent_A_chromosome = p.get_edge_candidates(parent_A);
@@ -15,7 +14,7 @@ std::vector<active_edge_t> crossover_uniform_list_representation(Population &p, 
 	}
 	return offspring_chromosome;
 }
-
+/*
 std::vector<int> mutation_flip_list_representation() {
 
 }
@@ -25,4 +24,4 @@ std::vector<int> mutation_set_list_representation() {
 
 std::vector<int> mutation_reset_list_representation() {
 
-}
+}*/
