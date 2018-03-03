@@ -1,8 +1,6 @@
 #include<iostream>
 #include<queue>
 #include"fitness.h"
-#include "selection.h"
-#include "var_operators.h"
 #include"global.h"
 #include"population.h"
 #include <list>
@@ -44,7 +42,6 @@ struct hash<edge>
 
 
 Population::~Population() {
-	std::vector<pos> * edge_candidates();
 	for (int ind_i = 0; ind_i < N_IND; ind_i++) {
 		for (int col_i = 0; col_i < get_im_w(); col_i++) {
 			delete [] population[ind_i][col_i] ;
@@ -419,6 +416,7 @@ void Population::initialize_population() {
 	//cv::waitKey(0);
 }
 
+
 void Population::MOEA_next_generation() {
 	/*
 	// Select parents:
@@ -448,6 +446,9 @@ void Population::MOEA_next_generation() {
 	}
 	*/
 }
+std::vector<active_edge_t>& Population::get_edge_candidates(int ind_index) {
+	return edge_candidates[ind_index];
+}
 
 void Population::merge_segments(int ind_index, edge merge_nodes) {
 	set_segment_entry(merge_nodes.p1, merge_nodes.p2, ind_index);
@@ -458,6 +459,7 @@ void Population::split_segment(int ind_index, edge split_nodes) {
 	set_dir_edge(split_nodes.p1, split_nodes.p2, 0, ind_index);
 	set_segment_entry(split_nodes.p1, split_nodes.p1, ind_index);
 }
+
 
 void Population::set_dir_edge(pos& parent, pos& child, int on, int ind_index) {
 	int x1 = parent.x;
@@ -591,10 +593,6 @@ int Population::get_parent_segment_size(pos& parent, int ind_index) {
 		next = pos(next.x, next.y) + population[ind_index][next.x][next.y].parent_dir;
 	}	
 	return population[ind_index][next.x][next.y].num_children;
-}
-
-std::vector<active_edge_t>& Population::get_edge_candidates(int ind_index) {
-	return edge_candidates[ind_index];
 }
 
 void Population::test_segment(pos& entry, int ind_index) {

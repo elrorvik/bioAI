@@ -4,6 +4,7 @@
 #include <string>
 #include <iostream>
 #include <ctime>
+#include "var_operators.h"
 
 int main() {
 	srand(time(0));
@@ -11,6 +12,7 @@ int main() {
 	
 	Population p;
 	p.initialize_population();
+	mutation_split_segments(p, 0);
 
 	//std::cout << p.get_im_h() *p.get_im_w() << std::endl;
 
