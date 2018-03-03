@@ -5,6 +5,16 @@
 #include<utility>
 #include<algorithm>
 #include<cmath>
+#include<set>
+
+struct descending_comparator {
+	bool operator() (const std::pair<double, int> p1, const std::pair<double, int> p2) {
+		return p1.first < p2.first;
+	}
+	bool operator() (const std::pair<int, int> p1, const std::pair<int, int> p2) {
+		return p1.first < p2.first;
+	}
+};
 
 std::vector<int> NSGAII(Population &p, const std::vector<pos> * entry_s, int n_pop) {
 
@@ -14,16 +24,6 @@ std::vector<int> NSGAII(Population &p, const std::vector<pos> * entry_s, int n_p
 	rank_individuals.reserve(2 * N_IND);
 	fitness_1.reserve(2 * N_IND);
 	fitness_2.reserve(2 * N_IND);
-
-	struct pair_comparator {
-		bool operator() (const std::pair<double, int> p1, const std::pair<double, int> p2) {
-			return p1.first < p2.first;
-		}
-		bool operator() (const std::pair<int, int> p1, const std::pair<int, int> p2) {
-			return p1.first < p2.first;
-		}
-	};
-	pair_comparator smallest_value_comparator;
 
 	double f_1_max = -DBL_MAX;
 	double f_2_max = -DBL_MAX;
@@ -48,7 +48,7 @@ std::vector<int> NSGAII(Population &p, const std::vector<pos> * entry_s, int n_p
 		}
 	}
 
-
+	descending_comparator smallest_value_comparator;
 	std::sort(rank_individuals.begin(), rank_individuals.end(), smallest_value_comparator);
 
 
@@ -113,17 +113,9 @@ std::vector<int> NSGAII(Population &p, const std::vector<pos> * entry_s, int n_p
 	return selected_population;
 }
 
-/*void MOEA_fitness(int n_pop, std::vector<std::pair<int, int>> &rank_individuals, std::vector<std::pair<double, int>> &fitness_1, std::vector<std::pair<double, int>> &fitness_2, double &f_1_max, double &f_2_max, double &f_1_min, double &f_2_min) {
+void MOEA_fitness(Population &p, const std::vector<pos> * entry_s, int n_pop, std::vector<std::pair<int, int>> &rank_individuals, std::vector<std::pair<double, int>> &fitness_1, std::vector<std::pair<double, int>> &fitness_2, double &f_1_max, double &f_2_max, double &f_1_min, double &f_2_min) {
 
-	struct pair_comparator {
-		bool operator() (const std::pair<double, int> p1, const std::pair<double, int> p2) {
-			return p1.first < p2.first;
-		}
-		bool operator() (const std::pair<int, int> p1, const std::pair<int, int> p2) {
-			return p1.first < p2.first;
-		}
-	};
-	pair_comparator smallest_value_comparator;
+	descending_comparator smallest_value_comparator;
 
 	f_1_max = -DBL_MAX;
 	f_2_max = -DBL_MAX;
@@ -147,4 +139,56 @@ std::vector<int> NSGAII(Population &p, const std::vector<pos> * entry_s, int n_p
 			if (fitness_1[ind_index] > fitness_1[other_index] && fitness_2[ind_index] > fitness_2[other_index]) rank_individuals[ind_index].first++;
 		}
 	}
-}*/
+}
+
+void MOEA_fitness(Population &p, const std::vector<pos> * entry_s, int n_pop, std::vector<std::pair<int, int>> &rank_individuals) {
+	std::vector<std::pair<int, int>> rank_individuals;
+	std::vector<std::pair<double, int>> fitness_1;
+	std::vector<std::pair<double, int>> fitness_2;
+	rank_individuals.reserve(2 * N_IND);
+	fitness_1.reserve(2 * N_IND);
+	fitness_2.reserve(2 * N_IND);
+	double f_1_max;
+	double f_2_max;
+	double f_1_min;
+	double f_2_min;
+
+	MOEA_fitness(p, entry_s, n_pop, rank_individuals, fitness_1, fitness_2, f_1_max, f_2_max, f_1_min, f_2_min);
+}
+
+std::vector<int> rank_tournament_selection(Population &p, const std::vector<pos> * entry_s, int n_pop, int tournament_size, int num_chosen) {
+
+	const double CHANCE = 0.3;
+
+	std::vector<std::pair<int, int>> rank_individuals;
+	rank_individuals.reserve(2 * N_IND);
+	MOEA_fitness(p, entry_s, n_pop, rank_individuals); // Technically does unneccessary amount of work, but much faster to code
+
+	std::vector<int> selected_tournament;
+	while (selected_tournament.size() < tournament_size) {
+		int ind_index = rand() % n_pop;
+		if (std::find(selected_tournament.begin(), selected_tournament.end(), ind_index) == selected_tournament.end()) selected_tournament.push_back(ind_index);
+	}
+
+	std::vector<std::pair<int, int>> rank_of_tournament;
+	for (int i = 0; i < tournament_size; i++) {
+		rank_of_tournament.push_back(rank_individuals[i]);
+	}
+	descending_comparator smallest_value_comparator;
+	std::sort(rank_of_tournament.begin(), rank_of_tournament.end(), smallest_value_comparator);
+
+	// Perform tournament
+	std::vector<int> selected_individuals;
+	selected_individuals.reserve(num_chosen);
+	for (int i = 0; i < tournament_size; i++) {
+		if (num_chosen - selected_individuals.size() <= tournament_size - i) {
+			selected_individuals.push_back(rank_of_tournament[i].second);
+		}
+		else {
+			double outcome = (rand() % 1000) / 1000.0;
+			if (outcome < CHANCE*pow(1 - CHANCE, i)) selected_individuals.push_back(rank_of_tournament[i].second);
+		}
+	}
+	return selected_individuals;
+}
+
