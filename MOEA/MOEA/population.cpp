@@ -425,23 +425,28 @@ void Population::MOEA_next_generation() {
 	std::vector<int> parents = rank_tournament_selection(*this, entry_s, n_pop, 10, N_PARENTS);
 	for (int i = 0; i < N_PARENTS; i++) {
 
-		double crossover_outcome = (rand() % 1000) / 1000.0;
+		double outcome = (rand() % 1000) / 1000.0;
 		population[n_pop++] = population[parents[i++]];
 		if (i >= N_PARENTS) continue;
 		population[n_pop++] = population[parents[i]];
-		if (crossover_outcome < CROSSOVER_RATE) {
+		if (outcome < CROSSOVER_RATE) {
 			edge_candidates[n_pop - 2] = crossover_uniform_list_representation(*this, parents[i - 1], parents[i]);
-			for (int gene_index = 0; gene_index < edge_candidates[n_pop - 2].size(); gene_index++) {
-				pos asd;
-				if (false);
-			}
 			edge_candidates[n_pop - 1] = crossover_uniform_list_representation(*this, parents[i - 1], parents[i]);
 		}
+		double outcome = (rand() % 1000) / 1000.0;
+		if (outcome < MUTATION_RATE) {
+			
+		}
 		
-		
+	}
 
-	}*/
-
+	std::vector<int> survivors = NSGAII(*this, entry_s, n_pop);
+	std::vector<int> non_survivors;
+	non_survivors.reserve(n_pop - N_IND);
+	for (int i = 0; i < n_pop; i++) {
+		if (find(survivors.begin(), survivors.end(), i) == survivors.end()) non_survivors.push_back(i);
+	}
+	*/
 }
 
 void Population::merge_segments(int ind_index, edge merge_nodes) {
