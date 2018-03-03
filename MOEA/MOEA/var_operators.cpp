@@ -16,14 +16,13 @@ std::vector<active_edge_t> crossover_uniform_list_representation(Population &p, 
 	return offspring_chromosome;
 }
 
-
-
 std::vector<int> mutation_flip_list_representation() {
 
 }
 std::vector<int> mutation_set_list_representation() {
 
 }
+
 std::vector<int> mutation_reset_list_representation() {
 
 }

@@ -3,7 +3,7 @@
 #ifndef GLOBAL_H
 #define GLOBAL_H
 
-const int N_IND = 1;
+const int N_IND = 10;
 const int N_SEG = 100;
 const int N_SEG_TYPES = 2;
 const int SEGMENT_SIZE[N_SEG_TYPES] = { 1000,10000 };
