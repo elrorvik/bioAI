@@ -53,6 +53,7 @@ Population::~Population() {
 
 	//delete[] edge_candidates;
 	delete[] entry_s;
+	//delete[] edge_candidates;
 }
 
 Population::Population() {
@@ -75,7 +76,7 @@ Population::Population() {
 		}
 	}
 	entry_s = new std::vector<pos>[N_IND];
-	
+	edge_candidates = new std::vector<active_edge_t>[N_IND];
 }
 
 /*node** Population::get_individual(int ind_index) {
@@ -320,7 +321,7 @@ void Population::initialize_individual_PrimsMST(int ind_index){
 	
 	int start_mst_x = 0; //rand() % get_im_w();
 	int start_mst_y = 0; // rand() % get_im_h();
-	int start_index = 0; // start_mst_x * get_im_h() + start_mst_y;
+	int start_index = start_mst_x * get_im_h() + start_mst_y;
 	
 	std::vector<int> mst_parents = g.primMST(start_index); // MAKE PRIM MST
 
@@ -388,16 +389,41 @@ void Population::initialize_individual_PrimsMST(int ind_index){
 	std::cout << "FINISHED " << std::endl;
 	std::cout << seconds - time(NULL) << std::endl;
 	seconds = time(NULL);
-	draw_segments(ind_index);
-	draw_segments_contour(ind_index);
+}
+void Population::initialize_population() {
+	int init_index = 0;
+	this->initialize_individual_PrimsMST(init_index);
+	for (int i = 0; i < N_IND; i++) {
+		for (int x = 0; x < get_im_w(); x++) {
+			for (int y = 0; y < get_im_h(); y++) {
+				this->population[i][x][y].color        = this->population[init_index][x][y].color;
+				this->population[i][x][y].left         = this->population[init_index][x][y].left;
+				this->population[i][x][y].right        = this->population[init_index][x][y].right;
+				this->population[i][x][y].up           = this->population[init_index][x][y].up;
+				this->population[i][x][y].down         = this->population[init_index][x][y].down;
+				this->population[i][x][y].entry.x      = this->population[init_index][x][y].entry.x;
+				this->population[i][x][y].entry.y      = this->population[init_index][x][y].entry.y;
+				this->population[i][x][y].num_children = this->population[init_index][x][y].num_children;
+				this->population[i][x][y].parent_dir   = this->population[init_index][x][y].parent_dir;
+			}
+		}
+		entry_s[i] = entry_s[init_index];
+		edge_candidates[i] = edge_candidates[init_index];
+	}
+	//draw_segments(0);
+	draw_segments_contour(0);
+	draw_segments_contour(N_IND - 1);
+	//draw_segments_contour(20);
 	cv::waitKey(0);
 }
+
 
 void Population::set_dir_edge(pos& parent, pos& child, int on, int ind_index) {
 	int x1 = parent.x;
 	int x2 = child.x;
 	int y1 = parent.y;
 	int y2 = child.y;
+	//std::cout << " x1 " << x1 << " y1 " << y1 << " x2" << x2 << " y2 " << y2 << std::endl;
 	if (x1 > x2) {
 		population[ind_index][x1][y1].left = on;
 		population[ind_index][x2][y2].right = on;
@@ -556,9 +582,10 @@ void Population::draw_segments_contour(int ind_index) {
 	}
 	delete[] edge_segment;
 	//std::cout << "show image" << std::endl;
-	cv::namedWindow("contour", 1);
+	std::string window_name = "contour " + to_string(ind_index);
+	cv::namedWindow(window_name, 1);
 	//std::cout << "show image" << std::endl;
-	cv::imshow("contour", segment);
+	cv::imshow(window_name, segment);
 }
 
 cv::Mat test_image() {
@@ -673,7 +700,7 @@ int Population::create_segments(int ind_index, int segment_size, edge_priority_q
 			//std::cout << " get_n " << min_pixels << std::endl;
 			entry_s[ind_index].push_back(child);
 			entry_s[ind_index].push_back(parent);
-			edge_candidates.push_back({ temp, true });
+			edge_candidates[ind_index].push_back({ temp, true });
 			n_segments--;
 		}
 	}

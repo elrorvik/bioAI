@@ -22,14 +22,14 @@ private:
 	node ***population;
 	std::vector<pos> * entry_s;
 	int n_segments;
-	std::vector<active_edge_t> edge_candidates;
+	std::vector<active_edge_t>* edge_candidates;
 public:
 	Population();
 	~Population();
 	//node** get_individual(int ind_index);
 	void initialize_population_PrimsMST();
 	void initialize_individual_PrimsMST(int ind_index);
-	void initialize_population(int ind_index);
+	void initialize_population();
 	void initialize_population_test();
 	void test_segment(pos& entry, int ind_index);
 
