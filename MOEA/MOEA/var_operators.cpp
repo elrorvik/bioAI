@@ -28,7 +28,7 @@ int  mutation_split_segments(Population &p, int ind_index) {
 		count--;
 	}
 	if (chromosome[loci].active == 1) {
-		// change segment
+		p.split_segment(ind_index, chromosome[loci].edge);
 		return 1;
 	}
 	else {
@@ -46,7 +46,7 @@ int  mutation_merge_segments(Population &p, int ind_index) {
 		count--;
 	}
 	if (chromosome[loci].active == 1) {
-		// change segment
+		p.merge_segments(ind_index, chromosome[loci].edge);
 		return 1;
 	}
 	else {
