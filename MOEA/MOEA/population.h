@@ -21,6 +21,7 @@ private:
 	node ***population;
 	std::vector<pos> * entry_s;
 	int n_segments;
+	std::vector<pos> * edge_candidates();
 public:
 	Population();
 	~Population();
@@ -43,7 +44,8 @@ public:
 	void draw_segments_contour(int ind_index);
 	std::vector<pos>* edges_segment(int ind_index);
 	
-	int check_if_edge(pos curr, int ind_index);
+	//int check_if_edge(pos curr, int ind_index);
+	int check_if_edge(pos curr, int ind_index, int cout);
 
 	int set_segment_value(pos& entry, int ind_index);
 	void set_dir_edge(pos& parent, pos& child, int on, int ind_index);

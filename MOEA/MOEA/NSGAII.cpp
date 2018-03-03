@@ -4,10 +4,11 @@
 #include"global.h"
 #include<utility>
 #include<algorithm>
+
 /*
 std::vector<int> NSGAII(Population &p, const std::vector<pos> * entry_s) {
 	
-	int rank[N_IND]{}; // TODO: Make sure N_IND is the number of parents + children in this case
+	int rank[N_IND]{}; // TODO: Make sure N_IND is the number of pa|						rents + children in this case
 	double fitness_1[N_IND]{};
 	double fitness_2[N_IND]{};
 
