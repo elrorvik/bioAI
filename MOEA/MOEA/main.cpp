@@ -10,7 +10,7 @@ int main() {
 
 	
 	Population p;
-	p.initialize_population_PrimsMST_2();
+	p.initialize_individual_PrimsMST(0);
 
 	//std::cout << p.get_im_h() *p.get_im_w() << std::endl;
 

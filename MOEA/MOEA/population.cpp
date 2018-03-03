@@ -39,24 +39,7 @@ struct hash<edge>
 	}
 };*/
 
-struct edge {
-	pos p1;
-	pos p2;
-	double RGBdist = 0;
-	int dependent_nodes = 0;
-	edge(pos p1, pos p2, double RGBdist) : p1(p1), p2(p2), RGBdist(RGBdist) {};
-	edge(pos p1, pos p2, double RGBdist, int n_nodes) : p1(p1), p2(p2), RGBdist(RGBdist), dependent_nodes(n_nodes) {};
-};
 
-struct edge_comparator {
-	bool operator()(edge e1, edge e2) {
-		return e1.RGBdist < e2.RGBdist;
-	}
-};
-
-bool operator<(edge e1, edge e2) {
-	return e1.RGBdist < e2.RGBdist;
-}
 
 Population::~Population() {
 	std::vector<pos> * edge_candidates();
@@ -312,9 +295,7 @@ void Population::initialize_population_test() {
 
 
 // Driver program to test methods of graph class
-void Population::initialize_population_PrimsMST_2(){
-
-	int ind_index = 0;
+void Population::initialize_individual_PrimsMST(int ind_index){
 
 	time_t seconds = time(NULL);
 	
@@ -337,16 +318,17 @@ void Population::initialize_population_PrimsMST_2(){
 	std::cout << seconds- time(NULL) << std::endl;
 	seconds = time(NULL);
 	
-	//  making above shown graph
-
-	std::vector<int> mst_parents = g.primMST(); // holdes parents of each edge
-
-	//std::cout << mst_parents.size() << " vs. size " << get_im_h()*get_im_w() << std::endl;
+	int start_mst_x = 0; //rand() % get_im_w();
+	int start_mst_y = 0; // rand() % get_im_h();
+	int start_index = 0; // start_mst_x * get_im_h() + start_mst_y;
+	
+	std::vector<int> mst_parents = g.primMST(start_index); // MAKE PRIM MST
 
 	std::cout << "MST " << std::endl;
 	std::cout << seconds - time(NULL) << std::endl;
 	seconds = time(NULL);
 	
+	// SETTING EDGES IN PHENOTYPE
 	std::priority_queue<edge, std::vector<edge>, edge_comparator> que;
 	for (int i = 1; i < get_im_h()*get_im_w(); i++) {
 		int index = mst_parents[i];
@@ -366,18 +348,24 @@ void Population::initialize_population_PrimsMST_2(){
 	std::cout << seconds - time(NULL) << std::endl;
 	seconds = time(NULL);
 
-	set_num_children(*this, 0, { 0, 0 });
-	//initialize_n_children(0, edgeChildren);
-
-	int segment_size = 1000; // three = 1000
-	int n_segments = 100; // how many segments currently made // three 100
-	create_segments(ind_index, segment_size, que, n_segments);
-	segment_size = 10000; // three 10000
-	n_segments = 60; // how many segments currently made // three 60
-	create_segments(ind_index, segment_size, que, n_segments);
 	
 
-	std::cout << "entry_s size " << entry_s[ind_index].size() << std::endl;
+	// setting number of children in graph belov a parent
+	set_num_children(*this, ind_index, pos(start_mst_x, start_mst_y));
+	
+	// creating segments
+	int edge_candidate_count = 0;
+	for (int i = 0; i < N_SEG_TYPES; i++) {
+		int segment_size = SEGMENT_SIZE[i]; // three = 1000
+		int n_segments = N_PIX_SEGMENT[i]; // how many segments currently made // three 100
+		
+		edge_candidate_count += n_segments - create_segments(ind_index, segment_size, que, n_segments);
+	}
+	
+	//std::cout << "candidate edges size" << edge_candidates.size() << " count " << edge_candidate_count << std::endl;
+	//std::cout << "entry_s size " << entry_s[ind_index].size() << std::endl;
+
+	// setting entry value
 	int total_segment_size = 0;
 	for (auto it = entry_s[0].begin(); it != entry_s[ind_index].end();) {
 		//std::cout << " check " << it->x << " " << it->y << std::endl;
@@ -388,7 +376,7 @@ void Population::initialize_population_PrimsMST_2(){
 			continue;
 		}
 		else {
-			std::cout <<"segment " << it->x << " " << it->y << " " << segment_size << std::endl;
+			//std::cout <<"segment " << it->x << " " << it->y << " " << segment_size << std::endl;
 			it++;
 		}
 		total_segment_size += segment_size;
@@ -396,10 +384,6 @@ void Population::initialize_population_PrimsMST_2(){
 	}
 
 	std::cout << "total " << total_segment_size << "should be " << get_im_h()*get_im_w() << std::endl;
-
-	/*for (auto it = entry_s[0].begin(); it != entry_s[0].end();it++) {
-	test_segment(*it, 0);
-	}*/
 
 	std::cout << "FINISHED " << std::endl;
 	std::cout << seconds - time(NULL) << std::endl;
@@ -659,7 +643,7 @@ std::vector<pos>* Population::edges_segment(int ind_index) {
 	return segment;
 }
 
-void Population::create_segments(int ind_index, int segment_size, edge_priority_que& que, int n_segments) {
+int Population::create_segments(int ind_index, int segment_size, edge_priority_que& que, int n_segments) {
 
 	while (n_segments > 0 && !que.empty()) {
 		edge temp = que.top();
@@ -678,10 +662,7 @@ void Population::create_segments(int ind_index, int segment_size, edge_priority_
 		int n_segment_2 = get_parent_segment_size(parent,ind_index);
 		int n_segment = population[ind_index][child.x][child.y].num_children;
 
-		
-
 		if (n_segment_2 - n_segment> segment_size && n_segment> segment_size) {
-			
 			//std::cout << "parent" << parent.x << " " << parent.x << " child " << child.x << " " << child.y << std::endl;
 			set_dir_edge(parent, child, 0,ind_index);
 			//std::cout << "n_pixels " << population[ind_index][child.x][child.y].num_children;
@@ -692,9 +673,11 @@ void Population::create_segments(int ind_index, int segment_size, edge_priority_
 			//std::cout << " get_n " << min_pixels << std::endl;
 			entry_s[ind_index].push_back(child);
 			entry_s[ind_index].push_back(parent);
+			edge_candidates.push_back({ temp, true });
 			n_segments--;
 		}
 	}
+	return n_segments;
 }
 
 int Population::check_if_edge(pos curr,  int ind_index, int cout) {

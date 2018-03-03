@@ -21,7 +21,7 @@ public:
 	Graph(int V);  // Constructor
 	~Graph();
 	void addEdge(int u, int v, double w);  // function to add an edge to graph
-	vector<int> primMST(); // creating MST returning parents
+	vector<int> primMST(int start_index); // creating MST returning parents
 };
 
 class Population;

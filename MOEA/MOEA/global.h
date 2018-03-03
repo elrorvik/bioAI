@@ -7,7 +7,7 @@ const int N_IND = 1;
 const int N_SEG = 100;
 const int N_SEG_TYPES = 2;
 const int SEGMENT_SIZE[N_SEG_TYPES] = { 1000,10000 };
-const int N_PIX_SEGMENT[N_SEG_TYPES] = {100,60}
+const int N_PIX_SEGMENT[N_SEG_TYPES] = { 100,60 };
 //const std::string img_path  = "..//test_img//86016//Test image.jpg"; // circle
 //const std::string img_path = "..//test_img//147091//Test image.jpg"; // three
 //const std::string img_path  = "..//test_img//160068//Test image.jpg"; // Leopart
@@ -51,6 +51,26 @@ struct node {
 	pos entry = pos(-1, -1); // entry to segment
 };
 
+struct edge {
+	pos p1;
+	pos p2;
+	double RGBdist = 0;
+	int dependent_nodes = 0;
+	edge(pos p1, pos p2, double RGBdist) : p1(p1), p2(p2), RGBdist(RGBdist) {};
+	edge(pos p1, pos p2, double RGBdist, int n_nodes) : p1(p1), p2(p2), RGBdist(RGBdist), dependent_nodes(n_nodes) {};
+};
+
+struct edge_comparator {
+	bool operator()(edge e1, edge e2) {
+		return e1.RGBdist < e2.RGBdist;
+	}
+};
+
+struct active_edge_t {
+	edge edge;
+	bool active;
+};
+
 pos operator+(pos coord, direction dir);
 
 void operator+(node &n, direction d);
@@ -60,5 +80,7 @@ bool operator==(pos& left, pos & right);
 
 bool operator!=(pos& left, pos & right);
 pos operator+(pos& left, pos& right);
+
+bool operator<(edge e1, edge e2);
 
 #endif 

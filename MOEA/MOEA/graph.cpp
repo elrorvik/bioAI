@@ -29,14 +29,14 @@ void Graph::addEdge(int u, int v, double w){
 }
 
 
-vector<int> Graph::primMST(){
+vector<int> Graph::primMST(int start_index){
 	// Create a priority queue to store vertices that
 	// are being preinMST. This is weird syntax in C++.
 	// Refer below link for details of this syntax
 	// http://geeksquiz.com/implement-min-heap-using-stl/
 	priority_queue< diPair, vector <diPair>, greater<diPair> > pq;
 
-	int src = 0; // Taking vertex 0 as source
+	int src = start_index; // Taking vertex 0 as source
 
 				 // Create a vector for keys and initialize all
 				 // keys as infinite (INF)

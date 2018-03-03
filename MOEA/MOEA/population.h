@@ -12,6 +12,7 @@ struct node;
 struct RGB;
 struct edge;
 struct edge_comparator;
+struct active_edge_t;
 
 typedef std::priority_queue<edge, std::vector<edge>, edge_comparator> edge_priority_que;
 
@@ -21,13 +22,14 @@ private:
 	node ***population;
 	std::vector<pos> * entry_s;
 	int n_segments;
-	std::vector<pos> * edge_candidates();
+	std::vector<active_edge_t> edge_candidates;
 public:
 	Population();
 	~Population();
 	//node** get_individual(int ind_index);
 	void initialize_population_PrimsMST();
-	void initialize_population_PrimsMST_2();
+	void initialize_individual_PrimsMST(int ind_index);
+	void initialize_population(int ind_index);
 	void initialize_population_test();
 	void test_segment(pos& entry, int ind_index);
 
@@ -51,7 +53,7 @@ public:
 	void set_dir_edge(pos& parent, pos& child, int on, int ind_index);
 
 
-	void create_segments(int ind_index, int segment_size, edge_priority_que& que, int n_segments);
+	int create_segments(int ind_index, int segment_size, edge_priority_que& que, int n_segments);
 	void change_parents_n_segment(pos& parent, pos& child, int ind_index);
 
 	//void initialize_n_children(int ind_index, std::map<edge, int> &edgeChildren);

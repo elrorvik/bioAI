@@ -72,3 +72,9 @@ pos operator+(pos& left, pos& right) {
 bool operator!=(pos& left, pos & right) {
 	return !(left==right);
 }
+
+
+
+bool operator<(edge e1, edge e2) {
+	return e1.RGBdist < e2.RGBdist;
+}
