@@ -1,4 +1,4 @@
-#include"NSGAII.h"
+#include"selection.h"
 #include"population.h"
 #include"fitness.h"
 #include"global.h"
@@ -112,3 +112,39 @@ std::vector<int> NSGAII(Population &p, const std::vector<pos> * entry_s, int n_p
 
 	return selected_population;
 }
+
+/*void MOEA_fitness(int n_pop, std::vector<std::pair<int, int>> &rank_individuals, std::vector<std::pair<double, int>> &fitness_1, std::vector<std::pair<double, int>> &fitness_2, double &f_1_max, double &f_2_max, double &f_1_min, double &f_2_min) {
+
+	struct pair_comparator {
+		bool operator() (const std::pair<double, int> p1, const std::pair<double, int> p2) {
+			return p1.first < p2.first;
+		}
+		bool operator() (const std::pair<int, int> p1, const std::pair<int, int> p2) {
+			return p1.first < p2.first;
+		}
+	};
+	pair_comparator smallest_value_comparator;
+
+	f_1_max = -DBL_MAX;
+	f_2_max = -DBL_MAX;
+	f_1_min = DBL_MAX;
+	f_2_min = DBL_MAX;
+
+	// Non dominated sorting, and store max and min values for each objective functions
+	for (int ind_index = 0; ind_index < n_pop; ind_index++) { // TODO: Make sure N_IND is the number of parents + children in this case
+		rank_individuals.push_back(std::make_pair(0, ind_index));
+		fitness_1.push_back(std::make_pair(overall_deviation_ind(p, ind_index, entry_s[ind_index]), ind_index));
+		fitness_2.push_back(std::make_pair(edge_value_ind(p, ind_index, entry_s[ind_index]), ind_index));
+
+		if (fitness_1[ind_index].first > f_1_max) f_1_max = fitness_1[ind_index].first;
+		if (fitness_2[ind_index].first > f_2_max) f_2_max = fitness_2[ind_index].first;
+		if (fitness_1[ind_index].first < f_1_min) f_1_min = fitness_1[ind_index].first;
+		if (fitness_2[ind_index].first < f_2_min) f_2_min = fitness_2[ind_index].first;
+	}
+
+	for (int ind_index = 0; ind_index < n_pop; ind_index++) {
+		for (int other_index = 0; other_index < n_pop; other_index++) {
+			if (fitness_1[ind_index] > fitness_1[other_index] && fitness_2[ind_index] > fitness_2[other_index]) rank_individuals[ind_index].first++;
+		}
+	}
+}*/
