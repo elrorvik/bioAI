@@ -344,7 +344,7 @@ void Population::initialize_individual_PrimsMST(int ind_index){
 		int y2 = index - get_im_h()*x2;
 		pos p2(x2, y2);
 		que.emplace(p1,p2, dist(get_RGB(p1), get_RGB(p2)));
-		set_dir_edge(p1, p2, 1,ind_index);	
+		set_dir_edge_and_parent(p1, p2, 1,ind_index);	
 	}
 
 	std::cout << "initialization  children" << std::endl;
@@ -372,7 +372,7 @@ void Population::initialize_individual_PrimsMST(int ind_index){
 	int total_segment_size = 0;
 	for (auto it = entry_s[0].begin(); it != entry_s[ind_index].end();) {
 		//std::cout << " check " << it->x << " " << it->y << std::endl;
-		int segment_size = set_segment_value(*it, ind_index);
+		int segment_size = set_start_segment_entry(*it, ind_index);
 		if (segment_size == 0) {
 			it = entry_s[ind_index].erase(it);
 			//std::cout << " zero in size" << std::endl;
@@ -419,8 +419,8 @@ void Population::initialize_population() {
 	cv::waitKey(0);
 }
 
-/*void Population::MOEA_next_generation() {
-
+void Population::MOEA_next_generation() {
+	/*
 	// Select parents:
 	std::vector<int> parents = rank_tournament_selection(*this, entry_s, n_pop, 10, N_PARENTS);
 	for (int i = 0; i < N_PARENTS; i++) {
@@ -431,16 +431,54 @@ void Population::initialize_population() {
 		population[n_pop++] = population[parents[i]];
 		if (crossover_outcome < CROSSOVER_RATE) {
 			edge_candidates[n_pop - 2] = crossover_uniform_list_representation(*this, parents[i - 1], parents[i]);
+			for (int gene_index = 0; gene_index < edge_candidates[n_pop - 2].size(); gene_index++) {
+				pos asd;
+				if (false);
+			}
 			edge_candidates[n_pop - 1] = crossover_uniform_list_representation(*this, parents[i - 1], parents[i]);
 		}
-
+		
 		
 
-	}
+	}*/
 
-}*/
+}
+
+void Population::merge_segments(int ind_index, edge merge_nodes) {
+	set_segment_entry(merge_nodes.p1, merge_nodes.p2, ind_index);
+	set_dir_edge(merge_nodes.p1, this->get_node(ind_index, merge_nodes.p2)->entry, 1, ind_index);
+}
+
+void Population::split_segment(int ind_index, edge split_nodes) {
+	set_dir_edge(split_nodes.p1, split_nodes.p2, 0, ind_index);
+	set_segment_entry(split_nodes.p1, split_nodes.p1, ind_index);
+}
 
 void Population::set_dir_edge(pos& parent, pos& child, int on, int ind_index) {
+	int x1 = parent.x;
+	int x2 = child.x;
+	int y1 = parent.y;
+	int y2 = child.y;
+	//std::cout << " x1 " << x1 << " y1 " << y1 << " x2" << x2 << " y2 " << y2 << std::endl;
+	if (x1 > x2) {
+		population[ind_index][x1][y1].left = on;
+		population[ind_index][x2][y2].right = on;
+	}
+	else if (x1 < x2) {
+		population[ind_index][x1][y1].right = on;
+		population[ind_index][x2][y2].left = on;
+	}
+	else if (y1 > y2) {
+		population[ind_index][x1][y1].up = on;
+		population[ind_index][x2][y2].down = on;
+	}
+	else {
+		population[ind_index][x1][y1].down = on;
+		population[ind_index][x2][y2].up = on;
+	}
+}
+
+void Population::set_dir_edge_and_parent(pos& parent, pos& child, int on, int ind_index) {
 	int x1 = parent.x;
 	int x2 = child.x;
 	int y1 = parent.y;
@@ -470,7 +508,7 @@ void Population::set_dir_edge(pos& parent, pos& child, int on, int ind_index) {
 	if( on == 0) population[ind_index][x2][y2].parent_dir = SELF;
 }
 
-int Population::set_segment_value(pos& entry, int ind_index) {
+int Population::set_start_segment_entry(pos& entry, int ind_index) {
 	stack<pos> branch_points;
 
 	pos invalid_pos(-1, -1);
@@ -492,6 +530,23 @@ int Population::set_segment_value(pos& entry, int ind_index) {
 		remove_color(*this, ind_index, entry, branch_points);
 		return count;
 	}
+}
+
+int Population::set_segment_entry(pos& entry, pos& set, int ind_index) {
+	stack<pos> branch_points;
+	pos invalid_pos(-1, -1);
+	//std::cout << "you not taken " << std::endl;
+	population[ind_index][entry.x][entry.y].entry = set;
+	pos next = entry;
+	int count = 0;
+	while (next.x != static_cast<unsigned short>(-1)) {
+		population[ind_index][next.x][next.y].entry = set;
+		next = traverse_ST(*this, ind_index, next, branch_points);
+		count++;
+	}
+	if (count == 0) population[ind_index][entry.x][entry.y].entry = invalid_pos;
+	remove_color(*this, ind_index, entry, branch_points);
+	return count;
 }
 
 int Population::get_n_segment(pos& entry, int ind_index) {
@@ -717,7 +772,7 @@ int Population::create_segments(int ind_index, int segment_size, edge_priority_q
 
 		if (n_segment_2 - n_segment> segment_size && n_segment> segment_size) {
 			//std::cout << "parent" << parent.x << " " << parent.x << " child " << child.x << " " << child.y << std::endl;
-			set_dir_edge(parent, child, 0,ind_index);
+			set_dir_edge_and_parent(parent, child, 0,ind_index);
 			//std::cout << "n_pixels " << population[ind_index][child.x][child.y].num_children;
 			//std::cout << " get_ parent " << get_n_segment(parent, ind_index) << " calculate " << n_segment_2 - n_segment << std::endl;
 			//std::cout << " get_ child " << get_n_segment(child, ind_index) << " calculate " <<  n_segment << std::endl;
@@ -726,7 +781,7 @@ int Population::create_segments(int ind_index, int segment_size, edge_priority_q
 			//std::cout << " get_n " << min_pixels << std::endl;
 			entry_s[ind_index].push_back(child);
 			entry_s[ind_index].push_back(parent);
-			edge_candidates[ind_index].push_back({ temp, true });
+			edge_candidates[ind_index].push_back({ temp, false });
 			n_segments--;
 		}
 	}
