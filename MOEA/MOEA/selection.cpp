@@ -31,7 +31,7 @@ std::vector<int> NSGAII(Population &p, const std::vector<pos> * entry_s, int n_p
 	double f_2_min = DBL_MAX;
 
 	// Non dominated sorting, and store max and min values for each objective functions
-	for (int ind_index = 0; ind_index < n_pop; ind_index++) { // TODO: Make sure N_IND is the number of parents + children in this case
+	for (int ind_index = 0; ind_index < n_pop; ind_index++) {
 		rank_individuals.push_back(std::make_pair(0, ind_index));
 		fitness_1.push_back(std::make_pair(overall_deviation_ind(p, ind_index, entry_s[ind_index]), ind_index));
 		fitness_2.push_back(std::make_pair(edge_value_ind(p, ind_index, entry_s[ind_index]), ind_index));
@@ -142,7 +142,6 @@ void MOEA_rank(Population &p, const std::vector<pos> * entry_s, int n_pop, std::
 }
 
 void MOEA_rank(Population &p, const std::vector<pos> * entry_s, int n_pop, std::vector<std::pair<int, int>> &rank_individuals) {
-	std::vector<std::pair<int, int>> rank_individuals;
 	std::vector<std::pair<double, int>> fitness_1;
 	std::vector<std::pair<double, int>> fitness_2;
 	rank_individuals.reserve(2 * N_IND);
@@ -192,3 +191,31 @@ std::vector<int> rank_tournament_selection(Population &p, const std::vector<pos>
 	return selected_individuals;
 }
 
+std::vector<int> fitness_tournament_selection(Population &p, const std::vector<pos> * entry_s, int n_pop, int tournament_size, int num_chosen, double weight_1, double weight_2) {
+
+	const double CHANCE = 0.3;
+
+	std::vector<std::pair<double, int>> fitness;
+	fitness.reserve(2 * N_IND);
+
+	// Non dominated sorting, and store max and min values for each objective functions
+	for (int ind_index = 0; ind_index < n_pop; ind_index++) {
+		fitness.push_back(std::make_pair(overall_deviation_ind(p, ind_index, entry_s[ind_index])*weight_1 + edge_value_ind(p, ind_index, entry_s[ind_index])*weight_2, ind_index));
+	}
+	descending_comparator smallest_value_comparator;
+	std::sort(fitness.begin(), fitness.end(), smallest_value_comparator);
+	
+	// Perform tournament
+	std::vector<int> selected_individuals;
+	selected_individuals.reserve(num_chosen);
+	for (int i = 0; i < tournament_size; i++) {
+		if (num_chosen - selected_individuals.size() <= tournament_size - i) {
+			selected_individuals.push_back(fitness[i].second);
+		}
+		else {
+			double outcome = (rand() % 1000) / 1000.0;
+			if (outcome < CHANCE*pow(1 - CHANCE, i)) selected_individuals.push_back(fitness[i].second);
+		}
+	}
+	return selected_individuals;
+}

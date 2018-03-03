@@ -59,5 +59,8 @@
     <ClCompile Include="selection.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="var_operators.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
