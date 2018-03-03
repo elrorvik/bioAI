@@ -96,10 +96,10 @@ double edge_value_ind(Population &p, int ind_index, const std::vector<pos> &entr
 	// double test_list[11] = { -1.3, -3.2, -7.0, -0.9, -4.9, -9.2, -4.0, -13.0, -8.8, -10.9, -20.0 };
 	// return test_list[i++];
 
-	/*double fitness = 0;
+	double fitness = 0;
 	for (int seg_i = 0; seg_i < entry_s.size(); seg_i++) {
 	fitness += edge_value_seg(p, ind_index, entry_s[seg_i]);
 	}
-	return fitness;*/
+	return fitness;
 }
 

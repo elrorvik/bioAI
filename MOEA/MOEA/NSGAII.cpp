@@ -6,8 +6,6 @@
 #include<algorithm>
 #include<cmath>
 
-#include<iostream> //TODO : Fjern
-
 std::vector<int> NSGAII(Population &p, const std::vector<pos> * entry_s, int n_pop) {
 
 	std::vector<std::pair<int, int>> rank_individuals;
@@ -39,9 +37,7 @@ std::vector<int> NSGAII(Population &p, const std::vector<pos> * entry_s, int n_p
 		fitness_2.push_back(std::make_pair(edge_value_ind(p, ind_index, entry_s[ind_index]), ind_index));
 
 		if (fitness_1[ind_index].first > f_1_max) f_1_max = fitness_1[ind_index].first;
-		std::cout << (fitness_2[ind_index].first > f_2_max) << std::endl;
-		std::cout << fitness_2[ind_index].first << ", " << f_2_max << std::endl;
-		if (fitness_2[ind_index].first > f_2_max) f_2_max = fitness_2[ind_index].first; // What? Hvorfor hopper den over denne?
+		if (fitness_2[ind_index].first > f_2_max) f_2_max = fitness_2[ind_index].first;
 		if (fitness_1[ind_index].first < f_1_min) f_1_min = fitness_1[ind_index].first;
 		if (fitness_2[ind_index].first < f_2_min) f_2_min = fitness_2[ind_index].first;
 	}
