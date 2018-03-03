@@ -1,6 +1,6 @@
 #pragma once
-#ifndef NSGAII_H
-#define NSGAII_H
+#ifndef SELECTION
+#define SELECTION
 #include<vector>
 
 struct Population;
