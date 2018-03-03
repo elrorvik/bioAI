@@ -52,7 +52,7 @@ public:
 	std::vector<pos>* edges_segment(int ind_index);
 	
 	//int check_if_edge(pos curr, int ind_index);
-	int check_if_edge(pos curr, int ind_index, int cout);
+	int check_if_edge(pos curr, int ind_index, int cout); // checkk if boarder
 
 	int set_segment_value(pos& entry, int ind_index);
 	void set_dir_edge(pos& parent, pos& child, int on, int ind_index);
