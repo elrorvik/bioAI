@@ -70,5 +70,5 @@ pos operator+(pos& left, pos& right) {
 }
 
 bool operator!=(pos& left, pos & right) {
-	return (left.x != right.x) && (left.y != right.y);
+	return !(left==right);
 }
