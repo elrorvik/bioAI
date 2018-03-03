@@ -119,7 +119,8 @@
     <ClInclude Include="fitness.h" />
     <ClInclude Include="global.h" />
     <ClInclude Include="graph.h" />
-    <ClInclude Include="NSGAII.h" />
+    <ClInclude Include="selection.h" />
+    <ClInclude Include="var_operators.h" />
     <ClInclude Include="population.h" />
   </ItemGroup>
   <ItemGroup>
@@ -128,7 +129,7 @@
     <ClCompile Include="global.cpp" />
     <ClCompile Include="graph.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="NSGAII.cpp" />
+    <ClCompile Include="selection.cpp" />
     <ClCompile Include="population.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
