@@ -7,6 +7,14 @@ const int N_IND = 1;
 const int N_SEG = 100;
 //const std::string img_path  = "..//test_img//86016//Test image.jpg"; // circle
 const std::string img_path = "..//test_img//147091//Test image.jpg"; // three
+//const std::string img_path  = "..//test_img//160068//Test image.jpg"; // Leopart
+//const std::string img_path  = "..//test_img//176035//Test image.jpg"; // Land
+//const std::string img_path  = "..//test_img//178054//Test image.jpg"; // ørken
+//const std::string img_path  = "..//test_img//216066//Test image.jpg"; // stein og ørken
+//const std::string img_path  = "..//test_img//353013//Test image.jpg"; // blomst
+
+
+
 
 //const std::string img_path = "..//2000px-Checkerboard_pattern_2.png";
 //const std::string img_path = "..//test_2.jpg";
@@ -48,5 +56,6 @@ void operator-(node &n, direction d);
 bool operator==(pos& left, pos & right); 
 
 bool operator!=(pos& left, pos & right);
+pos operator+(pos& left, pos& right);
 
 #endif 

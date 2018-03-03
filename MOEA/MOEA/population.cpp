@@ -10,6 +10,53 @@
 // opencv 
 #include <opencv2/highgui/highgui.hpp>
 
+/*struct KeyDataHasher
+{
+	std::size_t operator () (const KeyData &key) const
+	{
+		// The following line is a stright forward implementation. But it can be
+		// hard to design a good hash function if KeyData is complex.
+
+		//return (key.id << 32 | key.age); // suppose size_t is 64-bit and int is 32-bit
+
+		// A commonly used way is to use boost
+		std::size_t seed = 0;
+		boost::hash_combine(seed, boost::hash_value(key.id));
+		boost::hash_combine(seed, boost::hash_value(key.age));
+		return seed;
+	}
+};*/
+/*
+struct hash<edge>
+{
+	std::size_t operator()(const edge& k) const
+	{
+		using std::size_t;
+		using std::hash;
+		using std::string;
+
+		return ((hash<int>()(k.p1.x)) ^ (hash<int>()(k.p1.y)) ^ (hash<int>()(k.p2.x)) ^ (hash<int>()(k.p2.y) )^ (hash<int>()(k.RGBdist)));
+	}
+};*/
+
+struct edge {
+	pos p1;
+	pos p2;
+	double RGBdist = 0;
+	int dependent_nodes = 0;
+	edge(pos p1, pos p2, double RGBdist) : p1(p1), p2(p2), RGBdist(RGBdist) {};
+	edge(pos p1, pos p2, double RGBdist, int n_nodes) : p1(p1), p2(p2), RGBdist(RGBdist), dependent_nodes(n_nodes) {};
+};
+
+struct edge_comparator {
+	bool operator()(edge e1, edge e2) {
+		return e1.RGBdist < e2.RGBdist;
+	}
+};
+
+bool operator<(edge e1, edge e2) {
+	return e1.RGBdist < e2.RGBdist;
+}
 
 Population::~Population() {
 
@@ -257,18 +304,7 @@ void Population::initialize_population_test() {
 // Driver program to test methods of graph class
 void Population::initialize_population_PrimsMST_2(){
 
-	struct edge {
-		pos p1;
-		pos p2;
-		double RGBdist = 0;
-		edge(pos p1, pos p2, double RGBdist) : p1(p1), p2(p2), RGBdist(RGBdist) {};
-	};
-
-	struct edge_comparator {
-		bool operator()(edge e1, edge e2) {
-			return e1.RGBdist < e2.RGBdist;
-		}
-	};
+	int ind_index = 0;
 
 	time_t seconds = time(NULL);
 	
@@ -276,18 +312,13 @@ void Population::initialize_population_PrimsMST_2(){
 	int V = get_im_w()*get_im_h();
 	Graph g(V);
 	
-
 	std::vector<int> check(get_im_w()*get_im_h(),0);
 	for (int x = 0; x < get_im_w(); x++) {
 		for (int y = 0; y < get_im_h(); y++) {
 			if (x + 1 < get_im_w()) {
-				//std::cout << im.cols << " " << x <<" "  << x+1 <<std::endl;
-				//std::cout << im.rows << " " << y << std::endl;
 				g.addEdge(x*get_im_h() + y, (x + 1)*get_im_h() + y, dist(get_RGB(pos(x, y)), get_RGB(pos(x + 1, y))));
 			}
 			if (y + 1 < get_im_h()) {
-				//std::cout << im.cols << " " << x << std::endl;
-				//std::cout << im.rows << " " << y << " " <<y+1 <<std::endl;
 				g.addEdge(x*get_im_h() + y + 1, (x)*get_im_h() + y, dist(get_RGB(pos(x, y)), get_RGB(pos(x, y + 1))));
 			}
 		}
@@ -305,24 +336,6 @@ void Population::initialize_population_PrimsMST_2(){
 	std::cout << "MST " << std::endl;
 	std::cout << seconds - time(NULL) << std::endl;
 	seconds = time(NULL);
-
-	/*for (int i = 1; i < get_im_h()*get_im_w(); ++i){
-		check[i] += 1;
-		if (mst_parents[i] == -1) {
-			std::cout << " something wrong " << std::endl;
-		}
-		check[mst_parents[i]] += 1;
-		if (check[i] > 4 || check[mst_parents[i]] > 4) {
-			std::cout << "vertex wrong" << std::endl;
-			printf("%d - %d\n", check[mst_parents[i]], check[i]);
-		}
-	}
-
-	for (int i = 1; i < get_im_h()*get_im_w(); ++i) {
-		if (check[i] == 0 ) {
-			std::cout << "vertex not in " << i <<std::endl;
-		}
-	}*/
 	
 	std::priority_queue<edge, std::vector<edge>, edge_comparator> que;
 	for (int i = 1; i < get_im_h()*get_im_w(); i++) {
@@ -336,40 +349,31 @@ void Population::initialize_population_PrimsMST_2(){
 		int y2 = index - get_im_h()*x2;
 		pos p2(x2, y2);
 		que.emplace(p1,p2, dist(get_RGB(p1), get_RGB(p2)));
-		
-		set_dir_edge(p1, p2, 1);	
-
+		set_dir_edge(p1, p2, 1,ind_index);	
 	}
+
+	std::cout << "initialization  children" << std::endl;
+	std::cout << seconds - time(NULL) << std::endl;
+	seconds = time(NULL);
 
 	set_num_children(*this, 0, { 0, 0 });
-	
-	int n_segments = N_SEG;
-	while( n_segments > 0 && !que.empty()) {
-		edge temp = que.top();
-		que.pop();
-		set_dir_edge(temp.p1, temp.p2, 0);
-		int n_pixels_in_segment = get_n_segment(temp.p1, 0);
-		int n_pixels_in_segment_2 = get_n_segment(temp.p2, 0);
-		//std::cout << "n_pixels " << n_pixels_in_segment << "n_pixels_2 " << n_pixels_in_segment_2 << std::endl;
-		if (500 > n_pixels_in_segment || 500 > n_pixels_in_segment_2) {
-			set_dir_edge(temp.p1, temp.p2, 1);
-		}
-		else {
-			entry_s[0].push_back(temp.p1);
-			entry_s[0].push_back(temp.p2);
-			n_segments--;
-		}
-		//n_segments--;
-	}
-	//entry_s[0].push_back(pos(0,0)); // set first directory
+	//initialize_n_children(0, edgeChildren);
 
-	std::cout << "entry_s size " << entry_s[0].size() << std::endl;
+	int segment_size = 1000; // three = 1000
+	int n_segments = 7; // how many segments currently made // three 100
+	create_segments(ind_index, segment_size, que, n_segments);
+	segment_size = 10000; // three 10000
+	n_segments = 3; // how many segments currently made // three 60
+	create_segments(ind_index, segment_size, que, n_segments);
+	
+
+	std::cout << "entry_s size " << entry_s[ind_index].size() << std::endl;
 	int total_segment_size = 0;
-	for (auto it = entry_s[0].begin(); it != entry_s[0].end();) {
+	for (auto it = entry_s[0].begin(); it != entry_s[ind_index].end();) {
 		//std::cout << " check " << it->x << " " << it->y << std::endl;
-		int segment_size = set_segment_value(*it, 0);
+		int segment_size = set_segment_value(*it, ind_index);
 		if (segment_size == 0) {
-			it = entry_s[0].erase(it);
+			it = entry_s[ind_index].erase(it);
 			//std::cout << " zero in size" << std::endl;
 			continue;
 		}
@@ -383,39 +387,45 @@ void Population::initialize_population_PrimsMST_2(){
 
 	std::cout << "total " << total_segment_size << "should be " << get_im_h()*get_im_w() << std::endl;
 
-
 	/*for (auto it = entry_s[0].begin(); it != entry_s[0].end();it++) {
 	test_segment(*it, 0);
 	}*/
 
-	
 	std::cout << "FINISHED " << std::endl;
 	std::cout << seconds - time(NULL) << std::endl;
 	seconds = time(NULL);
-	draw_segments(0);
+	draw_segments(ind_index);
+	draw_segments_contour(ind_index);
+	cv::waitKey(0);
 }
 
-void Population::set_dir_edge(pos& parent, pos& child, int on) {
+void Population::set_dir_edge(pos& parent, pos& child, int on, int ind_index) {
 	int x1 = parent.x;
 	int x2 = child.x;
 	int y1 = parent.y;
 	int y2 = child.y;
 	if (x1 > x2) {
-		population[0][x1][y1].left = on;
-		population[0][x2][y2].right = on;
+		population[ind_index][x1][y1].left = on;
+		population[ind_index][x2][y2].right = on;
+		if(on == 1) population[ind_index][x2][y2].parent_dir = RIGHT ;
 	}
 	else if (x1 < x2) {
-		population[0][x1][y1].right = on;
-		population[0][x2][y2].left = on;
+		population[ind_index][x1][y1].right = on;
+		population[ind_index][x2][y2].left = on;
+		if (on == 1) population[ind_index][x2][y2].parent_dir = LEFT;
 	}
 	else if (y1 > y2) {
-		population[0][x1][y1].up = on;
-		population[0][x2][y2].down = on;
+		population[ind_index][x1][y1].up = on;
+		population[ind_index][x2][y2].down = on;
+		if (on == 1) population[ind_index][x2][y2].parent_dir = DOWN;
 	}
 	else {
-		population[0][x1][y1].down = on;
-		population[0][x2][y2].up = on;
+		population[ind_index][x1][y1].down = on;
+		population[ind_index][x2][y2].up = on;
+		if (on == 1) population[ind_index][x2][y2].parent_dir = UP;
 	}
+
+	if( on == 0) population[ind_index][x2][y2].parent_dir = SELF;
 }
 
 int Population::set_segment_value(pos& entry, int ind_index) {
@@ -429,13 +439,14 @@ int Population::set_segment_value(pos& entry, int ind_index) {
 	else {
 		//std::cout << "you not taken " << std::endl;
 		population[ind_index][entry.x][entry.y].entry = entry;
-		pos next = traverse_ST(*this, ind_index, entry, branch_points);
-		int count = 1;
+		pos next = entry;
+		int count = 0;
 		while (next.x != static_cast<unsigned short>(-1)) {
 			population[ind_index][next.x][next.y].entry = entry;
 			next = traverse_ST(*this, ind_index, next, branch_points);
 			count++;
 		}
+		if(count == 0) population[ind_index][entry.x][entry.y].entry = invalid_pos;
 		remove_color(*this, ind_index, entry, branch_points);
 		return count;
 	}
@@ -459,6 +470,25 @@ int Population::get_n_segment(pos& entry, int ind_index) {
 		remove_color(*this, ind_index, entry, branch_points);
 		return count;
 	}
+}
+
+void Population::change_parents_n_segment(pos& parent, pos& child, int ind_index) {
+	population[ind_index][parent.x][parent.y].num_children -= population[ind_index][child.x][child.y].num_children;
+	pos next = pos(parent.x, parent.y) + population[ind_index][parent.x][parent.y].parent_dir;
+	while (next.x != static_cast<unsigned short>(-1) && population[ind_index][next.x][next.y].parent_dir != SELF) {
+		population[ind_index][next.x][next.y].num_children -= population[ind_index][child.x][child.y].num_children;
+		next = pos(next.x, next.y) + population[ind_index][next.x][next.y].parent_dir;
+	}
+	population[ind_index][next.x][next.y].num_children -= population[ind_index][child.x][child.y].num_children; // rootnode
+}
+
+int Population::get_parent_segment_size(pos& parent, int ind_index) {
+	pos next = pos(parent.x, parent.y) + population[ind_index][parent.x][parent.y].parent_dir;
+
+	while (next.x != static_cast<unsigned short>(-1) && population[ind_index][next.x][next.y].parent_dir != SELF) {
+		next = pos(next.x, next.y) + population[ind_index][next.x][next.y].parent_dir;
+	}	
+	return population[ind_index][next.x][next.y].num_children;
 }
 
 void Population::test_segment(pos& entry, int ind_index) {
@@ -493,28 +523,48 @@ void Population::draw_segments(int ind_index) {
 	std::cout << " test imshow " << std::endl;
 	int count = 0;
 	for (auto it = entry_s[ind_index].begin(); it != entry_s[ind_index].end(); it++) {
-		segment.at<cv::Vec3b>(it->y, it->x)[2] = color[count].r;
-		segment.at<cv::Vec3b>(it->y, it->x)[1] = color[count].g;
-		segment.at<cv::Vec3b>(it->y, it->x)[0] = color[count].b;
 		stack<pos> branch_points;
-		pos next = traverse_ST(*this, ind_index, *it, branch_points);
-
+		pos next = *it;
+		int count_pixels = 0;
 		while (next.x != static_cast<unsigned short>(-1)) {
 			segment.at<cv::Vec3b>(next.y, next.x)[2] = color[count].r;
 			segment.at<cv::Vec3b>(next.y, next.x)[1] = color[count].g;
 			segment.at<cv::Vec3b>(next.y, next.x)[0] = color[count].b;
 			next = traverse_ST(*this, ind_index, next, branch_points);
+			count_pixels++;
 		}
-		std::cout << count << std::endl;
-		
+		std::cout <<it->x << " "<< it->y << " " << count_pixels << std::endl;
 		count++;
 		if (count == 10) count = 0;
 	}
-	//std::cout << "show image" << std::endl;
+	std::cout << "show segment" << std::endl;
 	cv::namedWindow("image", 1);
 	//std::cout << "show image" << std::endl;
 	cv::imshow("image", segment);                   
-	cv::waitKey(0);
+	//cv::waitKey(0);
+}
+
+void Population::draw_segments_contour(int ind_index) {
+	cv::Mat segment = cv::imread(img_path, 1);
+
+	std::vector<pos>* edge_segment = edges_segment(ind_index);
+	RGB color(0, 255, 0); // green ?=
+	
+	std::cout << " test imshow " << std::endl;
+	for (int i = 0; i < entry_s[ind_index].size(); i++) {
+		for (auto it = edge_segment[i].begin(); it != edge_segment[i].end(); ++it) {
+			//std::cout << " it->y" << it->y << " " << it->x << std::endl;
+			segment.at<cv::Vec3b>(it->y, it->x)[2] = color.r;
+			segment.at<cv::Vec3b>(it->y, it->x)[1] = color.g;
+			segment.at<cv::Vec3b>(it->y, it->x)[0] = color.b;
+		}
+		std::cout << "i " << i << std::endl;
+	}
+	delete[] edge_segment;
+	//std::cout << "show image" << std::endl;
+	cv::namedWindow("contour", 1);
+	//std::cout << "show image" << std::endl;
+	cv::imshow("contour", segment);
 }
 
 cv::Mat test_image() {
@@ -570,34 +620,99 @@ cv::Mat test_image() {
 // NOT TESTED
 std::vector<pos>* Population::edges_segment(int ind_index) {
 	std::vector<pos>* segment = new std::vector<pos>[entry_s->size()];
+	stack<pos> branch_points;
 
-	for (int x = 0; x < get_im_w(); x++) {
-		for (int y = 0; y < get_im_h(); y++) {
-			if (x + 1 < get_im_w()) {
-				if (population[ind_index][x][y].entry != population[ind_index][x + 1][y].entry) {
-					segment[x*get_im_h() + y].push_back(pos(x, y));
-					continue;
-				}
+	int count = 0;
+	for (auto it = entry_s[ind_index].begin(); it != entry_s[ind_index].end(); ++it) {
+		pos next = *it;
+		int count_pixels = 0;
+		while (next.x != static_cast<unsigned short>(-1)) {
+			if (check_if_edge(next,ind_index) == 1) {
+				segment[count].push_back(next);
+				//std::cout << " new edge" << std::endl;
 			}
-			if( x - 1 > 0){
-				if (population[ind_index][x][y].entry != population[ind_index][x - 1][y].entry) {
-					segment[x*get_im_h() + y].push_back(pos(x, y));
-					continue;
-				}
-			}
-			if (y + 1 < get_im_h()) {
-				if (population[ind_index][x][y].entry != population[ind_index][x][y + 1].entry) {
-					segment[x*get_im_h() + y].push_back(pos(x, y));
-					continue;
-				}
-			}
-			if (y - 1 > 0) {
-				if (population[ind_index][x][y].entry != population[ind_index][y - 1][y].entry) {
-					segment[x*get_im_h() + y].push_back(pos(x, y));
-					continue;
-				}
-			}
+			next = traverse_ST(*this, ind_index, next, branch_points);
+			count_pixels++;
+		}
+		std::cout << it->x << " " <<it->y << " "<< count_pixels << " edges " << segment[count].size() <<std::endl;
+		count++;
+		remove_color(*this, ind_index, *it, branch_points);
+	}	
+	return segment;
+}
+
+void Population::create_segments(int ind_index, int segment_size, edge_priority_que& que, int n_segments) {
+
+	while (n_segments > 0 && !que.empty()) {
+		edge temp = que.top();
+		que.pop();
+		pos parent;
+		pos child;
+		pos parent_for_p1 = (temp.p1 + population[ind_index][temp.p1.x][temp.p1.y].parent_dir);
+		if (parent_for_p1 == temp.p2) {
+			parent = temp.p2;
+			child = temp.p1;
+		}
+		else {
+			parent = temp.p1;
+			child = temp.p2;
+		}
+		int n_segment_2 = get_parent_segment_size(parent,ind_index);
+		int n_segment = population[ind_index][child.x][child.y].num_children;
+
+		
+
+		if (n_segment_2 - n_segment> segment_size && n_segment> segment_size) {
+			
+			//std::cout << "parent" << parent.x << " " << parent.x << " child " << child.x << " " << child.y << std::endl;
+			set_dir_edge(parent, child, 0,ind_index);
+			//std::cout << "n_pixels " << population[ind_index][child.x][child.y].num_children;
+			//std::cout << " get_ parent " << get_n_segment(parent, ind_index) << " calculate " << n_segment_2 - n_segment << std::endl;
+			//std::cout << " get_ child " << get_n_segment(child, ind_index) << " calculate " <<  n_segment << std::endl;
+			change_parents_n_segment(parent, child, ind_index);
+			//int min_pixels = get_n_segment(child, ind_index);
+			//std::cout << " get_n " << min_pixels << std::endl;
+			entry_s[ind_index].push_back(child);
+			entry_s[ind_index].push_back(parent);
+			n_segments--;
 		}
 	}
-	return segment;
+}
+
+int Population::check_if_edge(pos curr,  int ind_index) {
+
+	if (curr.x == 0 || curr.y == 0 || curr.x + 1 == get_im_w() || curr.y +1 == get_im_h()) {
+		return 1;
+	}
+
+	if (population[ind_index][curr.x][curr.y].left == 0 & curr.x- 1 > 0) {
+		pos neighbour = curr + LEFT;
+ 		if (population[ind_index][neighbour.x][neighbour.y].entry != population[ind_index][curr.x][curr.y].entry) {
+			return 1;
+		}
+	}
+
+	if (population[ind_index][curr.x][curr.y].right == 0 & curr.x + 1 < get_im_w()) {
+		pos neighbour = curr + RIGHT;
+		if (population[ind_index][neighbour.x][neighbour.y].entry != population[ind_index][curr.x][curr.y].entry) {
+			return 1;
+		}
+	}
+
+	if (population[ind_index][curr.x][curr.y].up == 0 && curr.y - 1 > 0) {
+		pos neighbour = curr + UP;
+		if (population[ind_index][neighbour.x][neighbour.y].entry != population[ind_index][curr.x][curr.y].entry) {
+			return 1;
+		}
+	}
+
+	if (population[ind_index][curr.x][curr.y].down == 0 && curr.y + 1 < get_im_h()) {
+		pos neighbour = curr + DOWN;
+		if (population[ind_index][neighbour.x][neighbour.y].entry != population[ind_index][curr.x][curr.y].entry) {
+			return 1;
+		}
+	}
+	
+	return 0;
+	
 }

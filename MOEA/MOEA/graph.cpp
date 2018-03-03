@@ -170,12 +170,13 @@ void remove_color(Population &p, int ind_index, pos entry, std::stack<pos> &bran
 	}
 }
 
+
 void set_num_children(Population &p, int ind_index, pos entry) {
 	std::stack<pos> branch_points;
 	pos prev(entry.x, entry.y);
 	pos next;
 	pos r_next;
-	p.get_node(ind_index, entry)->entry = entry;
+	//p.get_node(ind_index, entry)->entry = entry;
 
 	int counted_children;
 	int last_num_branch_points = 0;
@@ -187,9 +188,9 @@ void set_num_children(Population &p, int ind_index, pos entry) {
 
 			// Set entry while you are at it
 			node *n_next = p.get_node(ind_index, next);
-			if (next.x != static_cast<unsigned short>(-1)) {
+			/*if (next.x != static_cast<unsigned short>(-1)) {
 				n_next->entry = entry;
-			}
+			}*/
 
 			node *n_prev = p.get_node(ind_index, prev); // TODO; fix
 
@@ -252,3 +253,4 @@ void set_num_children(Population &p, int ind_index, pos entry) {
 		}
 	}
 }
+
