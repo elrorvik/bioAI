@@ -1,6 +1,7 @@
 #pragma once
 #ifndef VAR_OPERATORS
 #define VAR_OPERATORS
+
 #include <vector>
 
 class Population;

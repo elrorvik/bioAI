@@ -54,8 +54,13 @@ public:
 	//int check_if_edge(pos curr, int ind_index);
 	int check_if_edge(pos curr, int ind_index, int cout); // checkk if boarder
 
-	int set_segment_value(pos& entry, int ind_index);
+	void merge_segments(int ind_index, edge merge_nodes);
+	void split_segment(int ind_index, edge split_nodes);
+
 	void set_dir_edge(pos& parent, pos& child, int on, int ind_index);
+	void set_dir_edge_and_parent(pos& parent, pos& child, int on, int ind_index);
+	int set_start_segment_entry(pos& entry, int ind_index);
+	int set_segment_entry(pos& entry, pos& set, int ind_index);
 
 
 	int create_segments(int ind_index, int segment_size, edge_priority_que& que, int n_segments);

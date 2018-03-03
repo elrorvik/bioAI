@@ -4,6 +4,7 @@
 #include "var_operators.h"
 //#include<vector>
 
+
 std::vector<active_edge_t> crossover_uniform_list_representation(Population &p, int parent_A, int parent_B) {
 	std::vector<active_edge_t> parent_A_chromosome = p.get_edge_candidates(parent_A);
 	std::vector<active_edge_t> parent_B_chromosome = p.get_edge_candidates(parent_B);
@@ -20,14 +21,13 @@ std::vector<active_edge_t> crossover_uniform_list_representation(Population &p, 
 int  mutation_split_segments(Population &p, int ind_index) {
 	std::vector<active_edge_t> chromosome = p.get_edge_candidates(ind_index);
 	int loci = rand() % chromosome.size();
-	
+
 	int count = 10;
-	while (chromosome[loci].active != 1 && count > 0) {
-		loci= rand() % chromosome.size();
+	while (chromosome[loci].active == 0 && count > 0) {
+		loci = rand() % chromosome.size();
 		count--;
 	}
-
-	if (chromosome[loci].active == 0) {
+	if (chromosome[loci].active == 1) {
 		// change segment
 		return 1;
 	}
@@ -41,11 +41,11 @@ int  mutation_merge_segments(Population &p, int ind_index) {
 	int loci = rand() % chromosome.size();
 
 	int count = 10;
-	while (chromosome[loci].active != 0 && count > 0) {
+	while (chromosome[loci].active == 1 && count > 0) {
 		loci = rand() % chromosome.size();
 		count--;
 	}
-	if (chromosome[loci].active == 0) {
+	if (chromosome[loci].active == 1) {
 		// change segment
 		return 1;
 	}
