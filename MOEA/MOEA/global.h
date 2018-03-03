@@ -5,6 +5,9 @@
 
 const int N_IND = 1;
 const int N_SEG = 100;
+const int N_SEG_TYPES = 2;
+const int SEGMENT_SIZE[N_SEG_TYPES] = { 1000,10000 };
+const int N_PIX_SEGMENT[N_SEG_TYPES] = {100,60}
 //const std::string img_path  = "..//test_img//86016//Test image.jpg"; // circle
 //const std::string img_path = "..//test_img//147091//Test image.jpg"; // three
 //const std::string img_path  = "..//test_img//160068//Test image.jpg"; // Leopart

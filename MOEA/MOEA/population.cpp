@@ -530,7 +530,7 @@ void Population::draw_segments(int ind_index) {
 	color.push_back(RGB(120, 120, 120));
 	color.push_back(RGB(0, 120, 120)); // turquois
 	color.push_back(RGB(0, 0, 120));
-	std::cout << " test imshow " << std::endl;
+	std::cout << " test draw segments " << std::endl;
 	int count = 0;
 	for (auto it = entry_s[ind_index].begin(); it != entry_s[ind_index].end(); it++) {
 		stack<pos> branch_points;
@@ -543,11 +543,11 @@ void Population::draw_segments(int ind_index) {
 			next = traverse_ST(*this, ind_index, next, branch_points);
 			count_pixels++;
 		}
-		std::cout << count << " " <<it->x << " "<< it->y << " " << count_pixels << std::endl;
+		//std::cout << count << " " <<it->x << " "<< it->y << " " << count_pixels << std::endl;
 		count++;
 		if (count == 10) count = 0;
 	}
-	std::cout << "show segment" << std::endl;
+	//std::cout << "show segment" << std::endl;
 	cv::namedWindow("image", 1);
 	//std::cout << "show image" << std::endl;
 	cv::imshow("image", segment);                   
@@ -560,7 +560,7 @@ void Population::draw_segments_contour(int ind_index) {
 	std::vector<pos>* edge_segment = edges_segment(ind_index);
 	RGB color(0, 255, 0); // green ?=
 	
-	std::cout << " test imshow " << std::endl;
+	std::cout << " test contour plot imshow " << std::endl;
 	for (int i = 0; i < entry_s[ind_index].size(); i++) {
 		for (auto it = edge_segment[i].begin(); it != edge_segment[i].end(); ++it) {
 			//std::cout << " it->y" << it->y << " " << it->x << std::endl;
@@ -636,14 +636,14 @@ std::vector<pos>* Population::edges_segment(int ind_index) {
 	for (auto it = entry_s[ind_index].begin(); it != entry_s[ind_index].end(); ++it) {
 		pos next = *it;
 		int count_pixels = 0;
-		int cout;
-		if (next.x == 35 && next.y == 317) {
+		int cout = 0;
+		/*if (next.x == 35 && next.y == 317) {
 			std::cout << " in segment " << std::endl;
 			cout = 1;
 		}
 		else {
 			cout = 0;
-		}
+		}*/
 		while (next.x != static_cast<unsigned short>(-1)) {
 			if (check_if_edge(next,ind_index,cout) == 1) {
 				segment[count].push_back(next);
@@ -652,7 +652,7 @@ std::vector<pos>* Population::edges_segment(int ind_index) {
 			next = traverse_ST(*this, ind_index, next, branch_points);
 			count_pixels++;
 		}
-		std::cout << it->x << " " <<it->y << " "<< count_pixels << " edges " << segment[count].size() <<std::endl;
+		//std::cout << it->x << " " <<it->y << " "<< count_pixels << " edges " << segment[count].size() <<std::endl;
 		count++;
 		remove_color(*this, ind_index, *it, branch_points);
 	}	
