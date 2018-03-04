@@ -435,8 +435,6 @@ void Population::MOEA_next_generation() {
 			}
 			edge_candidates[n_pop - 1] = crossover_uniform_list_representation(*this, parents[i - 1], parents[i]);
 		}
-		
-		
 
 	}*/
 
