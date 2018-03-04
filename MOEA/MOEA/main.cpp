@@ -12,7 +12,13 @@ int main() {
 	
 	Population p;
 	p.initialize_population();
-	mutation_split_segments(p, 0);
+	
+	/*int generation = 0;
+	while (generation < N_GENRATIONS) {
+		p.MOEA_next_generation();
+		generation++;
+	}*/
+	
 
 	//std::cout << p.get_im_h() *p.get_im_w() << std::endl;
 

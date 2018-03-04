@@ -6,6 +6,8 @@
 #include <list>
 #include <time.h>
 #include "graph.h"
+#include "selection.h"
+#include "var_operators.h"
 
 // opencv 
 #include <opencv2/highgui/highgui.hpp>
@@ -42,7 +44,7 @@ struct hash<edge>
 
 
 Population::~Population() {
-	for (int ind_i = 0; ind_i < N_IND; ind_i++) {
+	for (int ind_i = 0; ind_i < N_IND+N_PARENTS; ind_i++) {
 		for (int col_i = 0; col_i < get_im_w(); col_i++) {
 			delete [] population[ind_i][col_i] ;
 		}
@@ -52,7 +54,7 @@ Population::~Population() {
 
 	//delete[] edge_candidates;
 	delete[] entry_s;
-	//delete[] edge_candidates;
+	delete[] edge_candidates;
 }
 
 Population::Population() {
@@ -67,15 +69,15 @@ Population::Population() {
 
 	int im_h = im.rows;
 	int im_w = im.cols;
-	population = new node**[N_IND];
-	for (int ind_i = 0; ind_i < N_IND; ind_i++) {
+	population = new node**[N_IND+N_PARENTS];
+	for (int ind_i = 0; ind_i < N_IND+ N_PARENTS; ind_i++) {
 		population[ind_i] = new node*[im_w];
 		for (int col_i = 0; col_i < im_w; col_i++) {
 			population[ind_i][col_i] = new node[im_h]{};
 		}
 	}
-	entry_s = new std::vector<pos>[N_IND];
-	edge_candidates = new std::vector<active_edge_t>[N_IND];
+	entry_s = new std::vector<pos>[N_IND+N_PARENTS];
+	edge_candidates = new std::vector<active_edge_t>[N_IND+N_PARENTS];
 }
 
 /*node** Population::get_individual(int ind_index) {
@@ -416,27 +418,54 @@ void Population::initialize_population() {
 	//cv::waitKey(0);
 }
 
-
+// NB NOT TESTED !!!!
+// CHANGED CONSTRUCTOR TO ADD POPULATION SUCH THAT IT IS N_IND + N_PARENTS
 void Population::MOEA_next_generation() {
-	/*
+	
 	// Select parents:
-	std::vector<int> parents = rank_tournament_selection(*this, entry_s, n_pop, 10, N_PARENTS);
-	for (int i = 0; i < N_PARENTS; i++) {
+	int n_pop = N_IND; // what is this variable? what is the differnce n_pop and N_IND? Is it the current number in population?
+	int tournament_size = 10;
 
-		double crossover_outcome = (rand() % 1000) / 1000.0;
+	// find parentss
+	std::vector<int> parents = rank_tournament_selection(*this, entry_s, n_pop, tournament_size, N_PARENTS); // returns list of parent index
+	for (int i = 0; i < N_PARENTS;) {
+		double rand_num = (rand() % 1000) / 1000.0;
 		population[n_pop++] = population[parents[i++]];
-		if (i >= N_PARENTS) continue;
-		population[n_pop++] = population[parents[i]];
-		if (crossover_outcome < CROSSOVER_RATE) {
-			edge_candidates[n_pop - 2] = crossover_uniform_list_representation(*this, parents[i - 1], parents[i]);
-			for (int gene_index = 0; gene_index < edge_candidates[n_pop - 2].size(); gene_index++) {
-				pos asd;
-				if (false);
-			}
+		if (i >= N_PARENTS) break; // before: continue
+		population[n_pop++] = population[parents[i++]]; // should it be deep copy? 
+		if (rand_num < CROSSOVER_RATE) {
+			edge_candidates[n_pop - 2] = crossover_uniform_list_representation(*this, parents[i - 1], parents[i]); // burde de ikke bytte parameter rekkefølge
 			edge_candidates[n_pop - 1] = crossover_uniform_list_representation(*this, parents[i - 1], parents[i]);
 		}
+	}
+	// mutations:
+	double mutation_rate = MUT_SPLIT_PERC + MUT_MERGE_PERC;
+	if (mutation_rate > 1.0) std::cout << " to high mutation rate" << std::endl;
+	for (int i = N_IND; i < n_pop; i++) {
+		double rand_num = (rand() % 1000) / 1000.0;
+		if (rand_num < MUTATION_RATE) {
+			rand_num = (rand() % 1000) / 1000.0;
+			if (rand_num < MUT_MERGE_PERC) {
+				mutation_merge_segments(*this, i);
+			}
+			else if (rand_num < MUT_MERGE_PERC + MUT_MERGE_PERC) {
+				mutation_split_segments(*this, i);
+			}
+		}
+	}
+	
+	std::vector<int> survivors = NSGAII(*this, entry_s, n_pop);
+	std::vector<int> non_survivors;
+	non_survivors.reserve(n_pop - N_IND);
+	for (int i = 0; i < n_pop; i++) {
+		if (find(survivors.begin(), survivors.end(), i) == survivors.end() && i > N_IND ) non_survivors.push_back(i); // don't care if it is higher than N_IND
+	}
+	if (survivors.size() != N_IND - non_survivors.size()) std::cout << " not same amount survivors and non survivors" << std::endl;
+	for (int i = 0; i < non_survivors.size(); i++) {
+		population[non_survivors[i]] = population[survivors[i]]; // again; should it be deep copy? Look for pointer error in destructor.
+	}
 
-	}*/
+	// return pareto rank 0 ? ( to main loop ? or ??)
 
 }
 std::vector<active_edge_t>& Population::get_edge_candidates(int ind_index) {
