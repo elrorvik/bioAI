@@ -20,6 +20,9 @@ class Population{
 private:
 	cv::Mat im;
 	node ***population;
+	double *fitness_1;
+	double *fitness_2;
+	int *rank;
 	std::vector<pos> * entry_s;
 	int n_segments;
 	int n_pop;

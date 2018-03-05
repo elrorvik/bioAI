@@ -45,7 +45,7 @@ struct hash<edge>
 
 
 Population::~Population() {
-	for (int ind_i = 0; ind_i < N_IND+N_PARENTS; ind_i++) {
+	for (int ind_i = 0; ind_i < N_IND+N_OFFSPRING; ind_i++) {
 		for (int col_i = 0; col_i < get_im_w(); col_i++) {
 			delete [] population[ind_i][col_i] ;
 		}
@@ -56,6 +56,9 @@ Population::~Population() {
 	//delete[] edge_candidates;
 	delete[] entry_s;
 	delete[] edge_candidates;
+	delete[] fitness_1;
+	delete[] fitness_2;
+	delete[] rank;
 }
 
 Population::Population() {
@@ -70,15 +73,18 @@ Population::Population() {
 
 	int im_h = im.rows;
 	int im_w = im.cols;
-	population = new node**[N_IND+N_PARENTS];
-	for (int ind_i = 0; ind_i < N_IND+ N_PARENTS; ind_i++) {
+	population = new node**[N_IND+N_OFFSPRING];
+	for (int ind_i = 0; ind_i < N_IND+ N_OFFSPRING; ind_i++) {
 		population[ind_i] = new node*[im_w];
 		for (int col_i = 0; col_i < im_w; col_i++) {
 			population[ind_i][col_i] = new node[im_h]{};
 		}
 	}
-	entry_s = new std::vector<pos>[N_IND+N_PARENTS];
-	edge_candidates = new std::vector<active_edge_t>[N_IND+N_PARENTS];
+	entry_s = new std::vector<pos>[N_IND+N_OFFSPRING];
+	edge_candidates = new std::vector<active_edge_t>[N_IND+N_OFFSPRING];
+	fitness_1 = new double[N_IND + N_OFFSPRING];
+	fitness_2 = new double[N_IND + N_OFFSPRING];
+	rank = new int[N_IND + N_OFFSPRING];
 }
 
 /*node** Population::get_individual(int ind_index) {
@@ -418,26 +424,29 @@ void Population::initialize_population() {
 }
 
 // NB NOT TESTED !!!!
-// CHANGED CONSTRUCTOR TO ADD POPULATION SUCH THAT IT IS N_IND + N_PARENTS
+// CHANGED CONSTRUCTOR TO ADD POPULATION SUCH THAT IT IS N_IND + N_OFFSPRING
 void Population::MOEA_next_generation() {
+	std::cout << "Next generation..." << std::endl;
 	
 	// Select parents:
 	int n_pop = N_IND; // what is this variable? what is the differnce n_pop and N_IND? Is it the current number in population?
 	int tournament_size = 10;
 
 	// find parentss
-	std::vector<int> parents = rank_tournament_selection(*this, entry_s, n_pop, tournament_size, N_PARENTS); // returns list of parent index
-	for (int i = 0; i < N_PARENTS;) {
+	std::vector<int> parents = rank_tournament_selection(*this, entry_s, n_pop, tournament_size, N_OFFSPRING); // returns list of parent index
+	std::cout << "Creating offspring" << std::endl;
+	for (int i = 0; i < N_OFFSPRING;) {
 		double rand_num = (rand() % 1000) / 1000.0;
 		population[n_pop++] = population[parents[i++]];
-		if (i >= N_PARENTS) continue;
-		population[n_pop++] = population[parents[i]];
-		if (outcome < CROSSOVER_RATE) {
-			edge_candidates[n_pop - 2] = crossover_uniform_list_representation(*this, parents[i - 1], parents[i]);
-			edge_candidates[n_pop - 1] = crossover_uniform_list_representation(*this, parents[i], parents[i - 1]);
+		if (i >= N_OFFSPRING) break;
+		population[n_pop++] = population[parents[i++]];
+		if (rand_num < CROSSOVER_RATE) {
+			edge_candidates[n_pop - 2] = crossover_uniform_list_representation(*this, parents[i - 2], parents[i - 1], n_pop - 2);
+			edge_candidates[n_pop - 1] = crossover_uniform_list_representation(*this, parents[i - 1], parents[i - 2], n_pop - 1);
 		}
 	}
 	// mutations:
+	std::cout << "Mutating offspring" << std::endl;
 	double mutation_rate = MUT_SPLIT_PERC + MUT_MERGE_PERC;
 	if (mutation_rate > 1.0) std::cout << " to high mutation rate" << std::endl;
 	for (int i = N_IND; i < n_pop; i++) {
@@ -453,6 +462,7 @@ void Population::MOEA_next_generation() {
 		}
 	}
 	
+	std::cout << "Selecting survivors" << std::endl;
 	std::vector<int> survivors = NSGAII(*this, entry_s, n_pop);
 	std::vector<int> non_survivors;
 	non_survivors.reserve(n_pop - N_IND);

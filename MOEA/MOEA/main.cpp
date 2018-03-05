@@ -5,6 +5,7 @@
 #include <iostream>
 #include <ctime>
 #include "var_operators.h"
+#include "global.h"
 
 int main() {
 	srand(time(0));
@@ -13,11 +14,12 @@ int main() {
 	Population p;
 	p.initialize_population();
 	
-	/*int generation = 0;
-	while (generation < N_GENRATIONS) {
+	int generation = 0;
+	while (generation < N_GENERATIONS) {
 		p.MOEA_next_generation();
+		std::cout << "next generation" << std::endl;
 		generation++;
-	}*/
+	}
 	
 
 	//std::cout << p.get_im_h() *p.get_im_w() << std::endl;
