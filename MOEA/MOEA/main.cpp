@@ -6,6 +6,7 @@
 #include <ctime>
 #include "var_operators.h"
 #include "global.h"
+#include "file.h"
 
 int main() {
 	srand(time(0));
@@ -13,13 +14,21 @@ int main() {
 	
 	Population p;
 	p.initialize_population();
+	p.draw_segments_contour(0, 0);
+	cv::Mat img = p.draw_segments_black_contour(0);
+	//(window_name, 1);
+	//cv::imshow(window_name, img);
+	writ_image_to_file(0, img);
+	cv::waitKey(0);
+	//writ_image_to_file(0, cv::Mat img)
+
 	
-	int generation = 0;
+	/*int generation = 0;
 	while (generation < N_GENERATIONS) {
 		p.MOEA_next_generation();
 		std::cout << "next generation" << std::endl;
 		generation++;
-	}
+	}*/
 	
 
 	//std::cout << p.get_im_h() *p.get_im_w() << std::endl;

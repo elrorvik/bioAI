@@ -52,6 +52,7 @@ public:
 
 	void draw_segments(int ind_index);
 	void draw_segments_contour(int ind_index, int name);
+	cv::Mat draw_segments_black_contour(int ind_index);
 	std::vector<pos>* edges_segment(int ind_index);
 	
 	//int check_if_edge(pos curr, int ind_index);

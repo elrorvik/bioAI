@@ -681,12 +681,34 @@ void Population::draw_segments(int ind_index) {
 	//cv::waitKey(0);
 }
 
+cv::Mat Population::draw_segments_black_contour(int ind_index) {
+
+	cv::Mat image(get_im_h(), get_im_w(), CV_8UC3, cv::Scalar(255, 255, 255));
+
+	std::vector<pos>* edge_segment = edges_segment(ind_index);
+	RGB color(0, 0, 0); // black
+	
+	std::cout << " test contour plot imshow " << std::endl;
+	for (int i = 0; i < entry_s[ind_index].size(); i++) {
+		for (auto it = edge_segment[i].begin(); it != edge_segment[i].end(); ++it) {
+			image.at<cv::Vec3b>(it->y, it->x)[2] = color.r;
+			image.at<cv::Vec3b>(it->y, it->x)[1] = color.g;
+			image.at<cv::Vec3b>(it->y, it->x)[0] = color.b;
+		}
+	}
+	delete[] edge_segment;
+	//std::string window_name = "contour " + to_string(name);
+	//cv::namedWindow(window_name, 1);
+	//cv::imshow(window_name, segment);
+	return image;
+}
+
 void Population::draw_segments_contour(int ind_index, int name) {
 	cv::Mat segment = cv::imread(img_path, 1);
 
 	std::vector<pos>* edge_segment = edges_segment(ind_index);
 	RGB color(0, 255, 0); // green ?=
-	
+
 	std::cout << " test contour plot imshow " << std::endl;
 	for (int i = 0; i < entry_s[ind_index].size(); i++) {
 		for (auto it = edge_segment[i].begin(); it != edge_segment[i].end(); ++it) {
