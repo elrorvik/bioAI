@@ -204,8 +204,8 @@ void Population::initialize_population() {
 	}
 
 	// Calculating fitness and rank of individuals
-	MOEA_fitness(*this, n_pop, entry_s, fitness_1, fitness_2);
-	MOEA_rank(n_pop, rank, fitness_1, fitness_2);
+	MOEA_fitness(*this, N_IND, entry_s, fitness_1, fitness_2);
+	MOEA_rank(N_IND, rank, fitness_1, fitness_2);
 
 
 	//draw_segments_contour(0,0);
@@ -281,7 +281,8 @@ void Population::MOEA_next_generation() {
 	//std::cin.get();
 	for (int i = 0; i < non_survivors.size(); i++) {
 		//std::cout << " switch " << non_survivors[i] << " " << survivors_offspring[i] << std::endl;
-		population[non_survivors[i]] = population[survivors_offspring[i]]; // again; should it be deep copy? Look for pointer error in destructor.
+		copy_individual(non_survivors[i], survivors_offspring[i]);
+
 	}
 
 	// return pareto rank 0 ? ( to main loop ? or ??)
@@ -724,7 +725,7 @@ void Population::copy_individual(int l_index, int r_index) {
 	}
 	entry_s[l_index] = entry_s[r_index];
 	edge_candidates[l_index] = edge_candidates[r_index];
-	fitness_1[l_index] = fitness_2[r_index];
-	fitness_2[l_index] = fitness_2[r_index];
-	rank[l_index] = rank[r_index];
+	fitness_1[l_index].first = fitness_2[r_index].first;
+	fitness_2[l_index].first = fitness_2[r_index].first;
+	rank[l_index].first = rank[r_index].first;
 }
