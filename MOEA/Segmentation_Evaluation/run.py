@@ -8,16 +8,16 @@ from fileReader import readTextFile
 #studentFolder = "86016_student" # you may have to specify the complete path
 #optimalFolder = "147091" # you may have to specify the complete path
 #studentFolder = "147091_student" # you may have to specify the complete path
-#optimalFolder = "160068" # you may have to specify the complete path
-#studentFolder = "160068_student" # you may have to specify the complete path
+optimalFolder = "160068" # you may have to specify the complete path
+studentFolder = "160068_student" # you may have to specify the complete path
 #optimalFolder = "176035" # you may have to specify the complete path
 #studentFolder = "176035_student" # you may have to specify the complete path
 #optimalFolder = "178054" # you may have to specify the complete path
 #studentFolder = "178054_student" # you may have to specify the complete path
 #optimalFolder = "216066" # you may have to specify the complete path
 #studentFolder = "216066_student" # you may have to specify the complete path
-optimalFolder = "353013" # you may have to specify the complete path
-studentFolder = "353013_student" # you may have to specify the complete path
+#optimalFolder = "353013" # you may have to specify the complete path
+#studentFolder = "353013_student" # you may have to specify the complete path
 
 colorValueSlackRange = 40
 blackValueThreshold = 100 # colors below 100 is black

@@ -3,29 +3,31 @@
 #ifndef GLOBAL_H
 #define GLOBAL_H
 
-const int N_GENERATIONS = 100;
-const int N_IND = 10;
-const int N_SEG = 100;
+const int N_GENERATIONS = 70;
+const int N_IND = 40;
 const int N_SEG_TYPES = 2;
-const double CROSSOVER_RATE = 0.5;
-const double MUTATION_RATE = 0.4;
-const int N_OFFSPRING = 6;
+
+const double CROSSOVER_RATE = 0.6;
+const double MUTATION_RATE = 0.9;
+const int N_OFFSPRING = 10;
 const double MUT_SPLIT_PERC = 0.1;
 const double MUT_MERGE_PERC = 0.9;
-const int SEGMENT_SIZE[N_SEG_TYPES] = { 1000,10000 };
-const int N_PIX_SEGMENT[N_SEG_TYPES] = { 100,60 };
+const int SEGMENT_SIZE[N_SEG_TYPES] = { 1000,5000 };
+const int N_PIX_SEGMENT[N_SEG_TYPES] = { 10,3};
+const int N_EDGES = 100;
 //const int SEGMENT_SIZE[N_SEG_TYPES] = { 1000,5000 };
 //const int N_PIX_SEGMENT[N_SEG_TYPES] = { 3,3 };
 
 //const std::string img_path  = "..//test_img//86016//Test image.jpg"; // circle
 //const std::string img_path = "..//test_img//147091//Test image.jpg"; // three
-//const std::string img_path  = "..//test_img//160068//Test image.jpg"; // Leopart
+const std::string img_path  = "..//test_img//160068//Test image.jpg"; // Leopart
+const std::string WRITE_PATH = "..//Segmentation_Evaluation//160068_student//"; // ørken
 //const std::string img_path  = "..//test_img//176035//Test image.jpg"; // Land
 //const std::string img_path  = "..//test_img//178054//Test image.jpg"; // ørken
 //const std::string WRITE_PATH = "..//Segmentation_Evaluation//178054_student//"; // ørken
 //const std::string img_path  = "..//test_img//216066//Test image.jpg"; // stein og ørken
-const std::string img_path  = "..//test_img//353013//Test image.jpg"; // blomst
-const std::string WRITE_PATH = "..//Segmentation_Evaluation//353013_student//"; // ørken
+//const std::string img_path  = "..//test_img//353013//Test image.jpg"; // blomst
+//const std::string WRITE_PATH = "..//Segmentation_Evaluation//353013_student//"; // ørken
 
 
 

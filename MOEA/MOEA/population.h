@@ -67,7 +67,7 @@ public:
 	int set_segment_entry(pos& entry, pos& set, int ind_index);
 
 
-	int create_segments(int ind_index, int segment_size, edge_priority_que& que, int n_segments);
+	int create_segments(int ind_index, int segment_size, edge_priority_que& que, edge_priority_que& reserve_que, int n_segments);
 	void change_parents_n_segment(pos& parent, pos& child, int ind_index);
 
 	//void initialize_n_children(int ind_index, std::map<edge, int> &edgeChildren);

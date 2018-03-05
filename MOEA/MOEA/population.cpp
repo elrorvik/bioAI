@@ -139,12 +139,49 @@ void Population::initialize_individual_PrimsMST(int ind_index){
 	set_num_children(*this, ind_index, pos(start_mst_x, start_mst_y));
 	
 	// creating segments
+	std::priority_queue<edge, std::vector<edge>, edge_comparator> reserve_que;
 	int edge_candidate_count = 0;
 	for (int i = 0; i < N_SEG_TYPES; i++) {
 		int segment_size = SEGMENT_SIZE[i]; // three = 1000
 		int n_segments = N_PIX_SEGMENT[i]; // how many segments currently made // three 100
 		
-		edge_candidate_count += n_segments - create_segments(ind_index, segment_size, que, n_segments);
+		edge_candidate_count += n_segments - create_segments(ind_index, segment_size, que,reserve_que, n_segments);
+	}
+	//std::cout << "Extra edges " <<N_EDGES - edge_candidate_count <<  std::endl;
+	for (int i = 0; i < N_EDGES - edge_candidate_count;) {
+		if (!que.empty()) {
+			std::cout << " que" << std::endl;
+			edge temp = que.top();
+			que.pop();
+			pos parent;
+			pos child;
+			pos parent_for_p1 = (temp.p1 + population[ind_index][temp.p1.x][temp.p1.y].parent_dir);
+			if (parent_for_p1 == temp.p2) {
+				parent = temp.p2;
+				child = temp.p1;
+			}
+			else {
+				parent = temp.p1;
+				child = temp.p2;
+			}
+			int n_segment_2 = get_parent_segment_size(parent, ind_index);
+			int n_segment = population[ind_index][child.x][child.y].num_children;
+
+			if (n_segment_2 - n_segment > 1000 && n_segment > 1000) {
+				edge_candidates[ind_index].push_back({ temp, true });
+				i++;
+			}
+		}
+		else if (!reserve_que.empty()) {
+			//std::cout << " reserve que" << std::endl;
+			edge temp = reserve_que.top();
+			reserve_que.pop();
+			edge_candidates[ind_index].push_back({ temp, true });
+			i++;
+		}
+		else {
+			break;
+		}
 	}
 	
 	//std::cout << "candidate edges size" << edge_candidates.size() << " count " << edge_candidate_count << std::endl;
@@ -247,8 +284,10 @@ void Population::MOEA_next_generation() {
 			rand_num = (rand() % 1000) / 1000.0;
 			if (rand_num < MUT_MERGE_PERC) {
 				mutation_merge_segments(*this, i);
+				mutation_merge_segments(*this, i);
+
 			}
-			else if (rand_num < MUT_MERGE_PERC + MUT_MERGE_PERC) {
+			else if (rand_num < MUT_MERGE_PERC + MUT_SPLIT_PERC) {
 				mutation_split_segments(*this, i);
 			}
 		}
@@ -278,6 +317,10 @@ void Population::MOEA_next_generation() {
 		//std::cout << " switch " << non_survivors[i] << " " << survivors_offspring[i] << std::endl;
 		copy_individual(non_survivors[i], survivors_offspring[i]);
 
+	}
+
+	for (int i = 0; i < N_IND; i++) {
+		std::cout << " rank " << rank[i].first << " fitness " << fitness_1[i].first << " fitness 2" << fitness_2[i].first << std::endl;
 	}
 
 	// return pareto rank 0 ? ( to main loop ? or ??)
@@ -617,7 +660,7 @@ std::vector<pos>* Population::edges_segment(int ind_index) {
 	return segment;
 }
 
-int Population::create_segments(int ind_index, int segment_size, edge_priority_que& que, int n_segments) {
+int Population::create_segments(int ind_index, int segment_size, edge_priority_que& que, edge_priority_que& reserve_que, int n_segments) {
 
 	while (n_segments > 0 && !que.empty()) {
 		edge temp = que.top();
@@ -649,6 +692,8 @@ int Population::create_segments(int ind_index, int segment_size, edge_priority_q
 			entry_s[ind_index].push_back(parent);
 			edge_candidates[ind_index].push_back({ temp, false });
 			n_segments--;
+		}if (n_segment_2 - n_segment > segment_size/2.0 && n_segment > segment_size/2.0) {
+			reserve_que.push(temp);
 		}
 	}
 	return n_segments;
@@ -727,9 +772,9 @@ void Population::copy_individual(int l_index, int r_index) {
 
 void Population::draw_pareto_front() {
 	for (int i = 0; i < N_IND; i++) {
-		if (rank[i].first == 0) {
+		if (rank[i].first <6) {
 			cv::Mat img = draw_segments_black_contour(i);
-			write_image_to_file(i, img);
+			write_image_to_file(rank[i].first, img);
 		}
 	}
 }
