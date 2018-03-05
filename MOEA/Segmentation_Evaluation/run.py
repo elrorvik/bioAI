@@ -16,8 +16,13 @@ studentFolder = "160068_student" # you may have to specify the complete path
 #studentFolder = "178054_student" # you may have to specify the complete path
 #optimalFolder = "216066" # you may have to specify the complete path
 #studentFolder = "216066_student" # you may have to specify the complete path
+<<<<<<< HEAD
 #optimalFolder = "353013" # you may have to specify the complete path
 #studentFolder = "353013_student" # you may have to specify the complete path
+=======
+optimalFolder = "86016" # you may have to specify the complete path
+studentFolder = "86016_student" # you may have to specify the complete path
+>>>>>>> 5a81241e2faa60016eab3c842824c0a9bc4155f5
 
 colorValueSlackRange = 40
 blackValueThreshold = 100 # colors below 100 is black

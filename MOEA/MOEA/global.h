@@ -3,6 +3,7 @@
 #ifndef GLOBAL_H
 #define GLOBAL_H
 
+
 const int N_GENERATIONS = 70;
 const int N_IND = 40;
 const int N_SEG_TYPES = 2;
@@ -18,6 +19,30 @@ const int N_EDGES = 100;
 //const int SEGMENT_SIZE[N_SEG_TYPES] = { 1000,5000 };
 //const int N_PIX_SEGMENT[N_SEG_TYPES] = { 3,3 };
 
+/*
+//const int N_GENERATIONS = 100;
+const int N_IND = 10;
+const int N_SEG_TYPES = 2;
+const double CROSSOVER_RATE = 0.5;
+const double MUTATION_RATE = 0.5;
+const int N_OFFSPRING = 6;
+const double MUT_SPLIT_PERC = 0.1;
+const double MUT_MERGE_PERC = 0.9;
+
+//Desert Circle
+const int N_GENERATIONS = 200;
+const int SEGMENT_SIZE[N_SEG_TYPES] = { 1000,10000 };
+const int N_PIX_SEGMENT[N_SEG_TYPES] = { 60,20 };
+const std::string img_path = "..//test_img//86016//Test image.jpg";
+const std::string WRITE_PATH = "..//Segmentation_Evaluation//86016_student//";
+
+//Flowers, low amount of starting segments
+//const int SEGMENT_SIZE[N_SEG_TYPES] = { 1000,10000 };
+//const int N_PIX_SEGMENT[N_SEG_TYPES] = { 60,20 };
+//const std::string img_path  = "..//test_img//353013//Test image.jpg"; // blomst
+//const std::string WRITE_PATH = "..//Segmentation_Evaluation//353013_student//";
+*/
+
 //const std::string img_path  = "..//test_img//86016//Test image.jpg"; // circle
 //const std::string img_path = "..//test_img//147091//Test image.jpg"; // three
 const std::string img_path  = "..//test_img//160068//Test image.jpg"; // Leopart
@@ -27,7 +52,11 @@ const std::string WRITE_PATH = "..//Segmentation_Evaluation//160068_student//"; 
 //const std::string WRITE_PATH = "..//Segmentation_Evaluation//178054_student//"; // ørken
 //const std::string img_path  = "..//test_img//216066//Test image.jpg"; // stein og ørken
 //const std::string img_path  = "..//test_img//353013//Test image.jpg"; // blomst
+<<<<<<< HEAD
 //const std::string WRITE_PATH = "..//Segmentation_Evaluation//353013_student//"; // ørken
+=======
+//const std::string WRITE_PATH = "..//Segmentation_Evaluation//353013_student//";
+>>>>>>> 5a81241e2faa60016eab3c842824c0a9bc4155f5
 
 
 
