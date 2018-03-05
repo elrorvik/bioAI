@@ -262,13 +262,26 @@ void Population::MOEA_next_generation() {
 	MOEA_rank(n_pop, rank, fitness_1, fitness_2);
 	std::vector<int> survivors = NSGAII(*this, entry_s, n_pop, rank, fitness_1, fitness_2);
 	std::vector<int> non_survivors;
-	non_survivors.reserve(n_pop - N_IND);
-	for (int i = 0; i < n_pop; i++) {
-		if (find(survivors.begin(), survivors.end(), i) == survivors.end() && i < N_IND ) non_survivors.push_back(i); // don't care if it is higher than N_IND
+	std::vector<int> survivors_offspring;
+
+	for (int i = 0; i < N_IND; i++) {
+		if (find(survivors.begin(), survivors.end(), i) == survivors.end()) {
+			if (i < N_IND) {
+				non_survivors.push_back(i); // don't care if it is higher than N_IND
+			}
+		}
+		else {
+			if (i >= N_IND) {
+				survivors_offspring.push_back(i);
+			}
+		}
 	}
-	if (survivors.size() != N_IND - non_survivors.size()) std::cout << " not same amount survivors and non survivors" << std::endl;
+
+	if (survivors_offspring.size() != non_survivors.size()) std::cout << "different size" << survivors_offspring.size() << " " << non_survivors.size() << std::endl;
+	//std::cin.get();
 	for (int i = 0; i < non_survivors.size(); i++) {
-		population[non_survivors[i]] = population[survivors[i]]; // again; should it be deep copy? Look for pointer error in destructor.
+		//std::cout << " switch " << non_survivors[i] << " " << survivors_offspring[i] << std::endl;
+		population[non_survivors[i]] = population[survivors_offspring[i]]; // again; should it be deep copy? Look for pointer error in destructor.
 	}
 
 	// return pareto rank 0 ? ( to main loop ? or ??)
@@ -480,12 +493,34 @@ void Population::draw_segments(int ind_index) {
 	//cv::waitKey(0);
 }
 
+cv::Mat Population::draw_segments_black_contour(int ind_index) {
+
+	cv::Mat image(get_im_h(), get_im_w(), CV_8UC3, cv::Scalar(255, 255, 255));
+
+	std::vector<pos>* edge_segment = edges_segment(ind_index);
+	RGB color(0, 0, 0); // black
+	
+	std::cout << " test contour plot imshow " << std::endl;
+	for (int i = 0; i < entry_s[ind_index].size(); i++) {
+		for (auto it = edge_segment[i].begin(); it != edge_segment[i].end(); ++it) {
+			image.at<cv::Vec3b>(it->y, it->x)[2] = color.r;
+			image.at<cv::Vec3b>(it->y, it->x)[1] = color.g;
+			image.at<cv::Vec3b>(it->y, it->x)[0] = color.b;
+		}
+	}
+	delete[] edge_segment;
+	//std::string window_name = "contour " + to_string(name);
+	//cv::namedWindow(window_name, 1);
+	//cv::imshow(window_name, segment);
+	return image;
+}
+
 void Population::draw_segments_contour(int ind_index, int name) {
 	cv::Mat segment = cv::imread(img_path, 1);
 
 	std::vector<pos>* edge_segment = edges_segment(ind_index);
 	RGB color(0, 255, 0); // green ?=
-	
+
 	std::cout << " test contour plot imshow " << std::endl;
 	for (int i = 0; i < entry_s[ind_index].size(); i++) {
 		for (auto it = edge_segment[i].begin(); it != edge_segment[i].end(); ++it) {
