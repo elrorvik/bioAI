@@ -204,6 +204,11 @@ void Population::initialize_population() {
 	}
 
 	// Calculating fitness and rank of individuals
+	std::cout << get_im_w() << std::endl;
+	std::cout << get_im_h() << std::endl;
+	std::cout << get_im_w()*get_im_h() << std::endl;
+	std::cout << "OK" << std::endl;
+
 	MOEA_fitness(*this, N_IND, entry_s, fitness_1, fitness_2);
 	MOEA_rank(N_IND, rank, fitness_1, fitness_2);
 

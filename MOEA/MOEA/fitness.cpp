@@ -23,15 +23,16 @@ double overall_deviation_seg(Population &p, int ind_index, pos s_entry) {
 		sum_G += p.get_RGB(pos_i).g;
 		sum_B += p.get_RGB(pos_i).b;
 		num_nodes_in_segment++;
-		pos_i = traverse_ST(p, ind_index, s_entry, branch_points);
+		pos_i = traverse_ST(p, ind_index, pos_i, branch_points);
 	}
 
+	// This also doubles as removing the coloration of the segment
 	RGB centroid(sum_R / num_nodes_in_segment, sum_G / num_nodes_in_segment, sum_B / num_nodes_in_segment);
 	double fitness = 0;
 	pos_i = s_entry;
 	while (pos_i.x != static_cast<unsigned short>(-1)) {
 		fitness = dist(p.get_RGB(pos_i), centroid);
-		pos_i = traverse_ST(p, ind_index, s_entry, branch_points);
+		pos_i = traverse_ST(p, ind_index, pos_i, branch_points);
 	}
 
 	return fitness;
@@ -59,33 +60,35 @@ double edge_value_seg(Population &p, int ind_index, pos s_entry) {
 	while (pos_i.x != static_cast<unsigned short>(-1)) {
 		node *node_i = p.get_node(ind_index, pos_i);
 
-		if (pos_i.y > 0) {
+		if (pos_i.y > 1) {
 			node *node_j = p.get_node(ind_index, pos_i + UP);
 			if (node_i->entry.x != node_j->entry.x || node_i->entry.y != node_j->entry.y) { // Replace with proper func
 				fitness += dist(p.get_RGB(pos_i), p.get_RGB(pos_i + UP));
 			}
 		}
-		if (pos_i.y < p.get_im_h()) {
+		if (pos_i.y < p.get_im_h() - 1) {
 			node *node_j = p.get_node(ind_index, pos_i + DOWN);
 			if (node_i->entry.x != node_j->entry.x || node_i->entry.y != node_j->entry.y) {
 				fitness += dist(p.get_RGB(pos_i), p.get_RGB(pos_i + DOWN));
 			}
 		}
-		if (pos_i.x > 0) {
+		if (pos_i.x > 1) {
 			node *node_j = p.get_node(ind_index, pos_i + LEFT);
 			if (node_i->entry.x != node_j->entry.x || node_i->entry.y != node_j->entry.y) {
 				fitness += dist(p.get_RGB(pos_i), p.get_RGB(pos_i + LEFT));
 			}
 		}
-		if (pos_i.x < p.get_im_w()) {
+		if (pos_i.x < p.get_im_w() - 1) {
 			node *node_j = p.get_node(ind_index, pos_i + RIGHT);
 			if (node_i->entry.x != node_j->entry.x || node_i->entry.y != node_j->entry.y) {
 				fitness += dist(p.get_RGB(pos_i), p.get_RGB(pos_i + RIGHT));
 			}
 		}
 
-		pos_i = traverse_ST(p, ind_index, s_entry, branch_points);
+		pos_i = traverse_ST(p, ind_index, pos_i, branch_points);
 	}
+
+	remove_color(p, ind_index, s_entry, branch_points);
 
 	return -fitness; // fitness defined negative in order to turn a maximation problem into a minimation problem
 }

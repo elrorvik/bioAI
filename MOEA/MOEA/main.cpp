@@ -11,7 +11,17 @@
 int main() {
 	srand(time(0));
 
-	std::vector<int> survivors;
+	Population p;
+	p.initialize_population();
+
+	int generation = 0;
+	while (generation < N_GENERATIONS) {
+	p.MOEA_next_generation();
+	std::cout << "next generation" << std::endl;
+	generation++;
+	}
+
+	/*std::vector<int> survivors;
 	survivors.push_back(0);
 	survivors.push_back(1);
 	survivors.push_back(4);
@@ -39,7 +49,7 @@ int main() {
 	for (int i = 0; i < non_survivors.size(); i++) {
 		std::cout << " switch " << non_survivors[i] << " " << survivors_offspring[i] << std::endl;
 		//population[non_survivors[i]] = population[survivors_offspring[i]]; // again; should it be deep copy? Look for pointer error in destructor.
-	}
+	}/*
 
 	
 	/*Population p;
@@ -51,14 +61,6 @@ int main() {
 	writ_image_to_file(0, img);
 	cv::waitKey(0);
 	//writ_image_to_file(0, cv::Mat img)*/
-
-	
-	/*int generation = 0;
-	while (generation < N_GENERATIONS) {
-		p.MOEA_next_generation();
-		std::cout << "next generation" << std::endl;
-		generation++;
-	}*/
 	
 
 	//std::cout << p.get_im_h() *p.get_im_w() << std::endl;

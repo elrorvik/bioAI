@@ -6,6 +6,7 @@
 #include<algorithm>
 #include<cmath>
 #include<set>
+#include<iostream>
 
 struct descending_comparator {
 	bool operator() (const std::pair<double, int> p1, const std::pair<double, int> p2) {
@@ -93,7 +94,9 @@ void MOEA_fitness(Population &p, int n_pop,const std::vector<pos> * entry_s, std
 	descending_comparator smallest_value_comparator;
 
 	// Non dominated sorting, and store max and min values for each objective functions
+	std::cout << "Calculating fitness of population" << std::endl;
 	for (int ind_index = 0; ind_index < n_pop; ind_index++) {
+		std::cout << ind_index << std::endl;
 		fitness_1[ind_index] = std::make_pair(overall_deviation_ind(p, ind_index, entry_s[ind_index]), ind_index);
 		fitness_2[ind_index] = std::make_pair(edge_value_ind(p, ind_index, entry_s[ind_index]), ind_index);
 	}
