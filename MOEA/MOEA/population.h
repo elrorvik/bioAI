@@ -74,6 +74,7 @@ public:
 	//int get_n_dependent_children(pos curr, pos next, int ind_index);
 
 	void copy_individual(int l_index, int r_index);
+	void draw_pareto_front();
 };
 
 cv::Mat test_image();

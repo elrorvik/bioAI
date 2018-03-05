@@ -9,12 +9,13 @@
 #include "graph.h"
 #include "selection.h"
 #include "var_operators.h"
+#include "file.h"
 
 // opencv 
 #include <opencv2/highgui/highgui.hpp>
 
 Population::~Population() {
-	for (int ind_i = 0; ind_i < N_IND+N_OFFSPRING; ind_i++) {
+	/*for (int ind_i = 0; ind_i < N_IND+N_OFFSPRING; ind_i++) {
 		for (int col_i = 0; col_i < get_im_w(); col_i++) {
 			delete [] population[ind_i][col_i] ;
 		}
@@ -24,7 +25,7 @@ Population::~Population() {
 
 	//delete[] edge_candidates;
 	delete[] entry_s;
-	delete[] edge_candidates;
+	delete[] edge_candidates;*/
 }
 
 Population::Population() {
@@ -182,6 +183,8 @@ void Population::initialize_population() {
 		fitness_1.push_back(std::make_pair(0.0, i));
 		fitness_2.push_back(std::make_pair(0.0, i));
 		rank.push_back(std::make_pair(0, i));
+		entry_s[i] = entry_s[init_index];
+		edge_candidates[i] = edge_candidates[init_index];
 
 		if (i >= N_IND) continue;
 
@@ -198,16 +201,9 @@ void Population::initialize_population() {
 				this->population[i][x][y].parent_dir   = this->population[init_index][x][y].parent_dir;
 			}
 		}
-
-		entry_s[i] = entry_s[init_index];
-		edge_candidates[i] = edge_candidates[init_index];
 	}
 
 	// Calculating fitness and rank of individuals
-	std::cout << get_im_w() << std::endl;
-	std::cout << get_im_h() << std::endl;
-	std::cout << get_im_w()*get_im_h() << std::endl;
-	std::cout << "OK" << std::endl;
 
 	MOEA_fitness(*this, N_IND, entry_s, fitness_1, fitness_2);
 	MOEA_rank(N_IND, rank, fitness_1, fitness_2);
@@ -221,7 +217,6 @@ void Population::initialize_population() {
 // NB NOT TESTED !!!!
 // CHANGED CONSTRUCTOR TO ADD POPULATION SUCH THAT IT IS N_IND + N_OFFSPRING
 void Population::MOEA_next_generation() {
-	std::cout << "Next generation..." << std::endl;
 	
 	// Select parents:
 	int n_pop = N_IND; // what is this variable? what is the differnce n_pop and N_IND? Is it the current number in population?
@@ -229,7 +224,6 @@ void Population::MOEA_next_generation() {
 
 	// find parentss
 	std::vector<int> parents = rank_tournament_selection(*this, entry_s, n_pop, tournament_size, N_OFFSPRING, rank); // returns list of parent index
-	std::cout << "Creating offspring" << std::endl;
 	for (int i = 0; i < N_OFFSPRING;) {
 		double rand_num = (rand() % 1000) / 1000.0;
 		population[n_pop++] = population[parents[i++]];
@@ -245,7 +239,6 @@ void Population::MOEA_next_generation() {
 		}
 	}
 	// mutations:
-	std::cout << "Mutating offspring" << std::endl;
 	double mutation_rate = MUT_SPLIT_PERC + MUT_MERGE_PERC;
 	if (mutation_rate > 1.0) std::cout << " to high mutation rate" << std::endl;
 	for (int i = N_IND; i < n_pop; i++) {
@@ -260,16 +253,13 @@ void Population::MOEA_next_generation() {
 			}
 		}
 	}
-
-	
-	std::cout << "Selecting survivors" << std::endl;
 	
 	MOEA_rank(n_pop, rank, fitness_1, fitness_2);
 	std::vector<int> survivors = NSGAII(*this, entry_s, n_pop, rank, fitness_1, fitness_2);
 	std::vector<int> non_survivors;
 	std::vector<int> survivors_offspring;
 
-	for (int i = 0; i < N_IND; i++) {
+	for (int i = 0; i < n_pop; i++) {
 		if (find(survivors.begin(), survivors.end(), i) == survivors.end()) {
 			if (i < N_IND) {
 				non_survivors.push_back(i); // don't care if it is higher than N_IND
@@ -282,9 +272,9 @@ void Population::MOEA_next_generation() {
 		}
 	}
 
-	if (survivors_offspring.size() != non_survivors.size()) std::cout << "different size" << survivors_offspring.size() << " " << non_survivors.size() << std::endl;
+	//if (survivors_offspring.size() != non_survivors.size()) std::cout << "different size" << survivors_offspring.size() << " " << non_survivors.size() << std::endl;
 	//std::cin.get();
-	for (int i = 0; i < non_survivors.size(); i++) {
+	for (int i = 0; i < survivors_offspring.size(); i++) {
 		//std::cout << " switch " << non_survivors[i] << " " << survivors_offspring[i] << std::endl;
 		copy_individual(non_survivors[i], survivors_offspring[i]);
 
@@ -733,4 +723,13 @@ void Population::copy_individual(int l_index, int r_index) {
 	fitness_1[l_index].first = fitness_2[r_index].first;
 	fitness_2[l_index].first = fitness_2[r_index].first;
 	rank[l_index].first = rank[r_index].first;
+}
+
+void Population::draw_pareto_front() {
+	for (int i = 0; i < N_IND; i++) {
+		if (rank[i].first == 0) {
+			cv::Mat img = draw_segments_black_contour(i);
+			write_image_to_file(i, img);
+		}
+	}
 }

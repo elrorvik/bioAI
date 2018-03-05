@@ -16,10 +16,11 @@ int main() {
 
 	int generation = 0;
 	while (generation < N_GENERATIONS) {
-	p.MOEA_next_generation();
-	std::cout << "next generation" << std::endl;
-	generation++;
+		p.MOEA_next_generation();
+		std::cout << "generation nr " << generation << std::endl;
+		generation++;
 	}
+	p.draw_pareto_front();
 
 	/*std::vector<int> survivors;
 	survivors.push_back(0);

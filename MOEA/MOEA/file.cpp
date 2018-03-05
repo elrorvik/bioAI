@@ -3,7 +3,7 @@
 #include "global.h"
 #include "population.h"
 
-void writ_image_to_file(int file_num, cv::Mat img) {
+void write_image_to_file(int file_num, cv::Mat img) {
 	std::string filename = WRITE_PATH + "seg" + std::to_string(file_num) + ".png";
 	cv::imwrite(filename, img);
 }
