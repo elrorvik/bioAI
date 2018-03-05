@@ -3,9 +3,15 @@
 #ifndef GLOBAL_H
 #define GLOBAL_H
 
+const int N_GENERATIONS = 100;
 const int N_IND = 10;
 const int N_SEG = 100;
 const int N_SEG_TYPES = 2;
+const double CROSSOVER_RATE = 0.5;
+const double MUTATION_RATE = 0.4;
+const int N_PARENTS = 6;
+const double MUT_SPLIT_PERC = 0.1;
+const double MUT_MERGE_PERC = 0.9;
 const int SEGMENT_SIZE[N_SEG_TYPES] = { 1000,10000 };
 const int N_PIX_SEGMENT[N_SEG_TYPES] = { 100,60 };
 
@@ -24,9 +30,7 @@ const std::string img_path  = "..//test_img//178054//Test image.jpg"; // ørken
 //const std::string img_path = "..//test_2.jpg";
 //const std::string img_path = "..//test_3.png";
 
-const double CROSSOVER_RATE = 0.5;
-const double MUTATION_RATE = 0.4;
-const int N_PARENTS = 6;
+
 
 enum direction { SELF, UP, DOWN, LEFT, RIGHT };
 
