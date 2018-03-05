@@ -48,14 +48,14 @@ public:
 	std::vector<active_edge_t>& get_edge_candidates(int ind_index);
 
 	void draw_segments(int ind_index);
-	void draw_segments_contour(int ind_index);
+	void draw_segments_contour(int ind_index, int name);
 	std::vector<pos>* edges_segment(int ind_index);
 	
 	//int check_if_edge(pos curr, int ind_index);
 	int check_if_edge(pos curr, int ind_index, int cout); // checkk if boarder
 
-	void merge_segments(int ind_index, edge merge_nodes);
-	void split_segment(int ind_index, edge split_nodes);
+	void merge_segments(int ind_index, int edge_index, edge merge_nodes);
+	void split_segment(int ind_index, int edge_index, edge split_nodes);
 
 	void set_dir_edge(pos& parent, pos& child, int on, int ind_index);
 	void set_dir_edge_and_parent(pos& parent, pos& child, int on, int ind_index);

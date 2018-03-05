@@ -3,6 +3,7 @@
 #include"fitness.h"
 #include"global.h"
 #include"population.h"
+#include"var_operators.h"
 #include <list>
 #include <time.h>
 #include "graph.h"
@@ -405,15 +406,13 @@ void Population::initialize_population() {
 				this->population[i][x][y].num_children = this->population[init_index][x][y].num_children;
 				this->population[i][x][y].parent_dir   = this->population[init_index][x][y].parent_dir;
 			}
-		}
+		}	
 		entry_s[i] = entry_s[init_index];
 		edge_candidates[i] = edge_candidates[init_index];
 	}
-	//draw_segments(0);
-	//draw_segments_contour(0);
-	//draw_segments_contour(N_IND - 1);
-	//draw_segments_contour(20);
+	//draw_segments_contour(0,0);
 	//cv::waitKey(0);
+
 }
 
 
@@ -429,7 +428,7 @@ void Population::MOEA_next_generation() {
 		population[n_pop++] = population[parents[i]];
 		if (outcome < CROSSOVER_RATE) {
 			edge_candidates[n_pop - 2] = crossover_uniform_list_representation(*this, parents[i - 1], parents[i]);
-			edge_candidates[n_pop - 1] = crossover_uniform_list_representation(*this, parents[i - 1], parents[i]);
+			edge_candidates[n_pop - 1] = crossover_uniform_list_representation(*this, parents[i], parents[i - 1]);
 		}
 		double outcome = (rand() % 1000) / 1000.0;
 		if (outcome < MUTATION_RATE) {
@@ -450,14 +449,16 @@ std::vector<active_edge_t>& Population::get_edge_candidates(int ind_index) {
 	return edge_candidates[ind_index];
 }
 
-void Population::merge_segments(int ind_index, edge merge_nodes) {
+void Population::merge_segments(int ind_index, int edge_index, edge merge_nodes) {
 	set_segment_entry(merge_nodes.p1, merge_nodes.p2, ind_index);
-	set_dir_edge(merge_nodes.p1, this->get_node(ind_index, merge_nodes.p2)->entry, 1, ind_index);
+	set_dir_edge(merge_nodes.p1, merge_nodes.p2, 1, ind_index);
+	edge_candidates[ind_index][edge_index].active = 1;
 }
 
-void Population::split_segment(int ind_index, edge split_nodes) {
+void Population::split_segment(int ind_index, int edge_index, edge split_nodes) {
 	set_dir_edge(split_nodes.p1, split_nodes.p2, 0, ind_index);
 	set_segment_entry(split_nodes.p1, split_nodes.p1, ind_index);
+	edge_candidates[ind_index][edge_index].active = 0;
 }
 
 
@@ -648,7 +649,7 @@ void Population::draw_segments(int ind_index) {
 	//cv::waitKey(0);
 }
 
-void Population::draw_segments_contour(int ind_index) {
+void Population::draw_segments_contour(int ind_index, int name) {
 	cv::Mat segment = cv::imread(img_path, 1);
 
 	std::vector<pos>* edge_segment = edges_segment(ind_index);
@@ -666,7 +667,7 @@ void Population::draw_segments_contour(int ind_index) {
 	}
 	delete[] edge_segment;
 	//std::cout << "show image" << std::endl;
-	std::string window_name = "contour " + to_string(ind_index);
+	std::string window_name = "contour " + to_string(name);
 	cv::namedWindow(window_name, 1);
 	//std::cout << "show image" << std::endl;
 	cv::imshow(window_name, segment);
