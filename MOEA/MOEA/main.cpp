@@ -11,8 +11,38 @@
 int main() {
 	srand(time(0));
 
+	std::vector<int> survivors;
+	survivors.push_back(0);
+	survivors.push_back(1);
+	survivors.push_back(4);
+	survivors.push_back(5);
+	survivors.push_back(7);
+	survivors.push_back(3);
+	std::vector<int> non_survivors;
+	std::vector<int> survivors_offspring;
+
+	for (int i = 0; i < 8; i++) {
+		if (find(survivors.begin(), survivors.end(), i) == survivors.end() && i < 6) {
+			if (i < 6) {
+				non_survivors.push_back(i); // don't care if it is higher than N_IND
+			}
+		}
+		else{
+			if (i >= 6) {
+				survivors_offspring.push_back(i);
+			}
+		}
+	}
 	
-	Population p;
+	if (survivors_offspring.size() != non_survivors.size()) std::cout << "different size" << survivors_offspring.size() << " " << non_survivors.size()<<  std::endl;
+	//std::cin.get();
+	for (int i = 0; i < non_survivors.size(); i++) {
+		std::cout << " switch " << non_survivors[i] << " " << survivors_offspring[i] << std::endl;
+		//population[non_survivors[i]] = population[survivors_offspring[i]]; // again; should it be deep copy? Look for pointer error in destructor.
+	}
+
+	
+	/*Population p;
 	p.initialize_population();
 	p.draw_segments_contour(0, 0);
 	cv::Mat img = p.draw_segments_black_contour(0);
@@ -20,7 +50,7 @@ int main() {
 	//cv::imshow(window_name, img);
 	writ_image_to_file(0, img);
 	cv::waitKey(0);
-	//writ_image_to_file(0, cv::Mat img)
+	//writ_image_to_file(0, cv::Mat img)*/
 
 	
 	/*int generation = 0;

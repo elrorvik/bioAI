@@ -465,13 +465,26 @@ void Population::MOEA_next_generation() {
 	std::cout << "Selecting survivors" << std::endl;
 	std::vector<int> survivors = NSGAII(*this, entry_s, n_pop);
 	std::vector<int> non_survivors;
-	non_survivors.reserve(n_pop - N_IND);
-	for (int i = 0; i < n_pop; i++) {
-		if (find(survivors.begin(), survivors.end(), i) == survivors.end() && i > N_IND ) non_survivors.push_back(i); // don't care if it is higher than N_IND
+	std::vector<int> survivors_offspring;
+
+	for (int i = 0; i < N_IND; i++) {
+		if (find(survivors.begin(), survivors.end(), i) == survivors.end()) {
+			if (i < N_IND) {
+				non_survivors.push_back(i); // don't care if it is higher than N_IND
+			}
+		}
+		else {
+			if (i >= N_IND) {
+				survivors_offspring.push_back(i);
+			}
+		}
 	}
-	if (survivors.size() != N_IND - non_survivors.size()) std::cout << " not same amount survivors and non survivors" << std::endl;
+
+	if (survivors_offspring.size() != non_survivors.size()) std::cout << "different size" << survivors_offspring.size() << " " << non_survivors.size() << std::endl;
+	//std::cin.get();
 	for (int i = 0; i < non_survivors.size(); i++) {
-		population[non_survivors[i]] = population[survivors[i]]; // again; should it be deep copy? Look for pointer error in destructor.
+		//std::cout << " switch " << non_survivors[i] << " " << survivors_offspring[i] << std::endl;
+		population[non_survivors[i]] = population[survivors_offspring[i]]; // again; should it be deep copy? Look for pointer error in destructor.
 	}
 
 	// return pareto rank 0 ? ( to main loop ? or ??)
