@@ -20,9 +20,9 @@ class Population{
 private:
 	cv::Mat im;
 	node ***population;
-	double *fitness_1;
-	double *fitness_2;
-	int *rank;
+	std::vector<std::pair<int, int>> rank;
+	std::vector<std::pair<double, int>> fitness_1;
+	std::vector<std::pair<double, int>> fitness_2;
 	std::vector<pos> * entry_s;
 	int n_segments;
 	int n_pop;
@@ -71,6 +71,8 @@ public:
 
 	//void initialize_n_children(int ind_index, std::map<edge, int> &edgeChildren);
 	//int get_n_dependent_children(pos curr, pos next, int ind_index);
+
+	void copy_individual(int l_index, int r_index);
 };
 
 cv::Mat test_image();
