@@ -321,7 +321,7 @@ void Population::MOEA_next_generation() {
 	}
 
 	for (int i = 0; i < N_IND; i++) {
-		std::cout << " rank " << rank[i].first << " fitness " << fitness_1[i].first << " fitness 2" << fitness_2[i].first << std::endl;
+		std::cout << " rank " << rank[i].first << " fitness 1: " << fitness_1[i].first << " fitness 2: " << fitness_2[i].first << std::endl;
 	}
 
 	// return pareto rank 0 ? ( to main loop ? or ??)
@@ -766,7 +766,7 @@ void Population::copy_individual(int l_index, int r_index) {
 	}
 	entry_s[l_index] = entry_s[r_index];
 	edge_candidates[l_index] = edge_candidates[r_index];
-	fitness_1[l_index].first = fitness_2[r_index].first;
+	fitness_1[l_index].first = fitness_1[r_index].first;
 	fitness_2[l_index].first = fitness_2[r_index].first;
 	rank[l_index].first = rank[r_index].first;
 }

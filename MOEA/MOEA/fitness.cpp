@@ -2,8 +2,8 @@
 #include <math.h>
 #include "global.h"
 #include "fitness.h"
-#include "population.h"
 #include "graph.h"
+#include "population.h"
 
 double dist(RGB p1, RGB p2) {
 	return sqrt(pow(p1.r - p2.r, 2) + pow(p1.g - p2.g, 2) + pow(p1.b - p2.b, 2));
