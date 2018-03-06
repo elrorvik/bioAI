@@ -246,8 +246,8 @@ void Population::initialize_population() {
 	MOEA_rank(N_IND, rank, fitness_1, fitness_2);
 
 
-	//draw_segments_contour(0,0);
-	//cv::waitKey(0);
+	draw_segments_contour(0,0);
+	cv::waitKey(0);
 
 }
 
@@ -283,6 +283,7 @@ void Population::MOEA_next_generation() {
 		if (rand_num < MUTATION_RATE) {
 			rand_num = (rand() % 1000) / 1000.0;
 			if (rand_num < MUT_MERGE_PERC) {
+				mutation_merge_segments(*this, i);
 				mutation_merge_segments(*this, i);
 				mutation_merge_segments(*this, i);
 
