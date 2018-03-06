@@ -4,7 +4,7 @@
 #define GLOBAL_H
 
 
-const int N_GENERATIONS = 100;
+const int N_GENERATIONS = 40; //100
 const int N_IND = 40;
 const int N_SEG_TYPES = 2;
 

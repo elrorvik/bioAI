@@ -295,6 +295,8 @@ void Population::initialize_population() {
 // NB NOT TESTED !!!!
 // CHANGED CONSTRUCTOR TO ADD POPULATION SUCH THAT IT IS N_IND + N_OFFSPRING
 void Population::MOEA_next_generation() {
+
+	//TODO: TEST WHETHER OR NOT FITNESS 1 AND 2, AND RANK retains the correct order of the individuals
 	
 	// Select parents:
 	int n_pop = N_IND; // what is this variable? what is the differnce n_pop and N_IND? Is it the current number in population?
@@ -304,16 +306,12 @@ void Population::MOEA_next_generation() {
 	std::vector<int> parents = rank_tournament_selection(*this, entry_s, n_pop, tournament_size, N_OFFSPRING, rank); // returns list of parent index
 	for (int i = 0; i < N_OFFSPRING;) {
 		double rand_num = (rand() % 1000) / 1000.0;
-		population[n_pop++] = population[parents[i++]];
+		copy_individual(n_pop++, parents[i++]);
 		if (i >= N_OFFSPRING) break;
-		population[n_pop++] = population[parents[i++]];
+		copy_individual(n_pop++, parents[i++]);
 		if (rand_num < CROSSOVER_RATE) {
 			edge_candidates[n_pop - 2] = crossover_uniform_list_representation(*this, parents[i - 2], parents[i - 1], n_pop - 2);
-			fitness_1[n_pop - 2].first = overall_deviation_ind(*this, n_pop - 2, entry_s[n_pop - 2]);
-			fitness_2[n_pop - 2].first = edge_value_ind(*this, n_pop - 2, entry_s[n_pop - 2]);
 			edge_candidates[n_pop - 1] = crossover_uniform_list_representation(*this, parents[i - 1], parents[i - 2], n_pop - 1);
-			fitness_1[n_pop - 1].first = overall_deviation_ind(*this, n_pop - 1, entry_s[n_pop - 1]);
-			fitness_2[n_pop - 1].first = edge_value_ind(*this, n_pop - 1, entry_s[n_pop - 1]);
 		}
 	}
 	// mutations:
@@ -333,6 +331,12 @@ void Population::MOEA_next_generation() {
 				mutation_split_segments(*this, i);
 			}
 		}
+	}
+
+	// Calculate fitness of offspring
+	for (int offspring_index = N_IND; offspring_index < N_IND + N_OFFSPRING; offspring_index++) {
+		fitness_1[offspring_index].first = overall_deviation_ind(*this, offspring_index, entry_s[offspring_index]);
+		fitness_2[offspring_index].first = edge_value_ind(*this, offspring_index, entry_s[offspring_index]);
 	}
 	
 	MOEA_rank(n_pop, rank, fitness_1, fitness_2);
@@ -362,7 +366,7 @@ void Population::MOEA_next_generation() {
 	}
 
 	for (int i = 0; i < N_IND; i++) {
-		std::cout << " rank " << rank[i].first << " fitness " << fitness_1[i].first << " fitness 2" << fitness_2[i].first << std::endl;
+		std::cout << " rank " << rank[i].first << "," << rank[i].second << " fitness 1: " << fitness_1[i].first << "," << fitness_1[i].second << " fitness 2: " << fitness_2[i].first << "," << fitness_2[i].second << std::endl;
 	}
 
 	// return pareto rank 0 ? ( to main loop ? or ??)
@@ -795,20 +799,20 @@ int Population::check_if_edge(pos curr,  int ind_index, int cout) {
 void Population::copy_individual(int l_index, int r_index) {
 	for (int x = 0; x < get_im_w(); x++) {
 		for (int y = 0; y < get_im_h(); y++) {
-			this->population[l_index][x][y].color = this->population[l_index][x][y].color;
-			this->population[l_index][x][y].left = this->population[l_index][x][y].left;
-			this->population[l_index][x][y].right = this->population[l_index][x][y].right;
-			this->population[l_index][x][y].up = this->population[l_index][x][y].up;
-			this->population[l_index][x][y].down = this->population[l_index][x][y].down;
-			this->population[l_index][x][y].entry.x = this->population[l_index][x][y].entry.x;
-			this->population[l_index][x][y].entry.y = this->population[l_index][x][y].entry.y;
-			this->population[l_index][x][y].num_children = this->population[l_index][x][y].num_children;
-			this->population[l_index][x][y].parent_dir = this->population[l_index][x][y].parent_dir;
+			this->population[l_index][x][y].color = this->population[r_index][x][y].color;
+			this->population[l_index][x][y].left = this->population[r_index][x][y].left;
+			this->population[l_index][x][y].right = this->population[r_index][x][y].right;
+			this->population[l_index][x][y].up = this->population[r_index][x][y].up;
+			this->population[l_index][x][y].down = this->population[r_index][x][y].down;
+			this->population[l_index][x][y].entry.x = this->population[r_index][x][y].entry.x;
+			this->population[l_index][x][y].entry.y = this->population[r_index][x][y].entry.y;
+			this->population[l_index][x][y].num_children = this->population[r_index][x][y].num_children;
+			this->population[l_index][x][y].parent_dir = this->population[r_index][x][y].parent_dir;
 		}
 	}
 	entry_s[l_index] = entry_s[r_index];
 	edge_candidates[l_index] = edge_candidates[r_index];
-	fitness_1[l_index].first = fitness_2[r_index].first;
+	fitness_1[l_index].first = fitness_1[r_index].first;
 	fitness_2[l_index].first = fitness_2[r_index].first;
 	rank[l_index].first = rank[r_index].first;
 }
