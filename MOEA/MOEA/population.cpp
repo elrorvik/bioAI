@@ -325,7 +325,7 @@ void Population::MOEA_next_generation() {
 	}
 
 	for (int i = 0; i < N_IND; i++) {
-		std::cout << " rank " << rank[i].first << " fitness 1: " << fitness_1[i].first << " fitness 2: " << fitness_2[i].first << std::endl;
+		std::cout << " rank " << rank[i].first << "," << rank[i].second << " fitness 1: " << fitness_1[i].first << "," << fitness_1[i].second << " fitness 2: " << fitness_2[i].first << "," << fitness_2[i].second << std::endl;
 	}
 
 	// return pareto rank 0 ? ( to main loop ? or ??)
