@@ -31,10 +31,11 @@ public:
 	Population();
 	~Population();
 	//node** get_individual(int ind_index);
-	void initialize_population_PrimsMST();
+	//void initialize_population_PrimsMST();
 	void initialize_individual_PrimsMST(int ind_index);
 	void initialize_population();
-	void initialize_population_test();
+	//void initialize_population_test();
+	void test_prim();
 	void test_segment(pos& entry, int ind_index);
 
 	void MOEA_next_generation();

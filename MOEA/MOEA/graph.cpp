@@ -37,9 +37,6 @@ vector<int> Graph::primMST(int start_index){
 	priority_queue< diPair, vector <diPair>, greater<diPair> > pq;
 
 	int src = start_index; // Taking vertex 0 as source
-
-				 // Create a vector for keys and initialize all
-				 // keys as infinite (INF)
 	vector<double> key(V, INF);
 
 	// To store parent array which in turn store MST
@@ -174,26 +171,32 @@ void remove_color(Population &p, int ind_index, pos entry, std::stack<pos> &bran
 void set_num_children(Population &p, int ind_index, pos entry) {
 	std::stack<pos> branch_points;
 	pos prev(entry.x, entry.y);
-	pos next;
+	pos next(entry.x, entry.y);
 	pos r_next;
 	//p.get_node(ind_index, entry)->entry = entry;
 
 	int counted_children;
 	int last_num_branch_points = 0;
 	bool backtrack_and_count_children = false;
-	while (prev.x != -1) {
+	int num_visited = 0;
+	while (prev.x != static_cast<unsigned short>(-1)) {
 		if (!backtrack_and_count_children) {
 			// Traverse and set parent
 			next = traverse_ST(p, ind_index, next, branch_points);
+			//if (next.x == static_cast<unsigned short>(-1)) {
+			//	std::cout << " something wrong " << std::endl;
+			//}
+			num_visited++;
+			//std::cout << " num visistend" <<num_visited << std::endl;
 
 			// Set entry while you are at it
-			node *n_next = p.get_node(ind_index, next);
+			
 			/*if (next.x != static_cast<unsigned short>(-1)) {
 				n_next->entry = entry;
 			}*/
 
-			node *n_prev = p.get_node(ind_index, prev); // TODO; fix
-
+			//node *n_prev = p.get_node(ind_index, prev); // TODO; fix
+			
 			// Handle node found with no other children than itself
 			if (last_num_branch_points > branch_points.size() || next.x == static_cast<unsigned short>(-1)) {
 				backtrack_and_count_children = true;
@@ -201,6 +204,7 @@ void set_num_children(Population &p, int ind_index, pos entry) {
 				counted_children = 1;
 				continue;
 			}
+			node *n_next = p.get_node(ind_index, next);
 
 			// Set parent
 			if (prev.x < next.x) n_next->parent_dir = LEFT;

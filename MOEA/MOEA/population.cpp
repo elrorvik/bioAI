@@ -79,10 +79,36 @@ pos Population::get_pixel_segment(int x,int y, int individual) {
 	return this->population[individual][x][y].entry;
 }
 
+void Population::test_prim() {
+	int V = 9;
+	Graph g(V);
+	int start_mst_x = rand() % 8;
+	std::cout << " start " << start_mst_x << std::endl;
+	//  making above shown graph
+	g.addEdge(0, 1, 4);
+	g.addEdge(0, 7, 8);
+	g.addEdge(1, 2, 8);
+	g.addEdge(1, 7, 11);
+	g.addEdge(2, 3, 7);
+	g.addEdge(2, 8, 2);
+	g.addEdge(2, 5, 4);
+	g.addEdge(3, 4, 9);
+	g.addEdge(3, 5, 14);
+	g.addEdge(4, 5, 10);
+	g.addEdge(5, 6, 2);
+	g.addEdge(6, 7, 1);
+	g.addEdge(6, 8, 6);
+	g.addEdge(7, 8, 7);
+
+	std::vector<int> parent = g.primMST(start_mst_x);
+	for (int i = 0; i < V; ++i)
+		printf("%d - %d\n", parent[i], i);
+}
+
 // Driver program to test methods of graph class
 void Population::initialize_individual_PrimsMST(int ind_index){
 
-	time_t seconds = time(NULL);
+	//time_t seconds = time(NULL);
 	
 	// create the graph given in above fugure
 	int V = get_im_w()*get_im_h();
@@ -99,41 +125,49 @@ void Population::initialize_individual_PrimsMST(int ind_index){
 			}
 		}
 	}
-	std::cout << "initilization " << std::endl;
-	std::cout << seconds- time(NULL) << std::endl;
-	seconds = time(NULL);
+	//std::cout << "initilization " << std::endl;
+	//std::cout << seconds- time(NULL) << std::endl;
+	//seconds = time(NULL);
 	
-	int start_mst_x = 0; //rand() % get_im_w();
-	int start_mst_y = 0; // rand() % get_im_h();
+	int start_mst_x = rand() % get_im_w();
+	int start_mst_y = rand() % get_im_h();
 	int start_index = start_mst_x * get_im_h() + start_mst_y;
+	std::cout << " start index " << start_index << std::endl;
 	
 	std::vector<int> mst_parents = g.primMST(start_index); // MAKE PRIM MST
 
-	std::cout << "MST " << std::endl;
-	std::cout << seconds - time(NULL) << std::endl;
-	seconds = time(NULL);
+	//std::cout << "MST " << std::endl;
+	//std::cout << seconds - time(NULL) << std::endl;
+	//seconds = time(NULL);
 	
 	// SETTING EDGES IN PHENOTYPE
 	std::priority_queue<edge, std::vector<edge>, edge_comparator> que;
-	for (int i = 1; i < get_im_h()*get_im_w(); i++) {
-		int index = mst_parents[i];
+	for (int i = 0; i < get_im_h()*get_im_w(); i++) {
+		int index = i;
+		int x2 = index / get_im_h();
+		int y2 = index - get_im_h()*x2;
+		pos p2(x2, y2);
+
+		index = mst_parents[i];
+		if (index == -1) {
+			//std::cout << "parent " << index << "for " << i << std::endl;// one node will not have parents
+			continue;
+		}
+		//if (index == 3210) {
+		//	std::cout << "parent " << index << "for " << i << std::endl;// one node will not have parents
+		//}
 		int x1 = index / get_im_h();
 		int y1 = index - get_im_h()*x1;
 		pos p1(x1, y1);
 
-		index = i;
-		int x2 = index / get_im_h();
-		int y2 = index - get_im_h()*x2;
-		pos p2(x2, y2);
+		//if (x1 >= get_im_w() || x2 >= get_im_w() || y1 >= get_im_h() || y2 >= get_im_h()) std::cout << " x1 " << x1 << " y1 " << y1 << " x2" << x2 << " y2 " << y2 << std::endl;
 		que.emplace(p1,p2, dist(get_RGB(p1), get_RGB(p2)));
-		set_dir_edge_and_parent(p1, p2, 1,ind_index);	
+		set_dir_edge_and_parent(p1, p2, 1, ind_index);	
 	}
 
-	std::cout << "initialization  children" << std::endl;
-	std::cout << seconds - time(NULL) << std::endl;
-	seconds = time(NULL);
-
-	
+	//std::cout << "initialization  children" << std::endl;
+	//std::cout << seconds - time(NULL) << std::endl;
+	//seconds = time(NULL);
 
 	// setting number of children in graph below a parent
 	set_num_children(*this, ind_index, pos(start_mst_x, start_mst_y));
@@ -150,7 +184,7 @@ void Population::initialize_individual_PrimsMST(int ind_index){
 	//std::cout << "Extra edges " <<N_EDGES - edge_candidate_count <<  std::endl;
 	for (int i = 0; i < N_EDGES - edge_candidate_count;) {
 		if (!que.empty()) {
-			std::cout << " que" << std::endl;
+			//std::cout << " que" << std::endl;
 			edge temp = que.top();
 			que.pop();
 			pos parent;
@@ -189,7 +223,7 @@ void Population::initialize_individual_PrimsMST(int ind_index){
 
 	// setting entry value
 	int total_segment_size = 0;
-	for (auto it = entry_s[0].begin(); it != entry_s[ind_index].end();) {
+	for (auto it = entry_s[ind_index].begin(); it != entry_s[ind_index].end();) {
 		//std::cout << " check " << it->x << " " << it->y << std::endl;
 		int segment_size = set_start_segment_entry(*it, ind_index);
 		if (segment_size == 0) {
@@ -207,15 +241,22 @@ void Population::initialize_individual_PrimsMST(int ind_index){
 
 	std::cout << "total " << total_segment_size << "should be " << get_im_h()*get_im_w() << std::endl;
 
-	std::cout << "FINISHED " << std::endl;
-	std::cout << seconds - time(NULL) << std::endl;
-	seconds = time(NULL);
+	//std::cout << "FINISHED " << std::endl;
+	//std::cout << seconds - time(NULL) << std::endl;
+	//seconds = time(NULL);
 }
 
 void Population::initialize_population() {
-	int init_index = 0;
-	this->initialize_individual_PrimsMST(init_index);
-	for (int i = 0; i < N_IND+N_OFFSPRING; i++) {
+	
+	for (int i = 0; i < 5;i++) {
+		this->initialize_individual_PrimsMST(i);
+		fitness_1.push_back(std::make_pair(0.0, i));
+		fitness_2.push_back(std::make_pair(0.0, i));
+		rank.push_back(std::make_pair(0, i));
+		draw_segments_contour(i, i);
+	}
+	/*int init_index = 0;
+	for (int i = N_IND; i < N_IND+N_OFFSPRING; i++) {
 
 		fitness_1.push_back(std::make_pair(0.0, i));
 		fitness_2.push_back(std::make_pair(0.0, i));
@@ -238,15 +279,15 @@ void Population::initialize_population() {
 				this->population[i][x][y].parent_dir   = this->population[init_index][x][y].parent_dir;
 			}
 		}
-	}
+	}*/
 
 	// Calculating fitness and rank of individuals
 
-	MOEA_fitness(*this, N_IND, entry_s, fitness_1, fitness_2);
-	MOEA_rank(N_IND, rank, fitness_1, fitness_2);
+	//MOEA_fitness(*this, N_IND, entry_s, fitness_1, fitness_2);
+	//MOEA_rank(N_IND, rank, fitness_1, fitness_2);
 
 
-	draw_segments_contour(0,0);
+	
 	cv::waitKey(0);
 
 }
@@ -376,6 +417,7 @@ void Population::set_dir_edge_and_parent(pos& parent, pos& child, int on, int in
 	int y1 = parent.y;
 	int y2 = child.y;
 	//std::cout << " x1 " << x1 << " y1 " << y1 << " x2" << x2 << " y2 " << y2 << std::endl;
+	
 	if (x1 > x2) {
 		population[ind_index][x1][y1].left = on;
 		population[ind_index][x2][y2].right = on;
