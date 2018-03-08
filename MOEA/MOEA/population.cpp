@@ -133,6 +133,7 @@ void Population::initialize_individual_PrimsMST(int ind_index){
 	int start_mst_y = rand() % get_im_h();
 	int start_index = start_mst_x * get_im_h() + start_mst_y;
 	std::cout << " start index " << start_index << std::endl;
+
 	
 	std::vector<int> mst_parents = g.primMST(start_index); // MAKE PRIM MST
 
@@ -153,9 +154,6 @@ void Population::initialize_individual_PrimsMST(int ind_index){
 			//std::cout << "parent " << index << "for " << i << std::endl;// one node will not have parents
 			continue;
 		}
-		//if (index == 3210) {
-		//	std::cout << "parent " << index << "for " << i << std::endl;// one node will not have parents
-		//}
 		int x1 = index / get_im_h();
 		int y1 = index - get_im_h()*x1;
 		pos p1(x1, y1);
@@ -165,13 +163,22 @@ void Population::initialize_individual_PrimsMST(int ind_index){
 		set_dir_edge_and_parent(p1, p2, 1, ind_index);	
 	}
 
+	
+
+
 	//std::cout << "initialization  children" << std::endl;
 	//std::cout << seconds - time(NULL) << std::endl;
 	//seconds = time(NULL);
 
 	// setting number of children in graph below a parent
 	set_num_children(*this, ind_index, pos(start_mst_x, start_mst_y));
-	
+	int i = 10;
+	std::cout << " start node num children " << population[ind_index][start_mst_x][start_mst_y].num_children << std::endl;
+	if(population[ind_index][start_mst_x][start_mst_y].left ) std::cout << " random left " << population[ind_index][start_mst_x - 1][start_mst_y ].num_children << std::endl;
+	if (population[ind_index][start_mst_x][start_mst_y].right)std::cout << " random right " << population[ind_index][start_mst_x + 1][start_mst_y].num_children << std::endl;
+	if (population[ind_index][start_mst_x][start_mst_y].up)std::cout << " random up " << population[ind_index][start_mst_x][start_mst_y - 1].num_children << std::endl;
+	if (population[ind_index][start_mst_x][start_mst_y].down)std::cout << " random down " << population[ind_index][start_mst_x][start_mst_y + 1].num_children << std::endl;
+
 	// creating segments
 	std::priority_queue<edge, std::vector<edge>, edge_comparator> reserve_que;
 	int edge_candidate_count = 0;
