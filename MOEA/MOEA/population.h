@@ -12,9 +12,11 @@ struct node;
 struct RGB;
 struct edge;
 struct edge_comparator;
+struct r_edge_comparator;
 struct active_edge_t;
 
 typedef std::priority_queue<edge, std::vector<edge>, edge_comparator> edge_priority_que;
+typedef std::priority_queue<edge, std::vector<edge>, r_edge_comparator> r_edge_priority_que;
 
 class Population{
 private:
@@ -31,10 +33,11 @@ public:
 	Population();
 	~Population();
 	//node** get_individual(int ind_index);
-	void initialize_population_PrimsMST();
+	//void initialize_population_PrimsMST();
 	void initialize_individual_PrimsMST(int ind_index);
 	void initialize_population();
-	void initialize_population_test();
+	//void initialize_population_test();
+	void test_prim();
 	void test_segment(pos& entry, int ind_index);
 
 	void MOEA_next_generation();
@@ -67,7 +70,8 @@ public:
 	int set_segment_entry(pos& entry, pos& set, int ind_index);
 
 
-	int create_segments(int ind_index, int segment_size, edge_priority_que& que, edge_priority_que& reserve_que, int n_segments);
+	int split_MST_segment(int ind_index,  edge_priority_que& que, r_edge_priority_que& merge_que);
+	int merge_small_segments(int ind_index, r_edge_priority_que& que, int n_segments);
 	void change_parents_n_segment(pos& parent, pos& child, int ind_index);
 
 	//void initialize_n_children(int ind_index, std::map<edge, int> &edgeChildren);

@@ -16,7 +16,7 @@ using namespace std;
 // Allocates memory for adjacency list
 Graph::Graph(int V){
 	this->V = V;
-	adj = new list<idPair>[V];
+	adj = new list<diPair>[V];
 }
 
 Graph::~Graph(){
@@ -24,8 +24,8 @@ Graph::~Graph(){
 }
 
 void Graph::addEdge(int u, int v, double w){
-	adj[u].push_back(make_pair(v, w));
-	adj[v].push_back(make_pair(u, w));
+	adj[u].push_back(make_pair(w, v));
+	adj[v].push_back(make_pair(w, u));
 }
 
 
@@ -38,8 +38,6 @@ vector<int> Graph::primMST(int start_index){
 
 	int src = start_index; // Taking vertex 0 as source
 
-				 // Create a vector for keys and initialize all
-				 // keys as infinite (INF)
 	vector<double> key(V, INF);
 
 	// To store parent array which in turn store MST
@@ -67,14 +65,13 @@ vector<int> Graph::primMST(int start_index){
 
 		inMST[u] = true;  // Include vertex in MST
 
-						  // 'i' is used to get all adjacent vertices of a vertex
-		list< pair<int, double> >::iterator i;
-		for (i = adj[u].begin(); i != adj[u].end(); ++i)
+		//list< pair<int, double> >::iterator i;
+		for (auto i = adj[u].begin(); i != adj[u].end(); ++i)
 		{
 			// Get vertex label and weight of current adjacent
 			// of u.
-			int v = (*i).first;
-			double weight = (*i).second;
+			int v = (*i).second;
+			double weight = (*i).first;
 
 			//  If v is not in MST and weight of (u,v) is smaller
 			// than current key of v
@@ -174,25 +171,19 @@ void remove_color(Population &p, int ind_index, pos entry, std::stack<pos> &bran
 void set_num_children(Population &p, int ind_index, pos entry) {
 	std::stack<pos> branch_points;
 	pos prev(entry.x, entry.y);
-	pos next;
+	pos next(entry.x, entry.y);
 	pos r_next;
 	//p.get_node(ind_index, entry)->entry = entry;
 
 	int counted_children;
 	int last_num_branch_points = 0;
 	bool backtrack_and_count_children = false;
-	while (prev.x != -1) {
+	int num_visited = 0;
+	while (prev.x != static_cast<unsigned short>(-1)) {
 		if (!backtrack_and_count_children) {
 			// Traverse and set parent
 			next = traverse_ST(p, ind_index, next, branch_points);
-
-			// Set entry while you are at it
-			node *n_next = p.get_node(ind_index, next);
-			/*if (next.x != static_cast<unsigned short>(-1)) {
-				n_next->entry = entry;
-			}*/
-
-			node *n_prev = p.get_node(ind_index, prev); // TODO; fix
+			num_visited++;
 
 			// Handle node found with no other children than itself
 			if (last_num_branch_points > branch_points.size() || next.x == static_cast<unsigned short>(-1)) {
@@ -201,12 +192,13 @@ void set_num_children(Population &p, int ind_index, pos entry) {
 				counted_children = 1;
 				continue;
 			}
+			//node *n_next = p.get_node(ind_index, next);
 
 			// Set parent
-			if (prev.x < next.x) n_next->parent_dir = LEFT;
-			if (prev.x > next.x) n_next->parent_dir = RIGHT;
-			if (prev.y < next.y) n_next->parent_dir = UP;
-			if (prev.y > next.y) n_next->parent_dir = DOWN;
+			//if (prev.x < next.x) n_next->parent_dir = LEFT;
+			//if (prev.x > next.x) n_next->parent_dir = RIGHT;
+			//if (prev.y < next.y) n_next->parent_dir = UP;
+			//if (prev.y > next.y) n_next->parent_dir = DOWN;
 
 			prev = next;
 			last_num_branch_points = branch_points.size();
@@ -240,11 +232,11 @@ void set_num_children(Population &p, int ind_index, pos entry) {
 				prev = r_next;
 
 				// Set parent
-				node *n_next = p.get_node(ind_index, next);
-				if (prev.x < next.x) n_next->parent_dir = LEFT;
+				//node *n_next = p.get_node(ind_index, next);
+				/*if (prev.x < next.x) n_next->parent_dir = LEFT;
 				if (prev.x > next.x) n_next->parent_dir = RIGHT;
 				if (prev.y < next.y) n_next->parent_dir = UP;
-				if (prev.y > next.y) n_next->parent_dir = DOWN;
+				if (prev.y > next.y) n_next->parent_dir = DOWN;*/
 
 				prev = next;
 				last_num_branch_points = branch_points.size();

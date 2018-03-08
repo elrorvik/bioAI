@@ -15,7 +15,7 @@ typedef pair<double, int> diPair;
 class Graph
 {
 	int V;    // No. of vertices
-	list<idPair> *adj; //  adjencency list
+	list<diPair> *adj; //  adjencency list
 
 public:
 	Graph(int V);  // Constructor

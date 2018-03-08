@@ -13,8 +13,14 @@ const double MUTATION_RATE = 0.9;
 const int N_OFFSPRING = 10;
 const double MUT_SPLIT_PERC = 0.1;
 const double MUT_MERGE_PERC = 0.9;
+//const int SEGMENT_SIZE[N_SEG_TYPES] = { 1000,5000 };
+//const int N_PIX_SEGMENT[N_SEG_TYPES] = { 20,20};
+const int SMALL_SEGMENT_SIZE = 10;
+const int N_SMALL_SEGMENT = 6000;
+const int N_MERGE_SMALL_SEGMENT = 5900;
+
 const int SEGMENT_SIZE[N_SEG_TYPES] = { 1000,5000 };
-const int N_PIX_SEGMENT[N_SEG_TYPES] = { 20,20};
+const int N_PIX_SEGMENT[N_SEG_TYPES] = { 10,1};
 const int N_EDGES = 60;
 //const int SEGMENT_SIZE[N_SEG_TYPES] = { 1000,5000 };
 //const int N_PIX_SEGMENT[N_SEG_TYPES] = { 3,3 };
@@ -100,6 +106,12 @@ struct edge {
 };
 
 struct edge_comparator {
+	bool operator()(edge e1, edge e2) {
+		return e1.RGBdist < e2.RGBdist;
+	}
+};
+
+struct r_edge_comparator {
 	bool operator()(edge e1, edge e2) {
 		return e1.RGBdist < e2.RGBdist;
 	}
