@@ -121,7 +121,7 @@ void Population::initialize_individual_PrimsMST(int ind_index){
 				g.addEdge(x*get_im_h() + y, (x + 1)*get_im_h() + y, dist(get_RGB(pos(x, y)), get_RGB(pos(x + 1, y))));
 			}
 			if (y + 1 < get_im_h()) {
-				g.addEdge(x*get_im_h() + y + 1, (x)*get_im_h() + y, dist(get_RGB(pos(x, y)), get_RGB(pos(x, y + 1))));
+				g.addEdge(x*get_im_h() + (y + 1), (x)*get_im_h() + y, dist(get_RGB(pos(x, y)), get_RGB(pos(x, y + 1))));
 			}
 		}
 	}
@@ -180,50 +180,12 @@ void Population::initialize_individual_PrimsMST(int ind_index){
 	if (population[ind_index][start_mst_x][start_mst_y].down)std::cout << " random down " << population[ind_index][start_mst_x][start_mst_y + 1].num_children << std::endl;
 
 	// creating segments
-	std::priority_queue<edge, std::vector<edge>, edge_comparator> reserve_que;
+	r_edge_priority_que merge_que;
 	int edge_candidate_count = 0;
-	for (int i = 0; i < N_SEG_TYPES; i++) {
-		int segment_size = SEGMENT_SIZE[i]; // three = 1000
-		int n_segments = N_PIX_SEGMENT[i]; // how many segments currently made // three 100
-		
-		edge_candidate_count += n_segments - create_segments(ind_index, segment_size, que,reserve_que, n_segments);
-	}
-	//std::cout << "Extra edges " <<N_EDGES - edge_candidate_count <<  std::endl;
-	for (int i = 0; i < N_EDGES - edge_candidate_count;) {
-		if (!que.empty()) {
-			//std::cout << " que" << std::endl;
-			edge temp = que.top();
-			que.pop();
-			pos parent;
-			pos child;
-			pos parent_for_p1 = (temp.p1 + population[ind_index][temp.p1.x][temp.p1.y].parent_dir);
-			if (parent_for_p1 == temp.p2) {
-				parent = temp.p2;
-				child = temp.p1;
-			}
-			else {
-				parent = temp.p1;
-				child = temp.p2;
-			}
-			int n_segment_2 = get_parent_segment_size(parent, ind_index);
-			int n_segment = population[ind_index][child.x][child.y].num_children;
+	split_MST_segment(ind_index, que,merge_que);
 
-			if (n_segment_2 - n_segment > 1000 && n_segment > 1000) {
-				edge_candidates[ind_index].push_back({ temp, true });
-				i++;
-			}
-		}
-		else if (!reserve_que.empty()) {
-			//std::cout << " reserve que" << std::endl;
-			edge temp = reserve_que.top();
-			reserve_que.pop();
-			edge_candidates[ind_index].push_back({ temp, true });
-			i++;
-		}
-		else {
-			break;
-		}
-	}
+	merge_small_segments(ind_index, merge_que, N_MERGE_SMALL_SEGMENT);
+
 	
 	//std::cout << "candidate edges size" << edge_candidates.size() << " count " << edge_candidate_count << std::endl;
 	//std::cout << "entry_s size " << entry_s[ind_index].size() << std::endl;
@@ -255,7 +217,7 @@ void Population::initialize_individual_PrimsMST(int ind_index){
 
 void Population::initialize_population() {
 	
-	for (int i = 0; i < 5;i++) {
+	for (int i = 0; i < 1;i++) {
 		this->initialize_individual_PrimsMST(i);
 		fitness_1.push_back(std::make_pair(0.0, i));
 		fitness_2.push_back(std::make_pair(0.0, i));
@@ -714,7 +676,9 @@ std::vector<pos>* Population::edges_segment(int ind_index) {
 	return segment;
 }
 
-int Population::create_segments(int ind_index, int segment_size, edge_priority_que& que, edge_priority_que& reserve_que, int n_segments) {
+int Population::split_MST_segment(int ind_index, edge_priority_que& que, r_edge_priority_que& merge_que) {
+	int segment_size = SMALL_SEGMENT_SIZE;
+	int n_segments = N_SMALL_SEGMENT;
 
 	while (n_segments > 0 && !que.empty()) {
 		edge temp = que.top();
@@ -745,10 +709,38 @@ int Population::create_segments(int ind_index, int segment_size, edge_priority_q
 			entry_s[ind_index].push_back(child);
 			entry_s[ind_index].push_back(parent);
 			edge_candidates[ind_index].push_back({ temp, false });
+			merge_que.push(temp);
 			n_segments--;
-		}if (n_segment_2 - n_segment > segment_size/2.0 && n_segment > segment_size/2.0) {
-			reserve_que.push(temp);
 		}
+	}
+	return n_segments;
+}
+
+int Population::merge_small_segments(int ind_index, r_edge_priority_que& que, int n_segments) {
+
+
+	while (n_segments > 0 && !que.empty()) {
+		edge temp = que.top();
+		que.pop();
+		pos parent;
+		pos child;
+		pos parent_for_p1 = (temp.p1 + population[ind_index][temp.p1.x][temp.p1.y].parent_dir);
+		if (parent_for_p1 == temp.p2) {
+			parent = temp.p2;
+			child = temp.p1;
+		}
+		else {
+			parent = temp.p1;
+			child = temp.p2;
+		}
+		
+		set_dir_edge_and_parent(parent, child, 1, ind_index);
+
+		// MUST BE DONE change_parents_n_segment(parent, child, ind_index);
+
+		entry_s[ind_index].push_back(child);
+		entry_s[ind_index].push_back(parent);
+		n_segments--;
 	}
 	return n_segments;
 }
