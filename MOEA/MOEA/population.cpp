@@ -385,10 +385,17 @@ std::vector<active_edge_t>& Population::get_edge_candidates(int ind_index) {
 }
 
 void Population::merge_segments(int ind_index, edge merge_nodes) {
+	//std::cout << merge_nodes.p1.x << "," << merge_nodes.p1.y << " p1, " << merge_nodes.p2.x << "," << merge_nodes.p2.y << " p2" << std::endl;
+	//pos entry1 = population[ind_index][merge_nodes.p1.x][merge_nodes.p1.y].entry;
+	//pos entry2 = population[ind_index][merge_nodes.p2.x][merge_nodes.p2.y].entry;
+	//std::cout << entry1.x << "," << entry1.y << " entry1, " << entry2.x << "," << entry2.y << " entry 2" << std::endl;
+	//std::cout << get_n_segment(entry1, ind_index, 0) << ", segment p1 size before merge" << std::endl;
+	//std::cout << get_n_segment(entry2, ind_index, 0) << ", segment p2 size before merge" << std::endl;
 	merge_segment_properties(ind_index, merge_nodes.p1, merge_nodes.p2);
 	set_segment_entry(merge_nodes.p2, merge_nodes.p1, ind_index);
 	set_dir_edge(merge_nodes.p1, merge_nodes.p2, 1, ind_index);
-	std::cout << " actual segment size " <<get_n_segment(merge_nodes.p1,ind_index) << std::endl;
+	//std::cout << get_n_segment(entry1, ind_index, 0) << ", segment p1 size after merge" << std::endl;
+	//std::cout << get_n_segment(entry2, ind_index, 0) << ", segment p2 size after merge" << std::endl;
 }
 
 void Population::merge_segments(int ind_index, int edge_index, edge merge_nodes) {
@@ -477,18 +484,25 @@ void Population::set_dir_edge(pos& parent, pos& child, int on, int ind_index) {
 	if (x1 > x2) {
 		population[ind_index][x1][y1].left = on;
 		population[ind_index][x2][y2].right = on;
+		//std::cout << "Combining" << std::endl;
 	}
 	else if (x1 < x2) {
 		population[ind_index][x1][y1].right = on;
 		population[ind_index][x2][y2].left = on;
+		//std::cout << "Combining" << std::endl;
+
 	}
 	else if (y1 > y2) {
 		population[ind_index][x1][y1].up = on;
 		population[ind_index][x2][y2].down = on;
+		//std::cout << "Combining" << std::endl;
+
 	}
 	else {
 		population[ind_index][x1][y1].down = on;
 		population[ind_index][x2][y2].up = on;
+		//std::cout << "Combining" << std::endl;
+
 	}
 }
 
@@ -550,6 +564,7 @@ int Population::set_start_segment_entry(pos& entry, int ind_index) {
 int Population::set_segment_entry(pos& entry, pos& set, int ind_index) {
 	stack<pos> branch_points;
 	pos invalid_pos(-1, -1);
+	//std::cout << "Merging" << std::endl;
 	//std::cout << "you not taken " << std::endl;
 	population[ind_index][entry.x][entry.y].entry = set;
 	pos next = entry;
@@ -564,11 +579,13 @@ int Population::set_segment_entry(pos& entry, pos& set, int ind_index) {
 	return count;
 }
 
-int Population::get_n_segment(pos& entry, int ind_index) {
+int Population::get_n_segment(pos& entry, int ind_index, bool check_for_taken) {
 	stack<pos> branch_points;
+	
+	//std::cout << entry.x << "," << entry.y << " entry in get_n_segment" << std::endl;
 
 	pos invalid_pos(-1, -1);
-	if (population[ind_index][entry.x][entry.y].entry != invalid_pos) {
+	if (population[ind_index][entry.x][entry.y].entry != invalid_pos && check_for_taken) {
 		//std::cout << " taken by " << entry.x << " " << entry.y << std::endl;
 		return 0;
 	}
@@ -794,7 +811,7 @@ std::vector<pos>* Population::edges_segment(int ind_index) {
 		//std::cout << it->x << " " <<it->y << " "<< count_pixels << " edges " << segment[count].size() <<std::endl;
 		count++;
 		remove_color(*this, ind_index, *it, branch_points);
-	}	
+	}
 	return segment;
 }
 
@@ -823,10 +840,10 @@ int Population::split_MST_segment(int ind_index, edge_priority_que& que, r_edge_
 			//std::cout << "parent" << parent.x << " " << parent.x << " child " << child.x << " " << child.y << std::endl;
 			set_dir_edge_and_parent(parent, child, 0,ind_index);
 			//std::cout << "n_pixels " << population[ind_index][child.x][child.y].num_children;
-			//std::cout << " get_ parent " << get_n_segment(parent, ind_index) << " calculate " << n_segment_2 - n_segment << std::endl;
-			//std::cout << " get_ child " << get_n_segment(child, ind_index) << " calculate " <<  n_segment << std::endl;
+			//std::cout << " get_ parent " << get_n_segment(parent, ind_index, 1) << " calculate " << n_segment_2 - n_segment << std::endl;
+			//std::cout << " get_ child " << get_n_segment(child, ind_index, 1) << " calculate " <<  n_segment << std::endl;
 			change_parents_n_segment(parent, child, ind_index);
-			//int min_pixels = get_n_segment(child, ind_index);
+			//int min_pixels = get_n_segment(child, ind_index, 1);
 			//std::cout << " get_n " << min_pixels << std::endl;
 			entry_s[ind_index].push_back(child);
 			entry_s[ind_index].push_back(parent);
