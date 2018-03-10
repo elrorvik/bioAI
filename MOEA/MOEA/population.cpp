@@ -422,7 +422,6 @@ void Population::merge_segment_properties(int ind_index, pos first, pos second) 
 	for (std::vector<pos>::iterator it = first_prop->neighbour_entries.begin(); it != first_prop->neighbour_entries.begin(); ++it) {
 		if (*it == second_entry) {
 			first_prop->neighbour_entries.erase(it); // must erase from this array
-			break;
 		}
 	}
 
