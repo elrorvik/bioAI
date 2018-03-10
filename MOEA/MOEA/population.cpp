@@ -233,6 +233,7 @@ void Population::initialize_individual_PrimsMST(int ind_index){
 					new_entry = population[ind_index][xt->p1.x][xt->p1.y].entry;
 				}
 				if (get_neighbor_dir(xt->p1, xt->p2) == SELF) std::cout << xt->p1.x << " " << xt->p1.y << " not neigh" << xt->p2.x << " " << xt->p2.y << std::endl;
+				if (abs(xt->p1.x - xt->p2.x) > 1 || abs(xt->p1.y - xt->p2.y) > 1) std::cout << xt->p1.x << " " << xt->p1.y << " not neigh" << xt->p2.x << " " << xt->p2.y << std::endl;
 				if (xt->p1.x > get_im_w() || xt->p2.x > get_im_w() || xt->p1.y > get_im_h() || xt->p2.y > get_im_h()) std::cout << " wrong " << std::endl;
 				segment_prop[ind_index][pos_entry].borders[new_entry].push_back(*xt);
 				//std::cout << "new entry " << new_entry.x << " " << new_entry.y << " size " << segment_prop[ind_index][pos_entry].borders[new_entry].size() << std::endl;
@@ -317,25 +318,18 @@ void Population::MOEA_next_generation() {
 		//	edge_candidates[n_pop - 1] = crossover_uniform_list_representation(*this, parents[i - 1], parents[i - 2], n_pop - 1);
 		//}
 	}
-	// mutations:
-	double mutation_rate = MUT_SPLIT_PERC + MUT_MERGE_PERC;
-	if (mutation_rate > 1.0) std::cout << " to high mutation rate" << std::endl;
-	for (int i = N_IND; i < n_pop; i++) {
-		double rand_num = (rand() % 1000) / 1000.0;
-		if (rand_num < MUTATION_RATE) {
+// mutations:
+double mutation_rate = MUT_SPLIT_PERC + MUT_MERGE_PERC;
+if (mutation_rate > 1.0) std::cout << " to high mutation rate" << std::endl;
+for (int i = N_IND; i < n_pop; i++) {
+	double rand_num = (rand() % 1000) / 1000.0;
+	if (rand_num < MUTATION_RATE) {
 
-			int num_mutations = 1000;
-			for (int j = 0; j < num_mutations; j++) {
-				int attempts = 0;
-				draw_segments_contour(0, 0);
-				cv::Mat im = draw_segments_black_contour(0);
-				cv::waitKey(0);
-				while (!mutation_greedy_merge_segments(*this, i) && 50 >= attempts++);
-				if (attempts == 50) std::cout << "Failed to mutate child" << std::endl;
-				draw_segments_contour(1, 1);
-				cv::Mat im2 = draw_segments_black_contour(1);
-				cv::waitKey(0);
-			}
+		int num_mutations = rand() % 10;
+		for (int j = 0; j < num_mutations; j++) {
+			int attempts = 0;
+			while (!mutation_greedy_merge_segments(*this, i) && 50 >= attempts++);
+			if (attempts == 50) std::cout << "Failed to mutate child" << std::endl;
 		}
 	}
 
@@ -365,11 +359,11 @@ void Population::MOEA_next_generation() {
 		}
 	}
 
-	//if (survivors_offspring.size() != non_survivors.size()) std::cout << "different size" << survivors_offspring.size() << " " << non_survivors.size() << std::endl;
-	//std::cin.get();
-	for (int i = 0; i < survivors_offspring.size(); i++) {
-		//std::cout << " switch " << non_survivors[i] << " " << survivors_offspring[i] << std::endl;
-		copy_individual(non_survivors[i], survivors_offspring[i]);
+//if (survivors_offspring.size() != non_survivors.size()) std::cout << "different size" << survivors_offspring.size() << " " << non_survivors.size() << std::endl;
+//std::cin.get();
+for (int i = 0; i < survivors_offspring.size(); i++) {
+	//std::cout << " switch " << non_survivors[i] << " " << survivors_offspring[i] << std::endl;
+	copy_individual(non_survivors[i], survivors_offspring[i]);
 
 	}
 
@@ -389,19 +383,10 @@ std::vector<active_edge_t>& Population::get_edge_candidates(int ind_index) {
 void Population::merge_segments(int ind_index, edge merge_nodes) {
 	//std::cout << get_n_segment(entry1, ind_index, 0) << ", segment p1 size before merge" << std::endl;
 	//std::cout << get_n_segment(entry2, ind_index, 0) << ", segment p2 size before merge" << std::endl;
-	if (!individual_uncolored(ind_index)) {
-		std::cout << "Individual " << ind_index << " doesn't have a uniform color before merge!" << std::endl;
-		std::cin.get();
-	}
 	int num_in_merged_segment = merge_segment_properties(ind_index, merge_nodes.p1, merge_nodes.p2);
 	set_segment_entry(merge_nodes.p2, merge_nodes.p1, ind_index);
 	set_dir_edge(merge_nodes.p1, merge_nodes.p2, 1, ind_index);
 	if (get_n_segment(merge_nodes.p2, ind_index, 0) != num_in_merged_segment) std::cout << " different size " << std::endl;
-	if (!individual_uncolored(ind_index)) {
-		std::cout << "Individual " << ind_index << " doesn't have a uniform color after merge!" << std::endl;
-		std::cin.get();
-	}
-
 }
 
 void Population::merge_segments(int ind_index, int edge_index, edge merge_nodes) {
@@ -410,7 +395,7 @@ void Population::merge_segments(int ind_index, int edge_index, edge merge_nodes)
 }
 
 int  Population::merge_segment_properties(int ind_index, pos first, pos second) {
-	//static int called = 0;
+	static int called = 0;
 	//std::cout << called++ << std::endl;
 	pos first_entry = population[ind_index][first.x][first.y].entry;
 	pos second_entry = population[ind_index][second.x][second.y].entry;
@@ -446,6 +431,10 @@ int  Population::merge_segment_properties(int ind_index, pos first, pos second) 
 			int j = 0;
 			for (int i = 0; i < it->second.size(); i++) {
 				
+				if (abs(it->second[i].p1.x - it->second[i].p2.x) > 1 || abs(it->second[i].p1.y - it->second[i].p2.y) > 1) {
+					std::cout << it->second[i].p1.x << " " << it->second[i].p1.y << " not neigh" << it->second[i].p2.x << " " << it->second[i].p2.x << std::endl;
+					std::cin.get();
+				}
 				if (get_neighbor_dir(it->second[i].p1, it->second[i].p2) == SELF) {
 					std:cout << it->second[i].p1.x << "," << it->second[i].p1.y << " og " << it->second[i].p2.x << "," << it->second[i].p2.y << std::endl;
 					std::cout << j << " i " << i <<std::endl;
@@ -470,7 +459,6 @@ int  Population::merge_segment_properties(int ind_index, pos first, pos second) 
 	}
 
 	segment_prop[ind_index].erase(second_entry);
-	return get_n_segment(first_entry, ind_index, 0) + get_n_segment(second, ind_index, 0);
 
 }
 
@@ -1012,7 +1000,8 @@ void Population::draw_pareto_front() {
 		if (rank[i].first == 0) {
 			cv::Mat img = draw_segments_black_contour(rank[i].second);
 			write_image_to_file(rank[i].second, img);
-			//std::cout << " rank . second " << rank[i].second << std::endl;
+			
+			std::cout << " num segments" << segment_prop[rank[i].second].size() << std::endl;
 		}
 	}
 }
@@ -1026,3 +1015,40 @@ bool Population::individual_uncolored(int ind_index) {
 	}
 	return 1;
 }
+	// mutations:
+	double mutation_rate = MUT_SPLIT_PERC + MUT_MERGE_PERC;
+	if (mutation_rate > 1.0) std::cout << " to high mutation rate" << std::endl;
+	for (int i = N_IND; i < n_pop; i++) {
+		double rand_num = (rand() % 1000) / 1000.0;
+		if (rand_num < MUTATION_RATE) {
+			int num_mutations = 1000;
+			for (int j = 0; j < num_mutations; j++) {
+				int attempts = 0;
+				draw_segments_contour(0, 0);
+				cv::Mat im = draw_segments_black_contour(0);
+				cv::waitKey(0);
+				while (!mutation_greedy_merge_segments(*this, i) && 50 >= attempts++);
+				if (attempts == 50) std::cout << "Failed to mutate child" << std::endl;
+				draw_segments_contour(1, 1);
+				cv::Mat im2 = draw_segments_black_contour(1);
+				cv::waitKey(0);
+			}
+	//if (survivors_offspring.size() != non_survivors.size()) std::cout << "different size" << survivors_offspring.size() << " " << non_survivors.size() << std::endl;
+	//std::cin.get();
+	for (int i = 0; i < survivors_offspring.size(); i++) {
+		//std::cout << " switch " << non_survivors[i] << " " << survivors_offspring[i] << std::endl;
+		copy_individual(non_survivors[i], survivors_offspring[i]);
+		//std::cout << "new indiviudal " << std::endl;
+	if (!individual_uncolored(ind_index)) {
+		std::cout << "Individual " << ind_index << " doesn't have a uniform color before merge!" << std::endl;
+		std::cin.get();
+	}
+	int num_in_merged_segment = merge_segment_properties(ind_index, merge_nodes.p1, merge_nodes.p2);
+	if (get_n_segment(merge_nodes.p2, ind_index, 0) != num_in_merged_segment) std::cout << " different size " << std::endl;
+	if (!individual_uncolored(ind_index)) {
+		std::cout << "Individual " << ind_index << " doesn't have a uniform color after merge!" << std::endl;
+		std::cin.get();
+	}
+
+int  Population::merge_segment_properties(int ind_index, pos first, pos second) {
+	//static int called = 0;
