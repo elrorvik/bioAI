@@ -220,7 +220,7 @@ void Population::initialize_individual_PrimsMST(int ind_index){
 
 			if (segment_prop[ind_index][pos_entry].avg_rgb == invalid_color ) {
 				segment_prop[ind_index][pos_entry].avg_rgb = avg_rgb_seg(*this, ind_index, pos_entry);
-				std::cout << i <<" adding color " << std::endl;
+				//std::cout << i <<" adding color " << std::endl;
 			}
 			
 			std::vector<edge> neigbours = get_neigbours(*it, ind_index, 0);
@@ -371,9 +371,9 @@ for (int i = 0; i < survivors_offspring.size(); i++) {
 
 }
 
-for (int i = 0; i < N_IND; i++) {
+/*for (int i = 0; i < N_IND; i++) {
 	std::cout << " rank " << rank[i].first << "," << rank[i].second << " fitness 1: " << fitness_1[i].first << "," << fitness_1[i].second << " fitness 2: " << fitness_2[i].first << "," << fitness_2[i].second << std::endl;
-}
+}*/
 
 // return pareto rank 0 ? ( to main loop ? or ??)
 
@@ -391,11 +391,10 @@ void Population::merge_segments(int ind_index, edge merge_nodes) {
 	//std::cout << entry1.x << "," << entry1.y << " entry1, " << entry2.x << "," << entry2.y << " entry 2" << std::endl;
 	//std::cout << get_n_segment(entry1, ind_index, 0) << ", segment p1 size before merge" << std::endl;
 	//std::cout << get_n_segment(entry2, ind_index, 0) << ", segment p2 size before merge" << std::endl;
-	merge_segment_properties(ind_index, merge_nodes.p1, merge_nodes.p2);
+	int num_in_merged_segment = merge_segment_properties(ind_index, merge_nodes.p1, merge_nodes.p2);
 	set_segment_entry(merge_nodes.p2, merge_nodes.p1, ind_index);
 	set_dir_edge(merge_nodes.p1, merge_nodes.p2, 1, ind_index);
-	//std::cout << get_n_segment(entry1, ind_index, 0) << ", segment p1 size after merge" << std::endl;
-	//std::cout << get_n_segment(entry2, ind_index, 0) << ", segment p2 size after merge" << std::endl;
+	if (get_n_segment(merge_nodes.p2, ind_index, 0) != num_in_merged_segment) std::cout << " different size " << std::endl;
 }
 
 void Population::merge_segments(int ind_index, int edge_index, edge merge_nodes) {
@@ -403,9 +402,9 @@ void Population::merge_segments(int ind_index, int edge_index, edge merge_nodes)
 	edge_candidates[ind_index][edge_index].active = 1;
 }
 
-void Population::merge_segment_properties(int ind_index, pos first, pos second) {
+int  Population::merge_segment_properties(int ind_index, pos first, pos second) {
 	static int called = 0;
-	std::cout << called++ << std::endl;
+	//std::cout << called++ << std::endl;
 	pos first_entry = population[ind_index][first.x][first.y].entry;
 	pos second_entry = population[ind_index][second.x][second.y].entry;
 
@@ -464,7 +463,7 @@ void Population::merge_segment_properties(int ind_index, pos first, pos second) 
 	}
 
 	segment_prop[ind_index].erase(second_entry);
-	std::cout << " get size of merged segment " << get_n_segment(first_entry, ind_index,0) + get_n_segment(second, ind_index,0) << std::endl;
+	return get_n_segment(first_entry, ind_index, 0) + get_n_segment(second, ind_index, 0);
 
 }
 
