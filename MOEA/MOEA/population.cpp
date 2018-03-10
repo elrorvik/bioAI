@@ -326,13 +326,10 @@ void Population::MOEA_next_generation() {
 			int num_mutations = 1000;
 			for (int j = 0; j < num_mutations; j++) {
 				int attempts = 0;
-				draw_segments_contour(0, 0);
-				cv::Mat im = draw_segments_black_contour(0);
-				cv::waitKey(0);
 				while (!mutation_greedy_merge_segments(*this, i) && 50 >= attempts++);
 				if (attempts == 50) std::cout << "Failed to mutate child" << std::endl;
-				draw_segments_contour(1, 1);
-				cv::Mat im2 = draw_segments_black_contour(1);
+				draw_segments_contour(i, i);
+				cv::Mat im2 = draw_segments_black_contour(i);
 				cv::waitKey(0);
 			}
 		}
@@ -410,7 +407,7 @@ void Population::merge_segments(int ind_index, int edge_index, edge merge_nodes)
 }
 
 void  Population::merge_segment_properties(int ind_index, pos first, pos second) {
-	static int called = 0;
+	//static int called = 0;
 	//std::cout << called++ << std::endl;
 	pos first_entry = population[ind_index][first.x][first.y].entry;
 	pos second_entry = population[ind_index][second.x][second.y].entry;
