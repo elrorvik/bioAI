@@ -89,6 +89,9 @@ bool operator<(edge e1, edge e2) {
 	return e1.RGBdist < e2.RGBdist;
 }
 bool operator<(pos p1, pos p2) {
+	if (p1.y == p2.y) {
+		return p1.x < p2.x;
+	}
 	return p1.y < p2.y;
 }
 
