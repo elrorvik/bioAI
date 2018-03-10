@@ -4,12 +4,12 @@ from fileReader import readTextFile
 
 #optimalFolder = "Optimal_Segmentation_Files" # you may have to specify the complete path
 #studentFolder = "Student_Segmentation_Files" # you may have to specify the complete path
-optimalFolder = "86016" # you may have to specify the complete path
-studentFolder = "86016_student" # you may have to specify the complete path
-#optimalFolder = "147091" # you may have to specify the complete path
-#studentFolder = "147091_student" # you may have to specify the complete path
-#optimalFolder = "160068" # you may have to specify the complete path
-#studentFolder = "160068_student" # you may have to specify the complete path
+#optimalFolder = "86016" # circle
+#studentFolder = "86016_student" 
+#optimalFolder = "147091" # three
+#studentFolder = "147091_student" 
+optimalFolder = "160068" # tiger
+studentFolder = "160068_student" 
 #optimalFolder = "176035" # you may have to specify the complete path
 #studentFolder = "176035_student" # you may have to specify the complete path
 #optimalFolder = "178054" # you may have to specify the complete path

@@ -15,13 +15,28 @@ const double MUT_SPLIT_PERC = 0.1;
 const double MUT_MERGE_PERC = 0.9;
 //const int SEGMENT_SIZE[N_SEG_TYPES] = { 1000,5000 };
 //const int N_PIX_SEGMENT[N_SEG_TYPES] = { 20,20};
-const int SMALL_SEGMENT_SIZE = 10;
-const int N_SMALL_SEGMENT = 6000;
-const int N_MERGE_SMALL_SEGMENT = 5900;
+
+
+// dessert 
+/*const int SMALL_SEGMENT_SIZE = 20; // 20
+const int N_SMALL_SEGMENT = 2000; // 3000
+const int N_MERGE_SMALL_SEGMENT = 1990; // 2990*/
+
+// Circle
+const int SMALL_SEGMENT_SIZE = 100; // 40
+const int N_SMALL_SEGMENT = 600; // 2000
+const int N_MERGE_SMALL_SEGMENT = 585; // 1950
+
+ // Tiger
+//const int SMALL_SEGMENT_SIZE = 2000;  // 1000
+//const int N_SMALL_SEGMENT = 10; // 40
+//const int N_MERGE_SMALL_SEGMENT =0; // 30
+
 
 const int SEGMENT_SIZE[N_SEG_TYPES] = { 1000,5000 };
-const int N_PIX_SEGMENT[N_SEG_TYPES] = { 10,1};
+const int N_PIX_SEGMENT[N_SEG_TYPES] = { 10,1 };
 const int N_EDGES = 60;
+
 //const int SEGMENT_SIZE[N_SEG_TYPES] = { 1000,5000 };
 //const int N_PIX_SEGMENT[N_SEG_TYPES] = { 3,3 };
 
@@ -50,8 +65,9 @@ const std::string WRITE_PATH = "..//Segmentation_Evaluation//86016_student//";
 */
 
 const std::string img_path  = "..//test_img//86016//Test image.jpg"; // circle
-const std::string WRITE_PATH = "..//Segmentation_Evaluation//86016_student//"; // ørken
+const std::string WRITE_PATH = "..//Segmentation_Evaluation//86016_student//"; 
 //const std::string img_path = "..//test_img//147091//Test image.jpg"; // three
+//const std::string WRITE_PATH = "..//Segmentation_Evaluation//147091_student//"; 
 //const std::string img_path  = "..//test_img//160068//Test image.jpg"; // Leopart
 //const std::string WRITE_PATH = "..//Segmentation_Evaluation//160068_student//"; 
 //const std::string img_path  = "..//test_img//176035//Test image.jpg"; // Land
