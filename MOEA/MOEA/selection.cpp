@@ -104,7 +104,7 @@ void MOEA_rank(int n_pop, std::vector<std::pair<int, int>> &rank_individuals, co
 	for (int ind_index = 0; ind_index < n_pop; ind_index++) {
 		rank_individuals[ind_index].first = 0;
 		for (int other_index = 0; other_index < n_pop; other_index++) {
-			if (fitness_1[ind_index] > fitness_1[other_index] && fitness_2[ind_index] > fitness_2[other_index]) rank_individuals[ind_index].first++;
+			if (fitness_1[ind_index].first > fitness_1[other_index].first && fitness_2[ind_index].first > fitness_2[other_index].first) rank_individuals[ind_index].first++;
 		}
 	}
 }
