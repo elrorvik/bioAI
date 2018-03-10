@@ -250,7 +250,7 @@ void Population::initialize_individual_PrimsMST(int ind_index){
 
 void Population::initialize_population() {
 	
-	for (int i = 0; i < 2;i++) {
+	for (int i = 0; i < 1;i++) {
 		this->initialize_individual_PrimsMST(i);
 		fitness_1.push_back(std::make_pair(0.0, i));
 		fitness_2.push_back(std::make_pair(0.0, i));
@@ -259,8 +259,8 @@ void Population::initialize_population() {
 		cv::Mat im = draw_segments_black_contour(i);
 		write_image_to_file(i, im);
 	}
-	/*int init_index = 0;
-	for (int i = N_IND; i < N_IND+N_OFFSPRING; i++) {
+	int init_index = 0;
+	for (int i = 1; i < N_IND+N_OFFSPRING; i++) {
 
 		fitness_1.push_back(std::make_pair(0.0, i));
 		fitness_2.push_back(std::make_pair(0.0, i));
@@ -283,15 +283,12 @@ void Population::initialize_population() {
 				this->population[i][x][y].parent_dir   = this->population[init_index][x][y].parent_dir;
 			}
 		}
-	}*/
+	}
 
 	// Calculating fitness and rank of individuals
 
-	//MOEA_fitness(*this, N_IND, entry_s, fitness_1, fitness_2);
-	//MOEA_rank(N_IND, rank, fitness_1, fitness_2);
-
-
-	
+	MOEA_fitness(*this, N_IND, entry_s, fitness_1, fitness_2);
+	MOEA_rank(N_IND, rank, fitness_1, fitness_2);	
 	cv::waitKey(0);
 
 }
