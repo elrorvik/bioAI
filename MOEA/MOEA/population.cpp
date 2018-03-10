@@ -209,7 +209,7 @@ void Population::initialize_individual_PrimsMST(int ind_index){
 
 	}
 
-	/*
+	
 	std::vector<pos>* edge_segments = edges_segment(ind_index);	
 	for (int i = 0; i < entry_s[ind_index].size(); i++) {
 		for (auto it = edge_segments[i].begin(); it != edge_segments[i].end(); ++it) {
@@ -217,7 +217,7 @@ void Population::initialize_individual_PrimsMST(int ind_index){
 
 			if (segment_prop[ind_index][pos_entry].avg_rgb.r == -1 && segment_prop[ind_index][pos_entry].avg_rgb.g == -1 && segment_prop[ind_index][pos_entry].avg_rgb.b == -1) {
 				segment_prop[ind_index][pos_entry].avg_rgb = avg_rgb_seg(*this, ind_index, pos_entry);
-				std::cout << " adding color " << std::endl;
+				//std::cout << " adding color " << std::endl;
 			}
 			
 			std::vector<edge> neigbours = get_neigbours(*it, ind_index, 0);
@@ -229,17 +229,16 @@ void Population::initialize_individual_PrimsMST(int ind_index){
 				else {
 					new_entry = population[ind_index][xt->p1.x][xt->p1.y].entry;
 				}
-				//std::cout << "new entry " << it->x << " " << it->y << " old entry " << xt->p2.x << " " << xt->p2.y << std::endl;
-				//std::cout << "new entry " << pos_entry.x << " " << pos_entry.y << " old entry " << new_entry.x << " " << new_entry.y << std::endl;
-				segment_prop[ind_index][pos_entry].boarder[new_entry].push_back(*xt);
+				segment_prop[ind_index][pos_entry].borders[new_entry].push_back(*xt);
+				//std::cout << "new entry " << new_entry.x << " " << new_entry.y << " size " << segment_prop[ind_index][pos_entry].borders[new_entry].size() << std::endl;
 				if (std::find_if(segment_prop[ind_index][pos_entry].neighbour_entries.begin(), segment_prop[ind_index][pos_entry].neighbour_entries.end(), pos_comparator(new_entry)) == segment_prop[ind_index][pos_entry].neighbour_entries.end()) {
 					segment_prop[ind_index][pos_entry].neighbour_entries.push_back(new_entry);
-					std::cout << pos_entry.x <<" entry " << pos_entry.y << " " <<segment_prop[ind_index][pos_entry].neighbour_entries.size() << std::endl;
+					//std::cout << " entry " << new_entry.x << " " << new_entry.y << " num_edges" << segment_prop[ind_index][pos_entry].neighbour_entries.size()  << std::endl;
 				}
 			}
 		}
-		std::cout << " i " << i << std::endl;
-	}*/
+		//std::cout << " i " << i << std::endl;
+	}
 
 
 	std::cout << "total " << total_segment_size << "should be " << get_im_h()*get_im_w() << std::endl;

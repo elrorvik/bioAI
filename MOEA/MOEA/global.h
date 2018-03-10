@@ -146,13 +146,6 @@ private:
 	const pos p1;
 };
 
-
-
-
-
-
-
-
 struct active_edge_t {
 	edge edge;
 	bool active;
