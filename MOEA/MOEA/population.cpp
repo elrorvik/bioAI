@@ -1,3 +1,5 @@
+// opencv 
+#include <opencv2/highgui/highgui.hpp>
 #include<iostream>
 #include<queue>
 #include"fitness.h"
@@ -11,8 +13,6 @@
 #include "var_operators.h"
 #include "file.h"
 
-// opencv 
-#include <opencv2/highgui/highgui.hpp>
 
 Population::~Population() {
 	/*for (int ind_i = 0; ind_i < N_IND+N_OFFSPRING; ind_i++) {
@@ -324,8 +324,12 @@ void Population::MOEA_next_generation() {
 		double rand_num = (rand() % 1000) / 1000.0;
 		if (rand_num < MUTATION_RATE) {
 
-			int attempts = 0;
-			while (!mutation_greedy_merge_segments(*this, i) && 50 > attempts++);
+			int num_mutations = rand() % 10;
+			for (int j = 0; j < num_mutations; j++) {
+				int attempts = 0;
+				while (!mutation_greedy_merge_segments(*this, i) && 50 >= attempts++);
+				if (attempts == 50) std::cout << "Failed to mutate child" << std::endl;
+			}
 
 			//rand_num = (rand() % 1000) / 1000.0;
 			//if (rand_num < MUT_MERGE_PERC) {
@@ -423,7 +427,9 @@ void Population::merge_segment_properties(int ind_index, pos first, pos second) 
 			continue;
 		}
 		else {
+			std::cout << second_prop->borders[it->first].size() << std::endl;
 			for (auto xt = second_prop->borders[it->first].begin(); xt != second_prop->borders[it->first].end(); ++xt) {
+				std:cout << xt->p1.x << "," << xt->p1.y << " og " << xt->p2.x << "," << xt->p2.y << std::endl;
 				first_prop->borders[it->first].push_back(*xt);
 			}
 		}

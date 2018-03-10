@@ -85,7 +85,6 @@ int mutation_greedy_merge_segments(Population &p, int ind_index) {
 	for (int i = 0; i < segment_properties.neighbour_entries.size(); i++) {
 		pos entry_other = segment_properties.neighbour_entries[i];
 		edge min_edge = { { -1, -1 },{ -1, -1 }, DBL_MAX };
-		min_edge.RGBdist = DBL_MAX;
 
 		// Calculate avg rgb dist in between segments
 		RGB avg_rgb_other = p.get_segment_property(ind_index, entry_other).avg_rgb;
@@ -102,7 +101,7 @@ int mutation_greedy_merge_segments(Population &p, int ind_index) {
 		}
 		neighbour_border_dist /= border_edges.size();
 
-		if (neighbour_dist < 50 && neighbour_border_dist > 100) {
+		if (neighbour_dist < 100 && neighbour_border_dist < 100) {
 			p.merge_segments(ind_index, min_edge);
 			return 1;
 		}
