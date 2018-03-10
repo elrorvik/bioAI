@@ -14,7 +14,7 @@ struct edge;
 struct edge_comparator;
 struct r_edge_comparator;
 struct active_edge_t;
-struct edge_rgb_t;
+struct seg_prop_t;
 
 typedef std::priority_queue<edge, std::vector<edge>, edge_comparator> edge_priority_que;
 typedef std::priority_queue<edge, std::vector<edge>, r_edge_comparator> r_edge_priority_que;
@@ -33,7 +33,7 @@ private:
 	int n_pop;
 	std::vector<active_edge_t> *edge_candidates;
 	
-	std::map<pos, edge_rgb_t> segment_prop;
+	std::map<pos, seg_prop_t>* segment_prop;
 
 public:
 	Population();
@@ -80,6 +80,7 @@ public:
 	int split_MST_segment(int ind_index,  edge_priority_que& que, r_edge_priority_que& merge_que);
 	int merge_small_segments(int ind_index, r_edge_priority_que& que, int n_segments);
 	void change_parents_n_segment(pos& parent, pos& child, int ind_index);
+	std::vector<edge> get_neigbours(pos curr, int ind_index, int cout);
 
 	//void initialize_n_children(int ind_index, std::map<edge, int> &edgeChildren);
 	//int get_n_dependent_children(pos curr, pos next, int ind_index);

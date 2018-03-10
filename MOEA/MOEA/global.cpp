@@ -63,6 +63,14 @@ bool operator==(pos& left, pos& right) {
 	return (left.x == right.x) && (left.y == right.y);
 }
 
+bool operator==(RGB& left, RGB& right) {
+	return (left.r == right.r) && (left.g == right.g) && (left.b == right.b);
+}
+
+bool operator<(const pos& left, const pos& right) {
+	return left.x  < right.x;
+}
+
 pos operator+(pos& left, pos& right) {
 	pos temp;
 	temp.x = left.x + right.x;
@@ -93,3 +101,12 @@ direction get_neighbor_dir(pos& origin, pos& neighbor) {
 	return SELF; // If up + down + left + right != 1, return SELF because they are not neighbors
 }
 
+/*
+struct edge_comperator {
+	// members
+	bool operator==(const monster& l, const monster& r) const
+	{
+		return l.id == r.id;
+	}
+};
+*/
