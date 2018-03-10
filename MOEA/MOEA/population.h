@@ -73,7 +73,7 @@ public:
 
 	void merge_segments(int ind_index, edge merge_nodes);
 	void merge_segments(int ind_index, int edge_index, edge merge_nodes);
-	void merge_segment_properties(int ind_index, pos first, pos second);
+	int merge_segment_properties(int ind_index, pos first, pos second);
 	void split_segment(int ind_index, int edge_index, edge split_nodes);
 
 	void set_dir_edge(pos& parent, pos& child, int on, int ind_index);
