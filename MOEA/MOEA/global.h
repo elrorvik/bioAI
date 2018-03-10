@@ -74,11 +74,11 @@ const std::string WRITE_PATH = "..//Segmentation_Evaluation//86016_student//";
 //const std::string img_path  = "..//test_img//160068//Test image.jpg"; // Leopart
 //const std::string WRITE_PATH = "..//Segmentation_Evaluation//160068_student//"; 
 //const std::string img_path  = "..//test_img//176035//Test image.jpg"; // Land
-//const std::string img_path  = "..//test_img//178054//Test image.jpg"; // ørken
-//const std::string WRITE_PATH = "..//Segmentation_Evaluation//178054_student//"; // ørken
-//const std::string img_path  = "..//test_img//216066//Test image.jpg"; // stein og ørken
+//const std::string img_path  = "..//test_img//178054//Test image.jpg"; // ï¿½rken
+//const std::string WRITE_PATH = "..//Segmentation_Evaluation//178054_student//"; // ï¿½rken
+//const std::string img_path  = "..//test_img//216066//Test image.jpg"; // stein og ï¿½rken
 //const std::string img_path  = "..//test_img//353013//Test image.jpg"; // blomst
-//const std::string WRITE_PATH = "..//Segmentation_Evaluation//353013_student//"; // ørken
+//const std::string WRITE_PATH = "..//Segmentation_Evaluation//353013_student//"; // ï¿½rken
 //const std::string WRITE_PATH = "..//Segmentation_Evaluation//353013_student//";
 
 //const std::string img_path = "..//2000px-Checkerboard_pattern_2.png";
@@ -137,15 +137,34 @@ struct r_edge_comparator {
 	}
 };
 
+struct pos_comparator {
+	bool operator()(const pos &rhs) {
+		return rhs.x == p1.x && rhs.y == p1.y;
+	}
+	pos_comparator(const pos p1) : p1(p1) {};
+private:
+	const pos p1;
+};
+
+
+
+
+
+
+
+
 struct active_edge_t {
 	edge edge;
 	bool active;
 };
 
+
+
 struct seg_prop_t {
 	RGB avg_rgb;
-	std::map<pos, std::vector<edge>> borders;
-	std::vector<pos> neighbor_entries;
+	std::map<pos, std::vector<edge>> boarder;
+	std::vector<pos> neighbour_entries;
+	seg_prop_t() :avg_rgb(-1, -1, -1) {};
 };
 
 pos operator+(pos coord, direction dir);
@@ -153,7 +172,11 @@ pos operator+(pos coord, direction dir);
 void operator+(node &n, direction d);
 void operator-(node &n, direction d);
 
-bool operator==(pos& left, pos & right); 
+bool operator==(pos& left, pos & right);
+
+bool operator==(RGB& left, RGB& right);
+
+bool operator<(const pos& left, const pos& right);
 
 bool operator!=(pos& left, pos & right);
 pos operator+(pos& left, pos& right);

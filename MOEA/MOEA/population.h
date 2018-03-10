@@ -85,6 +85,7 @@ public:
 	int split_MST_segment(int ind_index,  edge_priority_que& que, r_edge_priority_que& merge_que);
 	int merge_small_segments(int ind_index, r_edge_priority_que& que, int n_segments);
 	void change_parents_n_segment(pos& parent, pos& child, int ind_index);
+	std::vector<edge> get_neigbours(pos curr, int ind_index, int cout);
 
 	//void initialize_n_children(int ind_index, std::map<edge, int> &edgeChildren);
 	//int get_n_dependent_children(pos curr, pos next, int ind_index);

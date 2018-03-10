@@ -49,6 +49,7 @@ Population::Population() {
 	}
 	entry_s = new std::vector<pos>[N_IND+N_OFFSPRING];
 	edge_candidates = new std::vector<active_edge_t>[N_IND+N_OFFSPRING];
+	segment_prop = new std::map<pos,seg_prop_t>[N_IND + N_OFFSPRING];
 	fitness_1.reserve(N_IND + N_OFFSPRING);
 	fitness_2.reserve(N_IND + N_OFFSPRING);
 	rank.reserve(N_IND + N_OFFSPRING);
@@ -201,7 +202,6 @@ void Population::initialize_individual_PrimsMST(int ind_index){
 			continue;
 		}
 		else {
-			//segment_prop[*it] = 
 			//std::cout <<"segment " << it->x << " " << it->y << " " << segment_size << std::endl;
 			it++;
 		}
@@ -209,15 +209,38 @@ void Population::initialize_individual_PrimsMST(int ind_index){
 
 	}
 
-	/*std::vector<pos>* edge_segments = edges_segment(ind_index);
+	/*
+	std::vector<pos>* edge_segments = edges_segment(ind_index);	
 	for (int i = 0; i < entry_s[ind_index].size(); i++) {
-		segment_property[entry] = {};
-		for (auto it = edge_segments[i].begin(); it != edge_segments[i].end(); it++) {
-			pos entry = entry_s[ind_index][i];
-			//segment_prop[entry] = avg_rgb_seg(Population &p, int ind_index, pos s_entry) ;
+		for (auto it = edge_segments[i].begin(); it != edge_segments[i].end(); ++it) {
+			pos pos_entry = population[ind_index][it->x][it->y].entry;
+
+			if (segment_prop[ind_index][pos_entry].avg_rgb.r == -1 && segment_prop[ind_index][pos_entry].avg_rgb.g == -1 && segment_prop[ind_index][pos_entry].avg_rgb.b == -1) {
+				segment_prop[ind_index][pos_entry].avg_rgb = avg_rgb_seg(*this, ind_index, pos_entry);
+				std::cout << " adding color " << std::endl;
+			}
+			
+			std::vector<edge> neigbours = get_neigbours(*it, ind_index, 0);
+			for (auto xt = neigbours.begin(); xt != neigbours.end(); ++xt) {
+				pos new_entry;
+				if (xt->p1 == *it) {
+					new_entry = population[ind_index][xt->p2.x][xt->p2.y].entry;
+				}
+				else {
+					new_entry = population[ind_index][xt->p1.x][xt->p1.y].entry;
+				}
+				//std::cout << "new entry " << it->x << " " << it->y << " old entry " << xt->p2.x << " " << xt->p2.y << std::endl;
+				//std::cout << "new entry " << pos_entry.x << " " << pos_entry.y << " old entry " << new_entry.x << " " << new_entry.y << std::endl;
+				segment_prop[ind_index][pos_entry].boarder[new_entry].push_back(*xt);
+				if (std::find_if(segment_prop[ind_index][pos_entry].neighbour_entries.begin(), segment_prop[ind_index][pos_entry].neighbour_entries.end(), pos_comparator(new_entry)) == segment_prop[ind_index][pos_entry].neighbour_entries.end()) {
+					segment_prop[ind_index][pos_entry].neighbour_entries.push_back(new_entry);
+					std::cout << pos_entry.x <<" entry " << pos_entry.y << " " <<segment_prop[ind_index][pos_entry].neighbour_entries.size() << std::endl;
+				}
+			}
 		}
-		
+		std::cout << " i " << i << std::endl;
 	}*/
+
 
 	std::cout << "total " << total_segment_size << "should be " << get_im_h()*get_im_w() << std::endl;
 
@@ -857,6 +880,51 @@ int Population::check_if_edge(pos curr,  int ind_index, int cout) {
 	
 	return 0;
 	
+}
+
+std::vector<edge> Population::get_neigbours(pos curr, int ind_index, int cout) {
+
+	std::vector<edge> temp;
+
+	if (population[ind_index][curr.x][curr.y].left == 0 && curr.x - 1 > 0) {
+		pos neighbour = curr + LEFT;
+		//pos temp = population[ind_index][neighbour.x][neighbour.y].entry;
+		//if (cout) std::cout << population[ind_index][curr.x][curr.y].entry.x <<" "<< population[ind_index][curr.x][curr.y].entry.x <<" " << temp.x << " " <<temp.y << std::endl;
+		if (population[ind_index][neighbour.x][neighbour.y].entry != population[ind_index][curr.x][curr.y].entry) {
+			//	if (cout) std::cout << " new edge" << std::endl;
+			edge new_edge(curr, neighbour, dist(get_RGB(curr),get_RGB(neighbour)));
+			temp.push_back(new_edge);
+		}
+	}
+
+	if (population[ind_index][curr.x][curr.y].right == 0 && curr.x + 1 < get_im_w()) {
+		pos neighbour = curr + RIGHT;
+		//pos temp = population[ind_index][neighbour.x][neighbour.y].entry;
+		//if (cout) std::cout << population[ind_index][curr.x][curr.y].entry.x << " " << population[ind_index][curr.x][curr.y].entry.x << " " << temp.x << " " << temp.y << std::endl;
+		if (population[ind_index][neighbour.x][neighbour.y].entry != population[ind_index][curr.x][curr.y].entry) {
+			edge new_edge(curr, neighbour, dist(get_RGB(curr), get_RGB(neighbour)));
+			temp.push_back(new_edge);
+		}
+	}
+
+	if (population[ind_index][curr.x][curr.y].up == 0 && curr.y - 1 > 0) {
+		pos neighbour = curr + UP;
+		if (population[ind_index][neighbour.x][neighbour.y].entry != population[ind_index][curr.x][curr.y].entry) {
+			edge new_edge(curr, neighbour, dist(get_RGB(curr), get_RGB(neighbour)));
+			temp.push_back(new_edge);
+		}
+	}
+
+	if (population[ind_index][curr.x][curr.y].down == 0 && curr.y + 1 < get_im_h()) {
+		pos neighbour = curr + DOWN;
+		if (population[ind_index][neighbour.x][neighbour.y].entry != population[ind_index][curr.x][curr.y].entry) {
+			edge new_edge(curr, neighbour, dist(get_RGB(curr), get_RGB(neighbour)));
+			temp.push_back(new_edge);
+		}
+	}
+
+	return temp;
+
 }
 
 void Population::copy_individual(int l_index, int r_index) {
