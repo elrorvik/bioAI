@@ -142,18 +142,11 @@ std::vector<int> rank_tournament_selection(Population &p, const std::vector<pos>
 	std::vector<int> selected_individuals;
 	selected_individuals.reserve(num_chosen);
 	for (int i = 0; i < tournament_size; i++) {
-		//if (num_chosen - selected_individuals.size() <= tournament_size - i) {
-		//	selected_individuals.push_back(rank_of_tournament[i].second);
-		//}
-		if (selected_individuals.size() == num_chosen) break;
-		double outcome = (rand() % 1000) / 1000.0;
-		if (outcome < CHANCE*pow(1 - CHANCE, i)) {
-			if (std::find(selected_individuals.begin(), selected_individuals.end(), i) == selected_individuals.end()) {
-				selected_individuals.push_back(rank_of_tournament[i].second);
-			}
-		}
-		if (selected_individuals.size() < num_chosen && i == tournament_size - 1) {
-			i = 0;
+		if (num_chosen - selected_individuals.size() <= tournament_size - i) {
+			selected_individuals.push_back(rank_of_tournament[i].second);		}
+		else {
+			double outcome = (rand() % 1000) / 1000.0;
+			if (outcome < CHANCE*pow(1 - CHANCE, i)) selected_individuals.push_back(rank_of_tournament[i].second);
 		}
 	}
 	return selected_individuals;
