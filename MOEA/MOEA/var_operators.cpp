@@ -3,6 +3,7 @@
 #include "population.h"
 #include "var_operators.h"
 #include "fitness.h"
+#include <iostream>
 //#include<vector>
 
 
@@ -104,6 +105,8 @@ int mutation_greedy_merge_segments(Population &p, int ind_index) {
 
 		if (avg_RGB_dist  < 255 && neighbour_border_dist < 255) {
 
+			std::cout << p.get_node(ind_index, min_edge.p1)->entry.x << " " << p.get_node(ind_index, min_edge.p1)->entry.y << std::endl;
+			std::cout << p.get_node(ind_index, min_edge.p2)->entry.x << " " << p.get_node(ind_index, min_edge.p2)->entry.y << std::endl;
 			p.merge_segments(ind_index, min_edge);
 			return 1;
 		}
