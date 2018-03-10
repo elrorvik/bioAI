@@ -88,11 +88,12 @@ int mutation_greedy_merge_segments(Population &p, int ind_index) {
 
 		// Calculate avg rgb dist in between segments
 		RGB avg_rgb_other = p.get_segment_property(ind_index, entry_other).avg_rgb;
-		double neighbour_dist = dist(segment_properties.avg_rgb, avg_rgb_other);
+		double avg_RGB_dist = dist(segment_properties.avg_rgb, avg_rgb_other); // eucledian distnace avg RGB
 
 		// Calculate avg rgb dist in border of segments
 		double neighbour_border_dist = 0;
 		const std::vector<edge> border_edges = segment_properties.borders[entry_other];
+
 		for (int j = 0; j < border_edges.size(); j++) {
 			neighbour_border_dist += border_edges[j].RGBdist;
 			if (min_edge.RGBdist > border_edges[j].RGBdist) {
@@ -101,7 +102,8 @@ int mutation_greedy_merge_segments(Population &p, int ind_index) {
 		}
 		neighbour_border_dist /= border_edges.size();
 
-		if (neighbour_dist < 100 && neighbour_border_dist < 100) {
+		if (avg_RGB_dist  < 255 && neighbour_border_dist < 255) {
+
 			p.merge_segments(ind_index, min_edge);
 			return 1;
 		}

@@ -3,13 +3,14 @@
 #include"global.h"
 #include "graph.h"
 #include<iostream>
-#include<queue>
+//#include<queue>
 #include"fitness.h"
 #include"population.h"
 #include <list>
 #include <time.h>
 #include "selection.h"
 #include "file.h"
+//#include <opencv2/highgui/highgui.hpp>
 
 // opencv 
 #include <opencv2/highgui/highgui.hpp>
@@ -231,6 +232,8 @@ void Population::initialize_individual_PrimsMST(int ind_index){
 				else {
 					new_entry = population[ind_index][xt->p1.x][xt->p1.y].entry;
 				}
+				if (get_neighbor_dir(xt->p1, xt->p2) == SELF) std::cout << xt->p1.x << " " << xt->p1.y << " not neigh" << xt->p2.x << " " << xt->p2.y << std::endl;
+				if (xt->p1.x > get_im_w() || xt->p2.x > get_im_w() || xt->p1.y > get_im_h() || xt->p2.y > get_im_h()) std::cout << " wrong " << std::endl;
 				segment_prop[ind_index][pos_entry].borders[new_entry].push_back(*xt);
 				//std::cout << "new entry " << new_entry.x << " " << new_entry.y << " size " << segment_prop[ind_index][pos_entry].borders[new_entry].size() << std::endl;
 				if (std::find_if(segment_prop[ind_index][pos_entry].neighbour_entries.begin(), segment_prop[ind_index][pos_entry].neighbour_entries.end(), pos_comparator(new_entry)) == segment_prop[ind_index][pos_entry].neighbour_entries.end()) {
@@ -371,7 +374,7 @@ void Population::MOEA_next_generation() {
 
 	//if (survivors_offspring.size() != non_survivors.size()) std::cout << "different size" << survivors_offspring.size() << " " << non_survivors.size() << std::endl;
 	//std::cin.get();
-	for (int i = 0; i < survivors_offspring.size(); i++) {
+	/*for (int i = 0; i < survivors_offspring.size(); i++) {
 		//std::cout << " switch " << non_survivors[i] << " " << survivors_offspring[i] << std::endl;
 		copy_individual(non_survivors[i], survivors_offspring[i]);
 
@@ -379,7 +382,7 @@ void Population::MOEA_next_generation() {
 
 	for (int i = 0; i < N_IND; i++) {
 		std::cout << " rank " << rank[i].first << "," << rank[i].second << " fitness 1: " << fitness_1[i].first << "," << fitness_1[i].second << " fitness 2: " << fitness_2[i].first << "," << fitness_2[i].second << std::endl;
-	}
+	}*/
 
 	// return pareto rank 0 ? ( to main loop ? or ??)
 
@@ -974,9 +977,10 @@ void Population::copy_individual(int l_index, int r_index) {
 
 void Population::draw_pareto_front() {
 	for (int i = 0; i < N_IND; i++) {
-		if (rank[i].first <6) {
-			cv::Mat img = draw_segments_black_contour(i);
-			write_image_to_file(rank[i].first, img);
+		if (rank[i].first == 0) {
+			cv::Mat img = draw_segments_black_contour(rank[i].second);
+			write_image_to_file(rank[i].second, img);
+			std::cout << " rank . second " << rank[i].second << std::endl;
 		}
 	}
 }
