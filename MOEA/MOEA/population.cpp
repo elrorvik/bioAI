@@ -435,22 +435,23 @@ void Population::merge_segment_properties(int ind_index, pos first, pos second) 
 		else {
 			//std::cout << second_prop->borders[it->first].size() << std::endl;
 			int j = 0;
-			std::cout << first_prop->borders[it->first].size() << ", init_size" << std::endl;
-			std::cout << second_prop->borders[it->first].size() << ", size to be added" << std::endl;
+			//std::cout << first_prop->borders[it->first].size() << ", init_size" << std::endl;
+			//std::cout << second_prop->borders[it->first].size() << ", size to be added" << std::endl;
 			//for (auto xt = second_prop->borders[it->first].begin(); xt != second_prop->borders[it->first].end(); ++xt) {
 			for (int i = 0; i < second_prop->borders[it->first].size(); i++) {
 				j++;
 				edge e = second_prop->borders[it->first][i];
-				std::cout << it->first.x << " =? " << first_entry.x << "," << it->first.y << " =? " << first_entry.y << std::endl;
+				//std::cout << it->first.x << " =? " << first_entry.x << "," << it->first.y << " =? " << first_entry.y << std::endl;
 				if (get_neighbor_dir(e.p1, e.p2) == SELF || i > second_prop->borders[it->first].size()) {
 					std:cout << e.p1.x << "," << e.p1.y << " og " << e.p2.x << "," << e.p2.y << std::endl;
 					std::cout << j << std::endl;
 					std::cout << second_prop->borders[it->first].size() << std::endl;
 					std::cin.get();
 				}
+				if (std::find_if(first_prop->borders[it->first].begin(), first_prop->borders[it->first].end(), edge_equal_comparator(second_prop->borders[it->first][i])) != first_prop->borders[it->first].end()) continue;
 				first_prop->borders[it->first].push_back(second_prop->borders[it->first][i]);
 			}
-			std::cout << first_prop->borders[it->first].size() << ", resultant size" << std::endl;
+			//std::cout << first_prop->borders[it->first].size() << ", resultant size" << std::endl;
 		}
 	}
 
