@@ -55,7 +55,7 @@ public:
 	int get_im_h();
 	int get_parent_segment_size(pos& parent, int ind_index);
 	pos get_pixel_segment(int x, int y, int individual);
-	int get_n_segment(pos& entry, int ind_index);
+	int get_n_segment(pos& entry, int ind_index, bool check_for_taken);
 	std::vector<pos> get_segment_entries(int ind_index);
 	seg_prop_t get_segment_property(int ind_index, pos seg_entry);
 

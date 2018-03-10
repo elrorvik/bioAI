@@ -7,7 +7,7 @@
 #include<vector>
 #include<map>
 
-const int N_GENERATIONS = 40; //100
+const int N_GENERATIONS = 100; //100
 const int N_IND = 20;
 const int N_SEG_TYPES = 2;
 
