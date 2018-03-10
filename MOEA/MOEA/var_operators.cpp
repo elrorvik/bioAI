@@ -78,7 +78,7 @@ int  mutation_merge_segments(Population &p, int ind_index) {
 int mutation_greedy_merge_segments(Population &p, int ind_index) {
 	std::vector<pos> seg_entries = p.get_segment_entries(ind_index);
 	int entry_index = rand() % seg_entries.size();
-	seg_prop_t segment_properties = p.get_segment_properties(ind_index, seg_entries[entry_index]);
+	seg_prop_t segment_properties = p.get_segment_property(ind_index, seg_entries[entry_index]);
 	
 	pos best_entry;
 	
@@ -88,7 +88,7 @@ int mutation_greedy_merge_segments(Population &p, int ind_index) {
 		min_edge.RGBdist = DBL_MAX;
 
 		// Calculate avg rgb dist in between segments
-		RGB avg_rgb_other = p.get_segment_properties(ind_index, entry_other).avg_rgb;
+		RGB avg_rgb_other = p.get_segment_property(ind_index, entry_other).avg_rgb;
 		double neighbor_dist = dist(segment_properties.avg_rgb, avg_rgb_other);
 
 		// Calculate avg rgb dist in border of segments
