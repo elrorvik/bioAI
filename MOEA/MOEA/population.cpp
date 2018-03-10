@@ -217,12 +217,14 @@ void Population::initialize_individual_PrimsMST(int ind_index){
 
 void Population::initialize_population() {
 	
-	for (int i = 0; i < 1;i++) {
+	for (int i = 0; i < 2;i++) {
 		this->initialize_individual_PrimsMST(i);
 		fitness_1.push_back(std::make_pair(0.0, i));
 		fitness_2.push_back(std::make_pair(0.0, i));
 		rank.push_back(std::make_pair(0, i));
 		draw_segments_contour(i, i);
+		cv::Mat im = draw_segments_black_contour(i);
+		write_image_to_file(i, im);
 	}
 	/*int init_index = 0;
 	for (int i = N_IND; i < N_IND+N_OFFSPRING; i++) {
