@@ -3,7 +3,7 @@
 #define SELECTION
 #include<vector>
 
-struct Population;
+class Population;
 struct pos;
 std::vector<int> NSGAII(Population &p, const std::vector<pos> * entry_s, int n_pop, std::vector<std::pair<int, int>> rank_individuals, const std::vector<std::pair<double, int>> &fitness_1, const std::vector<std::pair<double, int>> fitness_2);
 void MOEA_fitness(Population &p, int n_pop, const std::vector<pos> * entry_s, std::vector<std::pair<double, int>> &fitness_1, std::vector<std::pair<double, int>> &fitness_2);

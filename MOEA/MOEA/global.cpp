@@ -97,16 +97,14 @@ bool operator<(pos p1, pos p2) {
 
 
 direction get_neighbor_dir(pos& origin, pos& neighbor) {
-	bool up = origin.y == neighbor.y + 1;
-	bool down = origin.y == neighbor.y - 1;
-	bool left = origin.x == neighbor.x + 1;
-	bool right = origin.x == neighbor.x - 1;
+	bool up = origin.y - 1 == neighbor.y;
+	bool down = origin.y + 1 == neighbor.y;
+	bool left = origin.x - 1 == neighbor.x;
+	bool right = origin.x + 1 == neighbor.x;
+	if (up + down + left + right != 1) return SELF;
 	if (up) return UP;
 	if (down) return DOWN;
 	if (left) return LEFT;
 	if (right) return RIGHT;
-	return SELF; // If up + down + left + right != 1, return SELF because they are not neighbors
+	return SELF;
 }
-
-
-

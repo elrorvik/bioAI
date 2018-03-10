@@ -99,14 +99,20 @@ int mutation_greedy_merge_segments(Population &p, int ind_index) {
 			neighbour_border_dist += border_edges[j].RGBdist;
 			if (min_edge.RGBdist > border_edges[j].RGBdist) {
 				min_edge = border_edges[j];
+				//std::cout << p.get_node(ind_index, min_edge.p1)->entry.x << " " << p.get_node(ind_index, min_edge.p1)->entry.y << std::endl;
+				//std::cout << p.get_node(ind_index, min_edge.p2)->entry.x << " " << p.get_node(ind_index, min_edge.p2)->entry.y << std::endl;
+				//std::cout << p.get_node(ind_index, min_edge.p1)->entry.x - p.get_node(ind_index, min_edge.p2)->entry.x << ", " << p.get_node(ind_index, min_edge.p1)->entry.y - p.get_node(ind_index, min_edge.p2)->entry.y << ", neighbor status" << std::endl;
 			}
+			if (!(abs(min_edge.p1.x - min_edge.p2.x) <= 1 || abs(min_edge.p1.y - min_edge.p2.y) <= 1)) std::cout << "Different" << std::endl;
 		}
 		neighbour_border_dist /= border_edges.size();
 
 		if (avg_RGB_dist  < 255 && neighbour_border_dist < 255) {
 
-			std::cout << p.get_node(ind_index, min_edge.p1)->entry.x << " " << p.get_node(ind_index, min_edge.p1)->entry.y << std::endl;
-			std::cout << p.get_node(ind_index, min_edge.p2)->entry.x << " " << p.get_node(ind_index, min_edge.p2)->entry.y << std::endl;
+			//std::cout << min_edge.p1.x << " " << min_edge.p1.y << " <-> " << min_edge.p2.x << " " << min_edge.p2.y << std::endl;
+			//std::cout << p.get_node(ind_index, min_edge.p1)->entry.x << " " << p.get_node(ind_index, min_edge.p1)->entry.y << std::endl;
+			//std::cout << p.get_node(ind_index, min_edge.p2)->entry.x << " " << p.get_node(ind_index, min_edge.p2)->entry.y << std::endl << std::endl;
+			//std::cin.get();
 			p.merge_segments(ind_index, min_edge);
 			return 1;
 		}
