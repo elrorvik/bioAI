@@ -162,7 +162,7 @@ struct active_edge_t {
 
 struct seg_prop_t {
 	RGB avg_rgb;
-	std::map<pos, std::vector<edge>> boarder;
+	std::map<pos, std::vector<edge>> borders;
 	std::vector<pos> neighbour_entries;
 	seg_prop_t() :avg_rgb(-1, -1, -1) {};
 };
@@ -175,8 +175,6 @@ void operator-(node &n, direction d);
 bool operator==(pos& left, pos & right);
 
 bool operator==(RGB& left, RGB& right);
-
-bool operator<(const pos& left, const pos& right);
 
 bool operator!=(pos& left, pos & right);
 pos operator+(pos& left, pos& right);

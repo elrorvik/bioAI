@@ -82,27 +82,27 @@ int mutation_greedy_merge_segments(Population &p, int ind_index) {
 	
 	pos best_entry;
 	
-	for (int i = 0; i < segment_properties.neighbor_entries.size(); i++) {
-		pos entry_other = segment_properties.neighbor_entries[i];
+	for (int i = 0; i < segment_properties.neighbour_entries.size(); i++) {
+		pos entry_other = segment_properties.neighbour_entries[i];
 		edge min_edge = { { -1, -1 },{ -1, -1 }, DBL_MAX };
 		min_edge.RGBdist = DBL_MAX;
 
 		// Calculate avg rgb dist in between segments
 		RGB avg_rgb_other = p.get_segment_property(ind_index, entry_other).avg_rgb;
-		double neighbor_dist = dist(segment_properties.avg_rgb, avg_rgb_other);
+		double neighbour_dist = dist(segment_properties.avg_rgb, avg_rgb_other);
 
 		// Calculate avg rgb dist in border of segments
-		double neighbor_border_dist = 0;
+		double neighbour_border_dist = 0;
 		const std::vector<edge> border_edges = segment_properties.borders[entry_other];
 		for (int j = 0; j < border_edges.size(); j++) {
-			neighbor_border_dist += border_edges[j].RGBdist;
+			neighbour_border_dist += border_edges[j].RGBdist;
 			if (min_edge.RGBdist > border_edges[j].RGBdist) {
 				min_edge = border_edges[j];
 			}
 		}
-		neighbor_border_dist /= border_edges.size();
+		neighbour_border_dist /= border_edges.size();
 
-		if (neighbor_dist < 50 && neighbor_border_dist > 100) {
+		if (neighbour_dist < 50 && neighbour_border_dist > 100) {
 			p.merge_segments(ind_index, min_edge);
 			return 1;
 		}

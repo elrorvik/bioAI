@@ -325,16 +325,20 @@ void Population::MOEA_next_generation() {
 	for (int i = N_IND; i < n_pop; i++) {
 		double rand_num = (rand() % 1000) / 1000.0;
 		if (rand_num < MUTATION_RATE) {
-			rand_num = (rand() % 1000) / 1000.0;
-			if (rand_num < MUT_MERGE_PERC) {
-				mutation_merge_segments(*this, i);
-				mutation_merge_segments(*this, i);
-				mutation_merge_segments(*this, i);
 
-			}
-			else if (rand_num < MUT_MERGE_PERC + MUT_SPLIT_PERC) {
-				mutation_split_segments(*this, i);
-			}
+			int attempts = 0;
+			while (!mutation_greedy_merge_segments(*this, i) && 50 > attempts++);
+
+			//rand_num = (rand() % 1000) / 1000.0;
+			//if (rand_num < MUT_MERGE_PERC) {
+			//	mutation_merge_segments(*this, i);
+			//	mutation_merge_segments(*this, i);
+			//	mutation_merge_segments(*this, i);
+			//
+			//}
+			//else if (rand_num < MUT_MERGE_PERC + MUT_SPLIT_PERC) {
+			//	mutation_split_segments(*this, i);
+			//}
 		}
 	}
 
@@ -403,23 +407,23 @@ void Population::merge_segment_properties(int ind_index, pos first, pos second, 
 	seg_prop_t *prop_a = &segment_prop[ind_index][first_entry];
 	seg_prop_t *prop_b = &segment_prop[ind_index][second_entry];
 
-	// 
+	// Calculate segment properties of the combined segment
 	new_prop->avg_rgb = ( prop_a->avg_rgb + prop_b->avg_rgb ) / 2;
 	new_prop->borders = prop_a->borders;
-	new_prop->neighbor_entries = prop_a->neighbor_entries;
-	for (int i = 0; i < prop_b->neighbor_entries.size(); i++) {
-		pos current_entry = prop_b->neighbor_entries[i];
+	new_prop->neighbour_entries = prop_a->neighbour_entries;
+	for (int i = 0; i < prop_b->neighbour_entries.size(); i++) {
+		pos current_entry = prop_b->neighbour_entries[i];
 		if (current_entry == first_entry) continue;
-		if (std::find(new_prop->neighbor_entries.begin(), new_prop->neighbor_entries.end(), current_entry) != new_prop->neighbor_entries.end()) {
+		if (std::find_if(new_prop->neighbour_entries.begin(), new_prop->neighbour_entries.end(), pos_comparator(current_entry)) != new_prop->neighbour_entries.end()) {
 			new_prop->borders[current_entry].insert(new_prop->borders[current_entry].end(), prop_b->borders[current_entry].begin(), prop_b->borders[current_entry].end());
 		}
 		else {
-			new_prop->neighbor_entries.push_back(current_entry);
+			new_prop->neighbour_entries.push_back(current_entry);
 			new_prop->borders[current_entry] = prop_b->borders[current_entry];
 		}
 	}
 	new_prop->borders.erase(second_entry);
-	new_prop->neighbor_entries.erase(std::find(new_prop->neighbor_entries.begin(), new_prop->neighbor_entries.end(), second_entry));
+	new_prop->neighbour_entries.erase(std::find_if(new_prop->neighbour_entries.begin(), new_prop->neighbour_entries.end(), pos_comparator(second_entry)));
 
 	segment_prop[ind_index].erase(first_entry);
 	segment_prop[ind_index].erase(second_entry);

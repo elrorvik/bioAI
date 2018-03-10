@@ -67,10 +67,6 @@ bool operator==(RGB& left, RGB& right) {
 	return (left.r == right.r) && (left.g == right.g) && (left.b == right.b);
 }
 
-bool operator<(const pos& left, const pos& right) {
-	return left.x  < right.x;
-}
-
 pos operator+(pos& left, pos& right) {
 	pos temp;
 	temp.x = left.x + right.x;
