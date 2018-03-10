@@ -136,6 +136,22 @@ struct r_edge_comparator {
 	}
 };
 
+struct pos_comparator {
+	bool operator()(const pos &rhs) {
+		return rhs.x == p1.x && rhs.y == p1.y;
+	}
+	pos_comparator(const pos p1) : p1(p1) {};
+private:
+	const pos p1;
+};
+
+
+
+
+
+
+
+
 struct active_edge_t {
 	edge edge;
 	bool active;

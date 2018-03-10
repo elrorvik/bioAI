@@ -101,12 +101,5 @@ direction get_neighbor_dir(pos& origin, pos& neighbor) {
 	return SELF; // If up + down + left + right != 1, return SELF because they are not neighbors
 }
 
-/*
-struct edge_comperator {
-	// members
-	bool operator==(const monster& l, const monster& r) const
-	{
-		return l.id == r.id;
-	}
-};
-*/
+
+
