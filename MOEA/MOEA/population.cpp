@@ -328,9 +328,11 @@ void Population::MOEA_next_generation() {
 				int attempts = 0;
 				while (!mutation_greedy_merge_segments(*this, i) && 50 >= attempts++);
 				if (attempts == 50) std::cout << "Failed to mutate child" << std::endl;
-				draw_segments_contour(i, i);
-				cv::Mat im2 = draw_segments_black_contour(i);
-				cv::waitKey(0);
+				if (j == 700) {
+					draw_segments_contour(i, i);
+					cv::Mat im2 = draw_segments_black_contour(i);
+					cv::waitKey(0);
+				}
 			}
 		}
 
@@ -417,6 +419,12 @@ void  Population::merge_segment_properties(int ind_index, pos first, pos second)
 
 	// Calculate segment properties of the combined segment
 	first_prop->avg_rgb = (first_prop->avg_rgb + second_prop->avg_rgb) / 2.0;
+	if (first_prop->avg_rgb.b > 255 || first_prop->avg_rgb.g > 255 || first_prop->avg_rgb.r > 255) {
+		std::cout << "illegal RGB" << std::endl;
+		std::cin.get();
+	}
+	
+	//std::cout << "avg_rgb: " << first_prop->avg_rgb.r << "," << first_prop->avg_rgb.g << "," << first_prop->avg_rgb.b << std::endl;;
 
 	first_prop->borders.erase(second_entry);
 

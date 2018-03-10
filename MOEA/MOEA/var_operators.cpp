@@ -90,11 +90,17 @@ int mutation_greedy_merge_segments(Population &p, int ind_index) {
 		// Calculate avg rgb dist in between segments
 		RGB avg_rgb_other = p.get_segment_property(ind_index, entry_other).avg_rgb;
 		double avg_RGB_dist = dist(segment_properties.avg_rgb, avg_rgb_other); // eucledian distnace avg RGB
+		if (avg_rgb_other.r > 255 || avg_rgb_other.g > 255 || avg_rgb_other.b > 255) {
+			std::cout << "illegal RGB" << std::endl;
+			std::cout << avg_rgb_other.r << ", " << avg_rgb_other.g << ", " << avg_rgb_other.b << std::endl;
+			std::cin.get();
+		}
 
 		// Calculate avg rgb dist in border of segments
 		double neighbour_border_dist = 0;
 		const std::vector<edge> border_edges = segment_properties.borders[entry_other];
 
+		std::cout << "size " << border_edges.size() << std::endl;
 		for (int j = 0; j < border_edges.size(); j++) {
 			neighbour_border_dist += border_edges[j].RGBdist;
 			if (min_edge.RGBdist > border_edges[j].RGBdist) {
@@ -107,12 +113,14 @@ int mutation_greedy_merge_segments(Population &p, int ind_index) {
 		}
 		neighbour_border_dist /= border_edges.size();
 
-		if (avg_RGB_dist  < 1000 && neighbour_border_dist < 1000) {
+		std::cout << "Can i activate? : " << avg_RGB_dist << " " <<  neighbour_border_dist << std::endl;
+		if (avg_RGB_dist  < 2000 && neighbour_border_dist < 2000) {
 
 			//std::cout << min_edge.p1.x << " " << min_edge.p1.y << " <-> " << min_edge.p2.x << " " << min_edge.p2.y << std::endl;
 			//std::cout << p.get_node(ind_index, min_edge.p1)->entry.x << " " << p.get_node(ind_index, min_edge.p1)->entry.y << std::endl;
 			//std::cout << p.get_node(ind_index, min_edge.p2)->entry.x << " " << p.get_node(ind_index, min_edge.p2)->entry.y << std::endl << std::endl;
 			//std::cin.get();
+			std::cout << "Merge, activate!" << std::endl;
 			p.merge_segments(ind_index, min_edge);
 			return 1;
 		}
