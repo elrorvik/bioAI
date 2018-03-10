@@ -250,16 +250,16 @@ void Population::initialize_individual_PrimsMST(int ind_index){
 
 void Population::initialize_population() {
 	
-	for (int i = 0; i < 2;i++) {
-		this->initialize_individual_PrimsMST(i);
-		fitness_1.push_back(std::make_pair(0.0, i));
-		fitness_2.push_back(std::make_pair(0.0, i));
-		rank.push_back(std::make_pair(0, i));
-		draw_segments_contour(i, i);
-		cv::Mat im = draw_segments_black_contour(i);
-		write_image_to_file(i, im);
-	}
-	/*int init_index = 0;
+	//for (int i = 0; i < 2;i++) {
+	//	this->initialize_individual_PrimsMST(i);
+	//	fitness_1.push_back(std::make_pair(0.0, i));
+	//	fitness_2.push_back(std::make_pair(0.0, i));
+	//	rank.push_back(std::make_pair(0, i));
+	//	draw_segments_contour(i, i);
+	//	cv::Mat im = draw_segments_black_contour(i);
+	//	write_image_to_file(i, im);
+	//}
+	int init_index = 0;
 	for (int i = N_IND; i < N_IND+N_OFFSPRING; i++) {
 
 		fitness_1.push_back(std::make_pair(0.0, i));
@@ -283,12 +283,12 @@ void Population::initialize_population() {
 				this->population[i][x][y].parent_dir   = this->population[init_index][x][y].parent_dir;
 			}
 		}
-	}*/
+	}
 
 	// Calculating fitness and rank of individuals
 
-	//MOEA_fitness(*this, N_IND, entry_s, fitness_1, fitness_2);
-	//MOEA_rank(N_IND, rank, fitness_1, fitness_2);
+	MOEA_fitness(*this, N_IND, entry_s, fitness_1, fitness_2);
+	MOEA_rank(N_IND, rank, fitness_1, fitness_2);
 
 
 	
@@ -309,14 +309,14 @@ void Population::MOEA_next_generation() {
 	// find parentss
 	std::vector<int> parents = rank_tournament_selection(*this, entry_s, n_pop, tournament_size, N_OFFSPRING, rank); // returns list of parent index
 	for (int i = 0; i < N_OFFSPRING;) {
-		double rand_num = (rand() % 1000) / 1000.0;
+		//double rand_num = (rand() % 1000) / 1000.0;
 		copy_individual(n_pop++, parents[i++]);
-		if (i >= N_OFFSPRING) break;
-		copy_individual(n_pop++, parents[i++]);
-		if (rand_num < CROSSOVER_RATE) {
-			edge_candidates[n_pop - 2] = crossover_uniform_list_representation(*this, parents[i - 2], parents[i - 1], n_pop - 2);
-			edge_candidates[n_pop - 1] = crossover_uniform_list_representation(*this, parents[i - 1], parents[i - 2], n_pop - 1);
-		}
+		//if (i >= N_OFFSPRING) break;
+		//copy_individual(n_pop++, parents[i++]);
+		//if (rand_num < CROSSOVER_RATE) {
+		//	edge_candidates[n_pop - 2] = crossover_uniform_list_representation(*this, parents[i - 2], parents[i - 1], n_pop - 2);
+		//	edge_candidates[n_pop - 1] = crossover_uniform_list_representation(*this, parents[i - 1], parents[i - 2], n_pop - 1);
+		//}
 	}
 	// mutations:
 	double mutation_rate = MUT_SPLIT_PERC + MUT_MERGE_PERC;
