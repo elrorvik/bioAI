@@ -397,6 +397,8 @@ void Population::merge_segments(int ind_index, int edge_index, edge merge_nodes)
 }
 
 void Population::merge_segment_properties(int ind_index, pos first, pos second) {
+	static int called = 0;
+	std::cout << called++ << std::endl;
 	pos first_entry = population[ind_index][first.x][first.y].entry;
 	pos second_entry = population[ind_index][second.x][second.y].entry;
 
@@ -412,14 +414,14 @@ void Population::merge_segment_properties(int ind_index, pos first, pos second) 
 	// delete from neigbour array
 	for (std::vector<pos>::iterator it = first_prop->neighbour_entries.begin(); it != first_prop->neighbour_entries.begin(); ++it) {
 		if (*it == second_entry) {
-			first_prop->neighbour_entries.erase(it);// must erase from this array
+			first_prop->neighbour_entries.erase(it); // must erase from this array
 			break;
 		}
 	}
 
 	// set in edges
-	for (auto it = second_prop->borders.begin(); it != second_prop->borders.end(); ++it) {
 
+	for (std::map<pos, std::vector<edge>>::iterator it = second_prop->borders.begin(); it != second_prop->borders.end(); ++it) {
 		if (it->first.x == first_entry.x && it->first.y == first_entry.y) {
 			continue;
 		}
@@ -445,6 +447,7 @@ void Population::merge_segment_properties(int ind_index, pos first, pos second) 
 				first_prop->borders[it->first].push_back(it->second[i]);
 				j++;
 			}
+			//std::cout << first_prop->borders[it->first].size() << ", resultant size" << std::endl;
 		}
 	}
 
