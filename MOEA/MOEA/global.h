@@ -1,8 +1,10 @@
 #pragma once
-#include<string>
+
 #ifndef GLOBAL_H
 #define GLOBAL_H
 
+#include<string>
+#include<vector>
 
 const int N_GENERATIONS = 40; //100
 const int N_IND = 40;
@@ -138,6 +140,11 @@ struct active_edge_t {
 	bool active;
 };
 
+struct edge_rgb_t {
+	double avg_rgb;
+	std::vector<pos> edges;
+};
+
 pos operator+(pos coord, direction dir);
 
 void operator+(node &n, direction d);
@@ -149,5 +156,7 @@ bool operator!=(pos& left, pos & right);
 pos operator+(pos& left, pos& right);
 
 bool operator<(edge e1, edge e2);
+
+
 
 #endif 

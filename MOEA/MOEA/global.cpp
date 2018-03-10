@@ -1,4 +1,5 @@
 #include"global.h"
+#include<vector>
 
 pos operator+(pos coord, direction dir) {
 switch (dir) {
@@ -78,3 +79,4 @@ bool operator!=(pos& left, pos & right) {
 bool operator<(edge e1, edge e2) {
 	return e1.RGBdist < e2.RGBdist;
 }
+

@@ -14,9 +14,12 @@ struct edge;
 struct edge_comparator;
 struct r_edge_comparator;
 struct active_edge_t;
+struct edge_rgb_t;
 
 typedef std::priority_queue<edge, std::vector<edge>, edge_comparator> edge_priority_que;
 typedef std::priority_queue<edge, std::vector<edge>, r_edge_comparator> r_edge_priority_que;
+
+
 
 class Population{
 private:
@@ -29,6 +32,9 @@ private:
 	int n_segments;
 	int n_pop;
 	std::vector<active_edge_t> *edge_candidates;
+	
+	std::map<pos, edge_rgb_t> segment_prop;
+
 public:
 	Population();
 	~Population();

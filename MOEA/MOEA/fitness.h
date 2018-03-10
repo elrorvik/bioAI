@@ -12,5 +12,6 @@ double overall_deviation_seg(Population &p, int ind_index, pos s_entry);
 double overall_deviation_ind(Population &p, int ind_index, const std::vector<pos> &entry_s);
 double edge_value_seg(Population &p, int ind_index, pos s_entry);
 double edge_value_ind(Population &p, int ind_index, const std::vector<pos> &entry_s);
+RGB avg_rgb_seg(Population &p, int ind_index, pos s_entry);
 
 #endif
