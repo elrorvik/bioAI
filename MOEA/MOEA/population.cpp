@@ -387,7 +387,7 @@ std::vector<active_edge_t>& Population::get_edge_candidates(int ind_index) {
 
 void Population::merge_segments(int ind_index, edge merge_nodes) {
 	merge_segment_properties(ind_index, merge_nodes.p1, merge_nodes.p2);
-	set_segment_entry(merge_nodes.p1, merge_nodes.p2, ind_index);
+	set_segment_entry(merge_nodes.p2, merge_nodes.p1, ind_index);
 	set_dir_edge(merge_nodes.p1, merge_nodes.p2, 1, ind_index);
 }
 
@@ -400,13 +400,14 @@ void Population::merge_segment_properties(int ind_index, pos first, pos second) 
 	pos first_entry = population[ind_index][first.x][first.y].entry;
 	pos second_entry = population[ind_index][second.x][second.y].entry;
 
-	seg_prop_t *first_prop = &segment_prop[ind_index][first_entry]; // copy elements form second to first
+	seg_prop_t *first_prop = &segment_prop[ind_index][first_entry];
 	seg_prop_t *second_prop = &segment_prop[ind_index][second_entry];
 
 	// Calculate segment properties of the combined segment
 	first_prop->avg_rgb = ( first_prop->avg_rgb + second_prop->avg_rgb ) / 2.0;
 
 	first_prop->borders.erase(second_entry);
+
 
 	// delete from neigbour array
 	for (auto it = first_prop->neighbour_entries.begin(); it != first_prop->neighbour_entries.begin(); ++it) {
@@ -429,9 +430,8 @@ void Population::merge_segment_properties(int ind_index, pos first, pos second) 
 	}
 
 	for (auto it = second_prop->neighbour_entries.begin(); it != second_prop->neighbour_entries.begin(); ++it) {
-		if (*it == first) {
-			first_prop->neighbour_entries.push_back(*it);// must erase from this array
-			break;
+		if (*it != first) {
+			first_prop->neighbour_entries.push_back(*it);
 		}
 	}
 
