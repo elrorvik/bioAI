@@ -107,7 +107,7 @@ int mutation_greedy_merge_segments(Population &p, int ind_index) {
 		}
 		neighbour_border_dist /= border_edges.size();
 
-		if (avg_RGB_dist  < 255 && neighbour_border_dist < 255) {
+		if (avg_RGB_dist  < 1000 && neighbour_border_dist < 1000) {
 
 			//std::cout << min_edge.p1.x << " " << min_edge.p1.y << " <-> " << min_edge.p2.x << " " << min_edge.p2.y << std::endl;
 			//std::cout << p.get_node(ind_index, min_edge.p1)->entry.x << " " << p.get_node(ind_index, min_edge.p1)->entry.y << std::endl;

@@ -386,7 +386,9 @@ void Population::merge_segments(int ind_index, edge merge_nodes) {
 	int num_in_merged_segment = merge_segment_properties(ind_index, merge_nodes.p1, merge_nodes.p2);
 	set_segment_entry(merge_nodes.p2, merge_nodes.p1, ind_index);
 	set_dir_edge(merge_nodes.p1, merge_nodes.p2, 1, ind_index);
-	if (get_n_segment(merge_nodes.p2, ind_index, 0) != num_in_merged_segment) std::cout << " different size " << std::endl;
+	int num_new_segment_size = get_n_segment(merge_nodes.p1, ind_index, 0);
+	int num_new_segment_size_2 = get_n_segment(merge_nodes.p2, ind_index, 0);
+	if (num_new_segment_size  != num_in_merged_segment) std::cout << " different size new 1 " << num_new_segment_size  <<" new 2 " << num_new_segment_size_2 <<"old " << num_in_merged_segment <<  std::endl;
 }
 
 void Population::merge_segments(int ind_index, int edge_index, edge merge_nodes) {
@@ -460,6 +462,10 @@ int  Population::merge_segment_properties(int ind_index, pos first, pos second) 
 
 	segment_prop[ind_index].erase(second_entry);
 
+	auto it = std::find_if(entry_s[ind_index].begin(), entry_s[ind_index].end(), pos_comparator(second_entry));
+	if(it != entry_s[ind_index].end()) {
+		entry_s[ind_index].erase(it);
+	}
 }
 
 void Population::split_segment(int ind_index, int edge_index, edge split_nodes) {
