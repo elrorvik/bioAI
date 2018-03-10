@@ -72,3 +72,29 @@ int  mutation_merge_segments(Population &p, int ind_index) {
 		return 0;
 	}
 }
+
+
+int mutation_greedy_merge_segments(Population &p, int ind_index) {
+	std::vector<pos> seg_entries = p.get_seg_entries(ind_index);
+	int entry_index = rand() % seg_entries.size();
+	
+	// get segment neighbours
+	int lowest_avg_RGB_dist_index = -1;
+	double lowest_avg_R_dist = DBL_MAX;
+	double lowest_avg_G_dist = DBL_MAX;
+	double lowest_avg_B_dist = DBL_MAX;
+	/*for (int i = 0; i < num_neighbours; i++) {
+		double d = avg_RGB(ind_index, seg_entries[entry_index]) - avg_RGB(ind_index, seg_entries[segment_neighbours[i]]);
+		if (d < lowest_avg_RGB_dist) {
+			lowest_avg_RGB_dist = d;
+			lowest_avg_RGB_dist_index = i;
+		}
+	}
+
+	if (d < some_value_criteria) {
+		// Merge these two segments!
+		p.merge_segments(ind_index, edge border_edge_with_least_RGB_dist);
+	}*/
+
+	return 1;
+}

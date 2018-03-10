@@ -349,9 +349,13 @@ std::vector<active_edge_t>& Population::get_edge_candidates(int ind_index) {
 	return edge_candidates[ind_index];
 }
 
-void Population::merge_segments(int ind_index, int edge_index, edge merge_nodes) {
+void Population::merge_segments(int ind_index, edge merge_nodes) {
 	set_segment_entry(merge_nodes.p1, merge_nodes.p2, ind_index);
 	set_dir_edge(merge_nodes.p1, merge_nodes.p2, 1, ind_index);
+}
+
+void Population::merge_segments(int ind_index, int edge_index, edge merge_nodes) {
+	merge_segments(ind_index, merge_nodes);
 	edge_candidates[ind_index][edge_index].active = 1;
 }
 
@@ -476,6 +480,10 @@ int Population::get_n_segment(pos& entry, int ind_index) {
 		remove_color(*this, ind_index, entry, branch_points);
 		return count;
 	}
+}
+
+std::vector<pos> Population::get_seg_entries(int ind_index) {
+	return entry_s[ind_index];
 }
 
 bool Population::get_pos_within_borders(pos& p) {

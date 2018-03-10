@@ -50,6 +50,7 @@ public:
 	int get_parent_segment_size(pos& parent, int ind_index);
 	pos get_pixel_segment(int x, int y, int individual);
 	int get_n_segment(pos& entry, int ind_index);
+	std::vector<pos> get_seg_entries(int ind_index);
 	bool get_pos_within_borders(pos& p);
 
 	std::vector<active_edge_t>& get_edge_candidates(int ind_index);
@@ -62,6 +63,7 @@ public:
 	//int check_if_edge(pos curr, int ind_index);
 	int check_if_edge(pos curr, int ind_index, int cout); // checkk if boarder
 
+	void merge_segments(int ind_index, edge merge_nodes);
 	void merge_segments(int ind_index, int edge_index, edge merge_nodes);
 	void split_segment(int ind_index, int edge_index, edge split_nodes);
 
