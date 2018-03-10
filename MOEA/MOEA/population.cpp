@@ -418,7 +418,7 @@ void Population::merge_segment_properties(int ind_index, pos first, pos second) 
 
 
 	// delete from neigbour array
-	for (auto it = first_prop->neighbour_entries.begin(); it != first_prop->neighbour_entries.begin(); ++it) {
+	for (std::vector<pos>::iterator it = first_prop->neighbour_entries.begin(); it != first_prop->neighbour_entries.begin(); ++it) {
 		if (*it == second_entry) {
 			first_prop->neighbour_entries.erase(it);// must erase from this array
 			break;
@@ -427,21 +427,27 @@ void Population::merge_segment_properties(int ind_index, pos first, pos second) 
 	
 	// set in edges
 	for (auto it = second_prop->borders.begin(); it != second_prop->borders.end(); ++it) {
+		
 		if (it->first.x == first_entry.x && it->first.y == first_entry.y) {
 			continue;
 		}
 		else {
-			//std::cout << second_prop->borders[it->first].size() << std::endl;
+			std::cout << " size " <<  it->second.size() << std::endl;
 			int j = 0;
-			for (auto xt = second_prop->borders[it->first].begin(); xt != second_prop->borders[it->first].end(); ++xt) {
-				j++;
-				if (get_neighbor_dir(xt->p1, xt->p2) == SELF) {
-					std:cout << xt->p1.x << "," << xt->p1.y << " og " << xt->p2.x << "," << xt->p2.y << std::endl;
-					std::cout << j << std::endl;
+			for (int i = 0; i < it->second.size(); i++) {
+				
+				if (get_neighbor_dir(it->second[i].p1, it->second[i].p2) == SELF) {
+					std:cout << it->second[i].p1.x << "," << it->second[i].p1.y << " og " << it->second[i].p2.x << "," << it->second[i].p2.y << std::endl;
+					std::cout << j << " i " << i <<std::endl;
 					std::cout << second_prop->borders[it->first].size() << std::endl;
 					std::cin.get();
 				}
-				first_prop->borders[it->first].push_back(*xt);
+				if (i >= it->second.size()) {
+					std::cout << i << " vs. size " << std::endl;
+					
+				}
+				first_prop->borders[it->first].push_back(it->second[i]);
+				j++;
 			}
 		}
 	}
