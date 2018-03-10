@@ -464,7 +464,7 @@ void Population::merge_segment_properties(int ind_index, pos first, pos second) 
 	}
 
 	segment_prop[ind_index].erase(second_entry);
-	std::cout << " get size of merged segment " << get_n_segment(first_entry, ind_index) + get_n_segment(second, ind_index) << std::endl;
+	std::cout << " get size of merged segment " << get_n_segment(first_entry, ind_index,0) + get_n_segment(second, ind_index,0) << std::endl;
 
 }
 
