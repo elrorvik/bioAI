@@ -387,7 +387,7 @@ std::vector<active_edge_t>& Population::get_edge_candidates(int ind_index) {
 
 void Population::merge_segments(int ind_index, edge merge_nodes) {
 	merge_segment_properties(ind_index, merge_nodes.p1, merge_nodes.p2);
-	set_segment_entry(merge_nodes.p1, merge_nodes.p2, ind_index);
+	set_segment_entry(merge_nodes.p2, merge_nodes.p1, ind_index);
 	set_dir_edge(merge_nodes.p1, merge_nodes.p2, 1, ind_index);
 }
 
@@ -964,9 +964,10 @@ void Population::copy_individual(int l_index, int r_index) {
 
 void Population::draw_pareto_front() {
 	for (int i = 0; i < N_IND; i++) {
-		if (rank[i].first <6) {
-			cv::Mat img = draw_segments_black_contour(i);
-			write_image_to_file(rank[i].first, img);
+		if (rank[i].first == 0) {
+			cv::Mat img = draw_segments_black_contour(rank[i].second);
+			write_image_to_file(rank[i].second, img);
+			std::cout << " rank . second " << rank[i].second << std::endl;
 		}
 	}
 }
