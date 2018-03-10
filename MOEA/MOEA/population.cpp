@@ -269,6 +269,7 @@ void Population::initialize_population() {
 		edge_candidates[i] = edge_candidates[init_index];
 
 		if (i >= N_IND) continue;
+		segment_prop[i] = segment_prop[init_index];
 
 		for (int x = 0; x < get_im_w(); x++) {
 			for (int y = 0; y < get_im_h(); y++) {
@@ -421,6 +422,7 @@ void Population::merge_segment_properties(int ind_index, pos first, pos second, 
 	new_prop->borders.erase(second_entry);
 	new_prop->neighbour_entries.erase(std::find_if(new_prop->neighbour_entries.begin(), new_prop->neighbour_entries.end(), pos_comparator(second_entry)));
 
+	if (std::find_if(segment_prop[ind_index].begin(), segment_prop[ind_index].end(), pos_comparator(first_entry)) != segment_prop[ind_index].end()) std::cout << "Jadda." << std::endl;
 	segment_prop[ind_index].erase(first_entry);
 	segment_prop[ind_index].erase(second_entry);
 
@@ -946,6 +948,7 @@ void Population::copy_individual(int l_index, int r_index) {
 	fitness_1[l_index].first = fitness_1[r_index].first;
 	fitness_2[l_index].first = fitness_2[r_index].first;
 	rank[l_index].first = rank[r_index].first;
+	segment_prop[l_index] = segment_prop[r_index];
 }
 
 void Population::draw_pareto_front() {
