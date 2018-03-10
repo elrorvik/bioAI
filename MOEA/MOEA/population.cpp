@@ -361,13 +361,46 @@ std::vector<active_edge_t>& Population::get_edge_candidates(int ind_index) {
 }
 
 void Population::merge_segments(int ind_index, edge merge_nodes) {
-	set_segment_entry(merge_nodes.p1, merge_nodes.p2, ind_index);
+	pos new_entry = merge_nodes.p2;
+	merge_segment_properties(ind_index, merge_nodes.p1, merge_nodes.p2, new_entry);
+	set_segment_entry(merge_nodes.p1, new_entry, ind_index);
 	set_dir_edge(merge_nodes.p1, merge_nodes.p2, 1, ind_index);
 }
 
 void Population::merge_segments(int ind_index, int edge_index, edge merge_nodes) {
 	merge_segments(ind_index, merge_nodes);
 	edge_candidates[ind_index][edge_index].active = 1;
+}
+
+void Population::merge_segment_properties(int ind_index, pos first, pos second, pos new_entry) {
+	pos first_entry = population[ind_index][first.x][first.y].entry;
+	pos second_entry = population[ind_index][second.x][second.y].entry;
+
+	seg_prop_t *new_prop = &segment_prop[ind_index][new_entry];
+	seg_prop_t *prop_a = &segment_prop[ind_index][first_entry];
+	seg_prop_t *prop_b = &segment_prop[ind_index][second_entry];
+
+	// 
+	new_prop->avg_rgb = ( prop_a->avg_rgb + prop_b->avg_rgb ) / 2;
+	new_prop->borders = prop_a->borders;
+	new_prop->neighbor_entries = prop_a->neighbor_entries;
+	for (int i = 0; i < prop_b->neighbor_entries.size(); i++) {
+		pos current_entry = prop_b->neighbor_entries[i];
+		if (current_entry == first_entry) continue;
+		if (std::find(new_prop->neighbor_entries.begin(), new_prop->neighbor_entries.end(), current_entry) != new_prop->neighbor_entries.end()) {
+			new_prop->borders[current_entry].insert(new_prop->borders[current_entry].end(), prop_b->borders[current_entry].begin(), prop_b->borders[current_entry].end());
+		}
+		else {
+			new_prop->neighbor_entries.push_back(current_entry);
+			new_prop->borders[current_entry] = prop_b->borders[current_entry];
+		}
+	}
+	new_prop->borders.erase(second_entry);
+	new_prop->neighbor_entries.erase(std::find(new_prop->neighbor_entries.begin(), new_prop->neighbor_entries.end(), second_entry));
+
+	segment_prop[ind_index].erase(first_entry);
+	segment_prop[ind_index].erase(second_entry);
+
 }
 
 void Population::split_segment(int ind_index, int edge_index, edge split_nodes) {
