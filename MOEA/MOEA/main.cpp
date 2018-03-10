@@ -13,12 +13,6 @@ int main() {
 
 	Population p;
 	p.initialize_population();
-	/*std::cout << " one " << std::endl;
-	p.test_prim();
-	std::cout << " one " << std::endl;
-	p.test_prim();
-	std::cout << " one " << std::endl;
-	p.test_prim();*/
 
 	int generation = 0;
 	time_t seconds = time(NULL);

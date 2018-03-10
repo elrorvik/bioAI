@@ -8,7 +8,7 @@
 #include<map>
 
 const int N_GENERATIONS = 40; //100
-const int N_IND = 40;
+const int N_IND = 20;
 const int N_SEG_TYPES = 2;
 
 const double CROSSOVER_RATE = 0.6;
