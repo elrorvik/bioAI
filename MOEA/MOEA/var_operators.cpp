@@ -2,6 +2,7 @@
 #include "global.h"
 #include "population.h"
 #include "var_operators.h"
+#include "fitness.h"
 //#include<vector>
 
 
@@ -75,26 +76,38 @@ int  mutation_merge_segments(Population &p, int ind_index) {
 
 
 int mutation_greedy_merge_segments(Population &p, int ind_index) {
-	std::vector<pos> seg_entries = p.get_seg_entries(ind_index);
+	std::vector<pos> seg_entries = p.get_segment_entries(ind_index);
 	int entry_index = rand() % seg_entries.size();
+	seg_prop_t segment_properties = p.get_segment_properties(ind_index, seg_entries[entry_index]);
 	
-	// get segment neighbours
-	int lowest_avg_RGB_dist_index = -1;
-	double lowest_avg_R_dist = DBL_MAX;
-	double lowest_avg_G_dist = DBL_MAX;
-	double lowest_avg_B_dist = DBL_MAX;
-	/*for (int i = 0; i < num_neighbours; i++) {
-		double d = avg_RGB(ind_index, seg_entries[entry_index]) - avg_RGB(ind_index, seg_entries[segment_neighbours[i]]);
-		if (d < lowest_avg_RGB_dist) {
-			lowest_avg_RGB_dist = d;
-			lowest_avg_RGB_dist_index = i;
+	pos best_entry;
+	
+	for (int i = 0; i < segment_properties.neighbor_entries.size(); i++) {
+		pos entry_other = segment_properties.neighbor_entries[i];
+		edge min_edge = { { -1, -1 },{ -1, -1 }, DBL_MAX };
+		min_edge.RGBdist = DBL_MAX;
+
+		// Calculate avg rgb dist in between segments
+		RGB avg_rgb_other = p.get_segment_properties(ind_index, entry_other).avg_rgb;
+		double neighbor_dist = dist(segment_properties.avg_rgb, avg_rgb_other);
+
+		// Calculate avg rgb dist in border of segments
+		double neighbor_border_dist = 0;
+		const std::vector<edge> border_edges = segment_properties.borders[entry_other];
+		for (int j = 0; j < border_edges.size(); j++) {
+			neighbor_border_dist += border_edges[j].RGBdist;
+			if (min_edge.RGBdist > border_edges[j].RGBdist) {
+				min_edge = border_edges[j];
+			}
 		}
+		neighbor_border_dist /= border_edges.size();
+
+		if (neighbor_dist < 50 && neighbor_border_dist > 100) {
+			p.merge_segments(ind_index, min_edge);
+			return 1;
+		}
+
 	}
 
-	if (d < some_value_criteria) {
-		// Merge these two segments!
-		p.merge_segments(ind_index, edge border_edge_with_least_RGB_dist);
-	}*/
-
-	return 1;
+	return 0;
 }

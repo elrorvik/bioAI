@@ -5,6 +5,7 @@
 
 #include<string>
 #include<vector>
+#include<map>
 
 const int N_GENERATIONS = 40; //100
 const int N_IND = 40;
@@ -140,9 +141,10 @@ struct active_edge_t {
 	bool active;
 };
 
-struct edge_rgb_t {
-	double avg_rgb;
-	std::vector<pos> edges;
+struct seg_prop_t {
+	RGB avg_rgb;
+	std::map<pos, std::vector<edge>> borders;
+	std::vector<pos> neighbor_entries;
 };
 
 pos operator+(pos coord, direction dir);

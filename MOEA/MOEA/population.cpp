@@ -493,8 +493,12 @@ int Population::get_n_segment(pos& entry, int ind_index) {
 	}
 }
 
-std::vector<pos> Population::get_seg_entries(int ind_index) {
+std::vector<pos> Population::get_segment_entries(int ind_index) {
 	return entry_s[ind_index];
+}
+
+seg_prop_t Population::get_segment_property(int ind_index, pos seg_entry) {
+	return segment_prop[ind_index][seg_entry];
 }
 
 bool Population::get_pos_within_borders(pos& p) {

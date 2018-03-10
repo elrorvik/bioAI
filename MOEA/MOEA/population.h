@@ -33,7 +33,7 @@ private:
 	int n_pop;
 	std::vector<active_edge_t> *edge_candidates;
 	
-	std::map<pos, edge_rgb_t> segment_prop;
+	std::map<pos, seg_prop_t>* segment_prop;
 
 public:
 	Population();
@@ -56,7 +56,9 @@ public:
 	int get_parent_segment_size(pos& parent, int ind_index);
 	pos get_pixel_segment(int x, int y, int individual);
 	int get_n_segment(pos& entry, int ind_index);
-	std::vector<pos> get_seg_entries(int ind_index);
+	std::vector<pos> get_segment_entries(int ind_index);
+	seg_prop_t get_segment_property(int ind_index, pos seg_entry);
+
 	bool get_pos_within_borders(pos& p);
 
 	std::vector<active_edge_t>& get_edge_candidates(int ind_index);
