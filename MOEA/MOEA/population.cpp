@@ -209,15 +209,16 @@ void Population::initialize_individual_PrimsMST(int ind_index){
 
 	}
 
-	
+	RGB invalid_color(-1, -1, -1);
 	std::vector<pos>* edge_segments = edges_segment(ind_index);	
 	for (int i = 0; i < entry_s[ind_index].size(); i++) {
 		for (auto it = edge_segments[i].begin(); it != edge_segments[i].end(); ++it) {
 			pos pos_entry = population[ind_index][it->x][it->y].entry;
 
-			if (segment_prop[ind_index][pos_entry].avg_rgb.r == -1 && segment_prop[ind_index][pos_entry].avg_rgb.g == -1 && segment_prop[ind_index][pos_entry].avg_rgb.b == -1) {
+
+			if (segment_prop[ind_index][pos_entry].avg_rgb == invalid_color ) {
 				segment_prop[ind_index][pos_entry].avg_rgb = avg_rgb_seg(*this, ind_index, pos_entry);
-				//std::cout << " adding color " << std::endl;
+				std::cout << i <<" adding color " << std::endl;
 			}
 			
 			std::vector<edge> neigbours = get_neigbours(*it, ind_index, 0);
@@ -240,7 +241,7 @@ void Population::initialize_individual_PrimsMST(int ind_index){
 		//std::cout << " i " << i << std::endl;
 	}
 
-
+	
 	std::cout << "total " << total_segment_size << "should be " << get_im_h()*get_im_w() << std::endl;
 
 	//std::cout << "FINISHED " << std::endl;
@@ -385,9 +386,8 @@ std::vector<active_edge_t>& Population::get_edge_candidates(int ind_index) {
 }
 
 void Population::merge_segments(int ind_index, edge merge_nodes) {
-	pos new_entry = merge_nodes.p2;
-	merge_segment_properties(ind_index, merge_nodes.p1, merge_nodes.p2, new_entry);
-	set_segment_entry(merge_nodes.p1, new_entry, ind_index);
+	merge_segment_properties(ind_index, merge_nodes.p1, merge_nodes.p2);
+	set_segment_entry(merge_nodes.p1, merge_nodes.p2, ind_index);
 	set_dir_edge(merge_nodes.p1, merge_nodes.p2, 1, ind_index);
 }
 
@@ -396,34 +396,45 @@ void Population::merge_segments(int ind_index, int edge_index, edge merge_nodes)
 	edge_candidates[ind_index][edge_index].active = 1;
 }
 
-void Population::merge_segment_properties(int ind_index, pos first, pos second, pos new_entry) {
+void Population::merge_segment_properties(int ind_index, pos first, pos second) {
 	pos first_entry = population[ind_index][first.x][first.y].entry;
 	pos second_entry = population[ind_index][second.x][second.y].entry;
 
-	seg_prop_t *new_prop = &segment_prop[ind_index][new_entry];
-	seg_prop_t *prop_a = &segment_prop[ind_index][first_entry];
-	seg_prop_t *prop_b = &segment_prop[ind_index][second_entry];
+	seg_prop_t *first_prop = &segment_prop[ind_index][first_entry]; // copy elements form second to first
+	seg_prop_t *second_prop = &segment_prop[ind_index][second_entry];
 
 	// Calculate segment properties of the combined segment
-	new_prop->avg_rgb = ( prop_a->avg_rgb + prop_b->avg_rgb ) / 2;
-	new_prop->borders = prop_a->borders;
-	new_prop->neighbour_entries = prop_a->neighbour_entries;
-	for (int i = 0; i < prop_b->neighbour_entries.size(); i++) {
-		pos current_entry = prop_b->neighbour_entries[i];
-		if (current_entry == first_entry) continue;
-		if (std::find_if(new_prop->neighbour_entries.begin(), new_prop->neighbour_entries.end(), pos_comparator(current_entry)) != new_prop->neighbour_entries.end()) {
-			new_prop->borders[current_entry].insert(new_prop->borders[current_entry].end(), prop_b->borders[current_entry].begin(), prop_b->borders[current_entry].end());
-		}
-		else {
-			new_prop->neighbour_entries.push_back(current_entry);
-			new_prop->borders[current_entry] = prop_b->borders[current_entry];
+	first_prop->avg_rgb = ( first_prop->avg_rgb + second_prop->avg_rgb ) / 2.0;
+
+	first_prop->borders.erase(second_entry);
+
+	// delete from neigbour array
+	for (auto it = first_prop->neighbour_entries.begin(); it != first_prop->neighbour_entries.begin(); ++it) {
+		if (*it == second_entry) {
+			first_prop->neighbour_entries.erase(it);// must erase from this array
+			break;
 		}
 	}
-	new_prop->borders.erase(second_entry);
-	new_prop->neighbour_entries.erase(std::find_if(new_prop->neighbour_entries.begin(), new_prop->neighbour_entries.end(), pos_comparator(second_entry)));
+	
+	// set in edges
+	for (auto it = second_prop->borders.begin(); it != second_prop->borders.end(); ++it) {
+		if (it->first.x == first_entry.x && it->first.y == first_entry.y) {
+			continue;
+		}
+		else {
+			for (auto xt = second_prop->borders[it->first].begin(); xt != second_prop->borders[it->first].end(); ++xt) {
+				first_prop->borders[it->first].push_back(*xt);
+			}
+		}
+	}
 
-	if (std::find_if(segment_prop[ind_index].begin(), segment_prop[ind_index].end(), pos_comparator(first_entry)) != segment_prop[ind_index].end()) std::cout << "Jadda." << std::endl;
-	segment_prop[ind_index].erase(first_entry);
+	for (auto it = second_prop->neighbour_entries.begin(); it != second_prop->neighbour_entries.begin(); ++it) {
+		if (*it == first) {
+			first_prop->neighbour_entries.push_back(*it);// must erase from this array
+			break;
+		}
+	}
+
 	segment_prop[ind_index].erase(second_entry);
 
 }
