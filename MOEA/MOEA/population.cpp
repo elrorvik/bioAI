@@ -405,6 +405,8 @@ void Population::merge_segments(int ind_index, int edge_index, edge merge_nodes)
 }
 
 void Population::merge_segment_properties(int ind_index, pos first, pos second) {
+	static int called = 0;
+	std::cout << called++ << std::endl;
 	pos first_entry = population[ind_index][first.x][first.y].entry;
 	pos second_entry = population[ind_index][second.x][second.y].entry;
 
@@ -420,29 +422,35 @@ void Population::merge_segment_properties(int ind_index, pos first, pos second) 
 	// delete from neigbour array
 	for (auto it = first_prop->neighbour_entries.begin(); it != first_prop->neighbour_entries.begin(); ++it) {
 		if (*it == second_entry) {
-			first_prop->neighbour_entries.erase(it);// must erase from this array
+			first_prop->neighbour_entries.erase(it); // must erase from this array
 			break;
 		}
 	}
 	
 	// set in edges
-	for (auto it = second_prop->borders.begin(); it != second_prop->borders.end(); ++it) {
+	for (std::map<pos, std::vector<edge>>::iterator it = second_prop->borders.begin(); it != second_prop->borders.end(); ++it) {
 		if (it->first.x == first_entry.x && it->first.y == first_entry.y) {
 			continue;
 		}
 		else {
 			//std::cout << second_prop->borders[it->first].size() << std::endl;
 			int j = 0;
-			for (auto xt = second_prop->borders[it->first].begin(); xt != second_prop->borders[it->first].end(); ++xt) {
+			std::cout << first_prop->borders[it->first].size() << ", init_size" << std::endl;
+			std::cout << second_prop->borders[it->first].size() << ", size to be added" << std::endl;
+			//for (auto xt = second_prop->borders[it->first].begin(); xt != second_prop->borders[it->first].end(); ++xt) {
+			for (int i = 0; i < second_prop->borders[it->first].size(); i++) {
 				j++;
-				if (get_neighbor_dir(xt->p1, xt->p2) == SELF) {
-					std:cout << xt->p1.x << "," << xt->p1.y << " og " << xt->p2.x << "," << xt->p2.y << std::endl;
+				edge e = second_prop->borders[it->first][i];
+				std::cout << it->first.x << " =? " << first_entry.x << "," << it->first.y << " =? " << first_entry.y << std::endl;
+				if (get_neighbor_dir(e.p1, e.p2) == SELF || i > second_prop->borders[it->first].size()) {
+					std:cout << e.p1.x << "," << e.p1.y << " og " << e.p2.x << "," << e.p2.y << std::endl;
 					std::cout << j << std::endl;
 					std::cout << second_prop->borders[it->first].size() << std::endl;
 					std::cin.get();
 				}
-				first_prop->borders[it->first].push_back(*xt);
+				first_prop->borders[it->first].push_back(second_prop->borders[it->first][i]);
 			}
+			std::cout << first_prop->borders[it->first].size() << ", resultant size" << std::endl;
 		}
 	}
 
