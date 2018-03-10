@@ -145,13 +145,6 @@ private:
 	const pos p1;
 };
 
-
-
-
-
-
-
-
 struct active_edge_t {
 	edge edge;
 	bool active;
@@ -161,7 +154,7 @@ struct active_edge_t {
 
 struct seg_prop_t {
 	RGB avg_rgb;
-	std::map<pos, std::vector<edge>> boarder;
+	std::map<pos, std::vector<edge>> borders;
 	std::vector<pos> neighbour_entries;
 	seg_prop_t() :avg_rgb(-1, -1, -1) {};
 };
