@@ -14,7 +14,7 @@ struct edge;
 struct edge_comparator;
 struct r_edge_comparator;
 struct active_edge_t;
-struct edge_rgb_t;
+struct seg_prop_t;
 
 typedef std::priority_queue<edge, std::vector<edge>, edge_comparator> edge_priority_que;
 typedef std::priority_queue<edge, std::vector<edge>, r_edge_comparator> r_edge_priority_que;

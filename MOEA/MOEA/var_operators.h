@@ -11,7 +11,5 @@ std::vector<active_edge_t> crossover_uniform_list_representation(Population &p, 
 int mutation_split_segments(Population &p, int ind_index);
 int mutation_merge_segments(Population &p, int ind_index);
 int mutation_greedy_merge_segments(Population &p, int ind_index);
-// Variaton operators (?)
-// GA
 
 #endif
