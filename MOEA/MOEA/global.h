@@ -157,6 +157,7 @@ pos operator+(pos& left, pos& right);
 
 bool operator<(edge e1, edge e2);
 
+direction get_neighbor_dir(pos& origin, pos& neighbor);
 
 
 #endif 

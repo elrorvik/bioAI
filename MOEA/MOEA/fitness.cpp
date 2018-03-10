@@ -9,6 +9,7 @@ double dist(RGB p1, RGB p2) {
 	return sqrt(pow(p1.r - p2.r, 2) + pow(p1.g - p2.g, 2) + pow(p1.b - p2.b, 2));
 }
 
+
 RGB avg_rgb_seg(Population &p, int ind_index, pos s_entry) {
 	// Calculate centroid
 	std::stack<pos> branch_points;
@@ -31,6 +32,17 @@ RGB avg_rgb_seg(Population &p, int ind_index, pos s_entry) {
 	double avg_B = sum_B / double(num_nodes_in_segment);
 	RGB avg(avg_R, avg_G, avg_B);
 	return avg;
+}
+
+double dist2(pos p1, pos p2) {
+	direction dir = get_neighbor_dir(p1, p2);
+	int search_diameter = 3;
+	int i = 0;
+	int j = 0;
+	while (false); //while something...
+
+	return 0.0;
+
 }
 
 double overall_deviation_seg(Population &p, int ind_index, pos s_entry) {

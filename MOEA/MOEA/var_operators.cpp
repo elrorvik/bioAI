@@ -23,6 +23,20 @@ std::vector<active_edge_t> crossover_uniform_list_representation(Population &p, 
 	return offspring_chromosome;
 }
 
+std::vector<active_edge_t> crossover_uniform_fluid_list_representation(Population &p, int parent_A, int parent_B, int offspring_index) {
+	int crossover_point_seperator_line = rand() % p.get_im_w();
+
+	std::vector<active_edge_t> parent_A_chromosome = p.get_edge_candidates(parent_A);
+	std::vector<active_edge_t> parent_B_chromosome = p.get_edge_candidates(parent_B);
+	std::vector<active_edge_t> offspring_chromosome = parent_A_chromosome;
+
+	for (int i = 0; i < parent_A_chromosome.size(); i++) {
+
+	}
+
+	return offspring_chromosome;
+}
+
 int  mutation_split_segments(Population &p, int ind_index) {
 	std::vector<active_edge_t> chromosome = p.get_edge_candidates(ind_index);
 	int loci = rand() % chromosome.size();
