@@ -1,4 +1,5 @@
 #include"global.h"
+#include<vector>
 
 pos operator+(pos coord, direction dir) {
 switch (dir) {
@@ -79,6 +80,7 @@ bool operator<(edge e1, edge e2) {
 	return e1.RGBdist < e2.RGBdist;
 }
 
+
 direction get_neighbor_dir(pos& origin, pos& neighbor) {
 	bool up = origin.y == neighbor.y + 1;
 	bool down = origin.y == neighbor.y - 1;
@@ -90,3 +92,4 @@ direction get_neighbor_dir(pos& origin, pos& neighbor) {
 	if (right) return RIGHT;
 	return SELF; // If up + down + left + right != 1, return SELF because they are not neighbors
 }
+

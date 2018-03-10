@@ -201,12 +201,23 @@ void Population::initialize_individual_PrimsMST(int ind_index){
 			continue;
 		}
 		else {
+			//segment_prop[*it] = 
 			//std::cout <<"segment " << it->x << " " << it->y << " " << segment_size << std::endl;
 			it++;
 		}
 		total_segment_size += segment_size;
 
 	}
+
+	/*std::vector<pos>* edge_segments = edges_segment(ind_index);
+	for (int i = 0; i < entry_s[ind_index].size(); i++) {
+		segment_property[entry] = {};
+		for (auto it = edge_segments[i].begin(); it != edge_segments[i].end(); it++) {
+			pos entry = entry_s[ind_index][i];
+			//segment_prop[entry] = avg_rgb_seg(Population &p, int ind_index, pos s_entry) ;
+		}
+		
+	}*/
 
 	std::cout << "total " << total_segment_size << "should be " << get_im_h()*get_im_w() << std::endl;
 
