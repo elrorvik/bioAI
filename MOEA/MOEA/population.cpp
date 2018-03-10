@@ -321,70 +321,61 @@ void Population::MOEA_next_generation() {
 		//	edge_candidates[n_pop - 1] = crossover_uniform_list_representation(*this, parents[i - 1], parents[i - 2], n_pop - 1);
 		//}
 	}
-	// mutations:
-	double mutation_rate = MUT_SPLIT_PERC + MUT_MERGE_PERC;
-	if (mutation_rate > 1.0) std::cout << " to high mutation rate" << std::endl;
-	for (int i = N_IND; i < n_pop; i++) {
-		double rand_num = (rand() % 1000) / 1000.0;
-		if (rand_num < MUTATION_RATE) {
+// mutations:
+double mutation_rate = MUT_SPLIT_PERC + MUT_MERGE_PERC;
+if (mutation_rate > 1.0) std::cout << " to high mutation rate" << std::endl;
+for (int i = N_IND; i < n_pop; i++) {
+	double rand_num = (rand() % 1000) / 1000.0;
+	if (rand_num < MUTATION_RATE) {
 
-			int num_mutations = rand() % 10;
-			for (int j = 0; j < num_mutations; j++) {
-				int attempts = 0;
-				while (!mutation_greedy_merge_segments(*this, i) && 50 >= attempts++);
-				if (attempts == 50) std::cout << "Failed to mutate child" << std::endl;
-			}
-
-			//rand_num = (rand() % 1000) / 1000.0;
-			//if (rand_num < MUT_MERGE_PERC) {
-			//	mutation_merge_segments(*this, i);
-			//	mutation_merge_segments(*this, i);
-			//	mutation_merge_segments(*this, i);
-			//
-			//}
-			//else if (rand_num < MUT_MERGE_PERC + MUT_SPLIT_PERC) {
-			//	mutation_split_segments(*this, i);
-			//}
+		int num_mutations = rand() % 10;
+		for (int j = 0; j < num_mutations; j++) {
+			int attempts = 0;
+			while (!mutation_greedy_merge_segments(*this, i) && 50 >= attempts++);
+			if (attempts == 50) std::cout << "Failed to mutate child" << std::endl;
 		}
 	}
+}
 
-	// Calculate fitness of offspring
-	for (int offspring_index = N_IND; offspring_index < N_IND + N_OFFSPRING; offspring_index++) {
-		fitness_1[offspring_index].first = overall_deviation_ind(*this, offspring_index, entry_s[offspring_index]);
-		fitness_2[offspring_index].first = edge_value_ind(*this, offspring_index, entry_s[offspring_index]);
-	}
-	
-	MOEA_rank(n_pop, rank, fitness_1, fitness_2);
-	std::vector<int> survivors = NSGAII(*this, entry_s, n_pop, rank, fitness_1, fitness_2);
-	std::vector<int> non_survivors;
-	std::vector<int> survivors_offspring;
+// Calculate fitness of offspring
+for (int offspring_index = N_IND; offspring_index < N_IND + N_OFFSPRING; offspring_index++) {
+	fitness_1[offspring_index].first = overall_deviation_ind(*this, offspring_index, entry_s[offspring_index]);
+	fitness_1[offspring_index].second = offspring_index;
+	fitness_2[offspring_index].first = edge_value_ind(*this, offspring_index, entry_s[offspring_index]);
+	fitness_1[offspring_index].second = offspring_index;
+}
 
-	for (int i = 0; i < n_pop; i++) {
-		if (find(survivors.begin(), survivors.end(), i) == survivors.end()) {
-			if (i < N_IND) {
-				non_survivors.push_back(i); // don't care if it is higher than N_IND
-			}
-		}
-		else {
-			if (i >= N_IND) {
-				survivors_offspring.push_back(i);
-			}
+MOEA_rank(n_pop, rank, fitness_1, fitness_2);
+std::vector<int> survivors = NSGAII(*this, entry_s, n_pop, rank, fitness_1, fitness_2);
+std::vector<int> non_survivors;
+std::vector<int> survivors_offspring;
+
+for (int i = 0; i < n_pop; i++) {
+	if (find(survivors.begin(), survivors.end(), i) == survivors.end()) {
+		if (i < N_IND) {
+			non_survivors.push_back(i); // don't care if it is higher than N_IND
 		}
 	}
-
-	//if (survivors_offspring.size() != non_survivors.size()) std::cout << "different size" << survivors_offspring.size() << " " << non_survivors.size() << std::endl;
-	//std::cin.get();
-	/*for (int i = 0; i < survivors_offspring.size(); i++) {
-		//std::cout << " switch " << non_survivors[i] << " " << survivors_offspring[i] << std::endl;
-		copy_individual(non_survivors[i], survivors_offspring[i]);
-
+	else {
+		if (i >= N_IND) {
+			survivors_offspring.push_back(i);
+		}
 	}
+}
 
-	for (int i = 0; i < N_IND; i++) {
-		std::cout << " rank " << rank[i].first << "," << rank[i].second << " fitness 1: " << fitness_1[i].first << "," << fitness_1[i].second << " fitness 2: " << fitness_2[i].first << "," << fitness_2[i].second << std::endl;
-	}*/
+//if (survivors_offspring.size() != non_survivors.size()) std::cout << "different size" << survivors_offspring.size() << " " << non_survivors.size() << std::endl;
+//std::cin.get();
+for (int i = 0; i < survivors_offspring.size(); i++) {
+	//std::cout << " switch " << non_survivors[i] << " " << survivors_offspring[i] << std::endl;
+	copy_individual(non_survivors[i], survivors_offspring[i]);
 
-	// return pareto rank 0 ? ( to main loop ? or ??)
+}
+
+for (int i = 0; i < N_IND; i++) {
+	std::cout << " rank " << rank[i].first << "," << rank[i].second << " fitness 1: " << fitness_1[i].first << "," << fitness_1[i].second << " fitness 2: " << fitness_2[i].first << "," << fitness_2[i].second << std::endl;
+}
+
+// return pareto rank 0 ? ( to main loop ? or ??)
 
 }
 
@@ -397,6 +388,7 @@ void Population::merge_segments(int ind_index, edge merge_nodes) {
 	merge_segment_properties(ind_index, merge_nodes.p1, merge_nodes.p2);
 	set_segment_entry(merge_nodes.p2, merge_nodes.p1, ind_index);
 	set_dir_edge(merge_nodes.p1, merge_nodes.p2, 1, ind_index);
+	std::cout << " actual segment size " <<get_n_segment(merge_nodes.p1,ind_index) << std::endl;
 }
 
 void Population::merge_segments(int ind_index, int edge_index, edge merge_nodes) {
@@ -412,7 +404,7 @@ void Population::merge_segment_properties(int ind_index, pos first, pos second) 
 	seg_prop_t *second_prop = &segment_prop[ind_index][second_entry];
 
 	// Calculate segment properties of the combined segment
-	first_prop->avg_rgb = ( first_prop->avg_rgb + second_prop->avg_rgb ) / 2.0;
+	first_prop->avg_rgb = (first_prop->avg_rgb + second_prop->avg_rgb) / 2.0;
 
 	first_prop->borders.erase(second_entry);
 
@@ -424,15 +416,19 @@ void Population::merge_segment_properties(int ind_index, pos first, pos second) 
 			break;
 		}
 	}
-	
+
 	// set in edges
 	for (auto it = second_prop->borders.begin(); it != second_prop->borders.end(); ++it) {
-		
+
 		if (it->first.x == first_entry.x && it->first.y == first_entry.y) {
 			continue;
 		}
+		else if (it->first.x == second_entry.x && it->first.y == second_entry.y){
+			std::cout << "hmm.... second = it " << std::endl;
+			continue;
+		}
 		else {
-			std::cout << " size " <<  it->second.size() << std::endl;
+			//std::cout << " size " <<  it->second.size() << std::endl;
 			int j = 0;
 			for (int i = 0; i < it->second.size(); i++) {
 				
@@ -453,12 +449,13 @@ void Population::merge_segment_properties(int ind_index, pos first, pos second) 
 	}
 
 	for (auto it = second_prop->neighbour_entries.begin(); it != second_prop->neighbour_entries.begin(); ++it) {
-		if (*it != first) {
+		if (*it != first && std::find_if(segment_prop[ind_index][first_entry].neighbour_entries.begin(), segment_prop[ind_index][first_entry].neighbour_entries.end(), pos_comparator(*it)) != segment_prop[ind_index][first_entry].neighbour_entries.end()) {
 			first_prop->neighbour_entries.push_back(*it);
 		}
 	}
 
 	segment_prop[ind_index].erase(second_entry);
+	std::cout << " get size of merged segment " << get_n_segment(first_entry, ind_index) + get_n_segment(second, ind_index) << std::endl;
 
 }
 
@@ -647,7 +644,7 @@ void Population::draw_segments(int ind_index) {
 	color.push_back(RGB(120, 120, 120));
 	color.push_back(RGB(0, 120, 120)); // turquois
 	color.push_back(RGB(0, 0, 120));
-	std::cout << " test draw segments " << std::endl;
+	//std::cout << " test draw segments " << std::endl;
 	int count = 0;
 	for (auto it = entry_s[ind_index].begin(); it != entry_s[ind_index].end(); it++) {
 		stack<pos> branch_points;
@@ -990,7 +987,7 @@ void Population::draw_pareto_front() {
 		if (rank[i].first == 0) {
 			cv::Mat img = draw_segments_black_contour(rank[i].second);
 			write_image_to_file(rank[i].second, img);
-			std::cout << " rank . second " << rank[i].second << std::endl;
+			//std::cout << " rank . second " << rank[i].second << std::endl;
 		}
 	}
 }
