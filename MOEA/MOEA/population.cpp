@@ -432,9 +432,13 @@ void Population::merge_segment_properties(int ind_index, pos first, pos second) 
 		}
 		else {
 			//std::cout << second_prop->borders[it->first].size() << std::endl;
+			int j = 0;
 			for (auto xt = second_prop->borders[it->first].begin(); xt != second_prop->borders[it->first].end(); ++xt) {
+				j++;
 				if (get_neighbor_dir(xt->p1, xt->p2) == SELF) {
 					std:cout << xt->p1.x << "," << xt->p1.y << " og " << xt->p2.x << "," << xt->p2.y << std::endl;
+					std::cout << j << std::endl;
+					std::cout << second_prop->borders[it->first].size() << std::endl;
 					std::cin.get();
 				}
 				first_prop->borders[it->first].push_back(*xt);
