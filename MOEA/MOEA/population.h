@@ -50,6 +50,7 @@ public:
 	int get_parent_segment_size(pos& parent, int ind_index);
 	pos get_pixel_segment(int x, int y, int individual);
 	int get_n_segment(pos& entry, int ind_index);
+	bool get_pos_within_borders(pos& p);
 
 	std::vector<active_edge_t>& get_edge_candidates(int ind_index);
 

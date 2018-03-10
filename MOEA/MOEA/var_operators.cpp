@@ -33,6 +33,8 @@ std::vector<active_edge_t> crossover_uniform_fluid_list_representation(Populatio
 	for (int i = 0; i < parent_A_chromosome.size(); i++) {
 
 	}
+
+	return offspring_chromosome;
 }
 
 int  mutation_split_segments(Population &p, int ind_index) {

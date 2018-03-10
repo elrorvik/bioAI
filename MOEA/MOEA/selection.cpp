@@ -1,7 +1,7 @@
 #include"selection.h"
 #include"population.h"
-#include"fitness.h"
 #include"global.h"
+#include"fitness.h"
 #include<utility>
 #include<algorithm>
 #include<cmath>
@@ -151,8 +151,10 @@ std::vector<int> rank_tournament_selection(Population &p, const std::vector<pos>
 		else {
 			double outcome = (rand() % 1000) / 1000.0;
 			if (outcome < CHANCE*pow(1 - CHANCE, i)) {
-				if (std::find(selected_individuals.begin(), selected_individuals.end(), i) == selected_individuals.end())
+				if (std::find(selected_individuals.begin(), selected_individuals.end(), i) == selected_individuals.end()) {
 					selected_individuals.push_back(rank_of_tournament[i].second);
+				}
+			}
 		}
 	}
 	return selected_individuals;

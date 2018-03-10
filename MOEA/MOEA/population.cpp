@@ -476,6 +476,12 @@ int Population::get_n_segment(pos& entry, int ind_index) {
 	}
 }
 
+bool Population::get_pos_within_borders(pos& p) {
+	return (p.x >= 0 && p.x < get_im_w() && p.y >= 0 && p.y < get_im_h());
+}
+
+
+
 void Population::change_parents_n_segment(pos& parent, pos& child, int ind_index) {
 	population[ind_index][parent.x][parent.y].num_children -= population[ind_index][child.x][child.y].num_children;
 	pos next = pos(parent.x, parent.y) + population[ind_index][parent.x][parent.y].parent_dir;
