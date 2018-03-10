@@ -1,18 +1,19 @@
+// opencv 
+
 #include<iostream>
-#include<queue>
+//#include<queue>
 #include"fitness.h"
 #include"global.h"
 #include"population.h"
 #include"var_operators.h"
-#include <list>
+//#include <list>
 #include <time.h>
 #include "graph.h"
 #include "selection.h"
 #include "var_operators.h"
 #include "file.h"
+//#include <opencv2/highgui/highgui.hpp>
 
-// opencv 
-#include <opencv2/highgui/highgui.hpp>
 
 Population::~Population() {
 	/*for (int ind_i = 0; ind_i < N_IND+N_OFFSPRING; ind_i++) {
@@ -230,6 +231,8 @@ void Population::initialize_individual_PrimsMST(int ind_index){
 				else {
 					new_entry = population[ind_index][xt->p1.x][xt->p1.y].entry;
 				}
+				if (get_neighbor_dir(xt->p1, xt->p2) == SELF) std::cout << xt->p1.x << " " << xt->p1.y << " not neigh" << xt->p2.x << " " << xt->p2.y << std::endl;
+				if (xt->p1.x > get_im_w() || xt->p2.x > get_im_w() || xt->p1.y > get_im_h() || xt->p2.y > get_im_h()) std::cout << " wrong " << std::endl;
 				segment_prop[ind_index][pos_entry].borders[new_entry].push_back(*xt);
 				//std::cout << "new entry " << new_entry.x << " " << new_entry.y << " size " << segment_prop[ind_index][pos_entry].borders[new_entry].size() << std::endl;
 				if (std::find_if(segment_prop[ind_index][pos_entry].neighbour_entries.begin(), segment_prop[ind_index][pos_entry].neighbour_entries.end(), pos_comparator(new_entry)) == segment_prop[ind_index][pos_entry].neighbour_entries.end()) {
@@ -324,8 +327,12 @@ void Population::MOEA_next_generation() {
 		double rand_num = (rand() % 1000) / 1000.0;
 		if (rand_num < MUTATION_RATE) {
 
-			int attempts = 0;
-			while (!mutation_greedy_merge_segments(*this, i) && 50 > attempts++);
+			int num_mutations = rand() % 10;
+			for (int j = 0; j < num_mutations; j++) {
+				int attempts = 0;
+				while (!mutation_greedy_merge_segments(*this, i) && 50 >= attempts++);
+				if (attempts == 50) std::cout << "Failed to mutate child" << std::endl;
+			}
 
 			//rand_num = (rand() % 1000) / 1000.0;
 			//if (rand_num < MUT_MERGE_PERC) {
@@ -366,7 +373,7 @@ void Population::MOEA_next_generation() {
 
 	//if (survivors_offspring.size() != non_survivors.size()) std::cout << "different size" << survivors_offspring.size() << " " << non_survivors.size() << std::endl;
 	//std::cin.get();
-	for (int i = 0; i < survivors_offspring.size(); i++) {
+	/*for (int i = 0; i < survivors_offspring.size(); i++) {
 		//std::cout << " switch " << non_survivors[i] << " " << survivors_offspring[i] << std::endl;
 		copy_individual(non_survivors[i], survivors_offspring[i]);
 
@@ -374,7 +381,7 @@ void Population::MOEA_next_generation() {
 
 	for (int i = 0; i < N_IND; i++) {
 		std::cout << " rank " << rank[i].first << "," << rank[i].second << " fitness 1: " << fitness_1[i].first << "," << fitness_1[i].second << " fitness 2: " << fitness_2[i].first << "," << fitness_2[i].second << std::endl;
-	}
+	}*/
 
 	// return pareto rank 0 ? ( to main loop ? or ??)
 
@@ -400,13 +407,14 @@ void Population::merge_segment_properties(int ind_index, pos first, pos second) 
 	pos first_entry = population[ind_index][first.x][first.y].entry;
 	pos second_entry = population[ind_index][second.x][second.y].entry;
 
-	seg_prop_t *first_prop = &segment_prop[ind_index][first_entry]; // copy elements form second to first
+	seg_prop_t *first_prop = &segment_prop[ind_index][first_entry];
 	seg_prop_t *second_prop = &segment_prop[ind_index][second_entry];
 
 	// Calculate segment properties of the combined segment
 	first_prop->avg_rgb = ( first_prop->avg_rgb + second_prop->avg_rgb ) / 2.0;
 
 	first_prop->borders.erase(second_entry);
+
 
 	// delete from neigbour array
 	for (auto it = first_prop->neighbour_entries.begin(); it != first_prop->neighbour_entries.begin(); ++it) {
@@ -422,16 +430,17 @@ void Population::merge_segment_properties(int ind_index, pos first, pos second) 
 			continue;
 		}
 		else {
+			std::cout << second_prop->borders[it->first].size() << std::endl;
 			for (auto xt = second_prop->borders[it->first].begin(); xt != second_prop->borders[it->first].end(); ++xt) {
+				std:cout << xt->p1.x << "," << xt->p1.y << " og " << xt->p2.x << "," << xt->p2.y << std::endl;
 				first_prop->borders[it->first].push_back(*xt);
 			}
 		}
 	}
 
 	for (auto it = second_prop->neighbour_entries.begin(); it != second_prop->neighbour_entries.begin(); ++it) {
-		if (*it == first) {
-			first_prop->neighbour_entries.push_back(*it);// must erase from this array
-			break;
+		if (*it != first) {
+			first_prop->neighbour_entries.push_back(*it);
 		}
 	}
 

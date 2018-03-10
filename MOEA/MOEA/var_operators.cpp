@@ -103,6 +103,7 @@ int mutation_greedy_merge_segments(Population &p, int ind_index) {
 		neighbour_border_dist /= border_edges.size();
 
 		if (avg_RGB_dist  < 255 && neighbour_border_dist < 255) {
+
 			p.merge_segments(ind_index, min_edge);
 			return 1;
 		}
