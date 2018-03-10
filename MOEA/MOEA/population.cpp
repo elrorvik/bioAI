@@ -1,17 +1,18 @@
-// opencv 
-#include <opencv2/highgui/highgui.hpp>
+#include"var_operators.h"
+#include "var_operators.h"
+#include"global.h"
+#include "graph.h"
 #include<iostream>
 #include<queue>
 #include"fitness.h"
-#include"global.h"
 #include"population.h"
-#include"var_operators.h"
 #include <list>
 #include <time.h>
-#include "graph.h"
 #include "selection.h"
-#include "var_operators.h"
 #include "file.h"
+
+// opencv 
+#include <opencv2/highgui/highgui.hpp>
 
 
 Population::~Population() {
@@ -427,9 +428,12 @@ void Population::merge_segment_properties(int ind_index, pos first, pos second) 
 			continue;
 		}
 		else {
-			std::cout << second_prop->borders[it->first].size() << std::endl;
+			//std::cout << second_prop->borders[it->first].size() << std::endl;
 			for (auto xt = second_prop->borders[it->first].begin(); xt != second_prop->borders[it->first].end(); ++xt) {
-				std:cout << xt->p1.x << "," << xt->p1.y << " og " << xt->p2.x << "," << xt->p2.y << std::endl;
+				if (get_neighbor_dir(xt->p1, xt->p2) == SELF) {
+					std:cout << xt->p1.x << "," << xt->p1.y << " og " << xt->p2.x << "," << xt->p2.y << std::endl;
+					std::cin.get();
+				}
 				first_prop->borders[it->first].push_back(*xt);
 			}
 		}
