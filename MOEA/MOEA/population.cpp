@@ -203,7 +203,7 @@ void Population::initialize_individual_PrimsMST(int ind_index){
 			continue;
 		}
 		else {
-			//std::cout <<"segment " << it->x << " " << it->y << " " << segment_size << std::endl;
+			std::cout <<"segment " << it->x << " " << it->y << " " << segment_size << std::endl;
 			it++;
 		}
 		total_segment_size += segment_size;
@@ -215,6 +215,7 @@ void Population::initialize_individual_PrimsMST(int ind_index){
 	for (int i = 0; i < entry_s[ind_index].size(); i++) {
 		for (auto it = edge_segments[i].begin(); it != edge_segments[i].end(); ++it) {
 			pos pos_entry = population[ind_index][it->x][it->y].entry;
+			//std::cout << pos_entry.x << pos_entry.y << " num segments" << get_n_segment(pos_entry, ind_index, 0) << std::endl;
 
 
 			if (segment_prop[ind_index][pos_entry].avg_rgb == invalid_color ) {
@@ -244,7 +245,9 @@ void Population::initialize_individual_PrimsMST(int ind_index){
 		}
 		//std::cout << " i " << i << std::endl;
 	}
-
+	for (auto it = entry_s[ind_index].begin(); it != entry_s[ind_index].end(); ++it) {
+		print_entry_properties(ind_index, *it);
+	}
 	
 	std::cout << "total " << total_segment_size << "should be " << get_im_h()*get_im_w() << std::endl;
 
@@ -328,9 +331,9 @@ void Population::MOEA_next_generation() {
 				int attempts = 0;
 				while (!mutation_greedy_merge_segments(*this, i) && 50 >= attempts++);
 				if (attempts == 50) std::cout << "Failed to mutate child" << std::endl;
-				draw_segments_contour(i, i);
-				cv::Mat im2 = draw_segments_black_contour(i);
-				cv::waitKey(0);
+				//draw_segments_contour(i, i);
+				//cv::Mat im2 = draw_segments_black_contour(i);
+				//cv::waitKey(0);
 			}
 		}
 
@@ -948,7 +951,7 @@ std::vector<edge> Population::get_neigbours(pos curr, int ind_index, int cout) {
 
 	std::vector<edge> temp;
 
-	if (population[ind_index][curr.x][curr.y].left == 0 && curr.x - 1 > 0) {
+	if (population[ind_index][curr.x][curr.y].left == 0 && curr.x - 1 >= 0) {
 		pos neighbour = curr + LEFT;
 		//pos temp = population[ind_index][neighbour.x][neighbour.y].entry;
 		//if (cout) std::cout << population[ind_index][curr.x][curr.y].entry.x <<" "<< population[ind_index][curr.x][curr.y].entry.x <<" " << temp.x << " " <<temp.y << std::endl;
@@ -969,7 +972,7 @@ std::vector<edge> Population::get_neigbours(pos curr, int ind_index, int cout) {
 		}
 	}
 
-	if (population[ind_index][curr.x][curr.y].up == 0 && curr.y - 1 > 0) {
+	if (population[ind_index][curr.x][curr.y].up == 0 && curr.y - 1 >= 0) {
 		pos neighbour = curr + UP;
 		if (population[ind_index][neighbour.x][neighbour.y].entry != population[ind_index][curr.x][curr.y].entry) {
 			edge new_edge(curr, neighbour, dist(get_RGB(curr), get_RGB(neighbour)));
@@ -1030,4 +1033,22 @@ bool Population::individual_uncolored(int ind_index) {
 		}
 	}
 	return 1;
+}
+
+void Population::print_entry_properties(int ind_index, pos entry) {
+	std::cout << "********** entry: \t" << entry.x << " " << entry.y << std::endl;
+	std::cout << "RGB avg: \t" << segment_prop[ind_index][entry].avg_rgb.r  << " " << segment_prop[ind_index][entry].avg_rgb.g << " " << segment_prop[ind_index][entry].avg_rgb.b <<std::endl;
+
+	std::cout <<"num neigbours: \t" <<  segment_prop[ind_index][entry].borders.size() << std::endl;
+	std::cout << "boarders check " << std::endl;
+	for (auto it = segment_prop[ind_index][entry].borders.begin(); it != segment_prop[ind_index][entry].borders.end(); it++) {
+		std::cout << "neig \t" << it->first.x << " " << it->first.y << "\t num pixels " << it->second.size() << std::endl;
+	}
+
+	std::cout << " neighbours entries check " << std::endl;
+	for (auto it = segment_prop[ind_index][entry].neighbour_entries.begin(); it != segment_prop[ind_index][entry].neighbour_entries.end(); it++) {
+		std::cout << "neig \t " << it->x << " " << it->y << std::endl;
+	}
+	std::cout << std::endl;
+	
 }

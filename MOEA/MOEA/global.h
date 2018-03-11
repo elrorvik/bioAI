@@ -26,8 +26,8 @@ const int N_SMALL_SEGMENT = 2000; // 3000
 const int N_MERGE_SMALL_SEGMENT = 1990; // 2990*/
 
 // Circle
-const int SMALL_SEGMENT_SIZE = 100; // 40
-const int N_SMALL_SEGMENT = 600; // 2000
+const int SMALL_SEGMENT_SIZE = 100; // 4, 100
+const int N_SMALL_SEGMENT = 2; // 2000, 600
 const int N_MERGE_SMALL_SEGMENT = 0; // 1950
 
  // Tiger
