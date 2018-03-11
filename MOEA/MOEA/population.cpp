@@ -245,9 +245,9 @@ void Population::initialize_individual_PrimsMST(int ind_index) {
 		}
 		//std::cout << " i " << i << std::endl;
 	}
-	for (auto it = entry_s[ind_index].begin(); it != entry_s[ind_index].end(); ++it) {
-		print_entry_properties(ind_index, *it, 0);
-	}
+	//for (auto it = entry_s[ind_index].begin(); it != entry_s[ind_index].end(); ++it) {
+	//	print_entry_properties(ind_index, *it, 0);
+	//}
 
 	std::cout << "total " << total_segment_size << "should be " << get_im_h()*get_im_w() << std::endl;
 
@@ -266,6 +266,8 @@ void Population::initialize_population() {
 		draw_segments_contour(i, i);
 		cv::Mat im = draw_segments_black_contour(i);
 		write_image_to_file(i, im);
+		cv::waitKey(1);
+
 	}
 	int init_index = 0;
 	for (int i = 1; i < N_IND + N_OFFSPRING; i++) {
@@ -298,7 +300,7 @@ void Population::initialize_population() {
 
 	MOEA_fitness(*this, N_IND, entry_s, fitness_1, fitness_2);
 	MOEA_rank(N_IND, rank, fitness_1, fitness_2);
-	cv::waitKey(0);
+	//cv::waitKey(0);
 
 }
 
@@ -313,6 +315,7 @@ void Population::MOEA_next_generation() {
 	for (int i = 0; i < N_OFFSPRING;) {
 		//double rand_num = (rand() % 1000) / 1000.0;
 		copy_individual(n_pop++, parents[i++]);
+		individual_uncolored(n_pop - 1);
 		//if (i >= N_OFFSPRING) break;
 		//copy_individual(n_pop++, parents[i++]);
 		//if (rand_num < CROSSOVER_RATE) {
@@ -337,9 +340,12 @@ void Population::MOEA_next_generation() {
 				//cv::Mat im2 = draw_segments_black_contour(i);
 				//cv::waitKey(0);
 
+				//if (j == 700) {
 				draw_segments_contour(i, i);
 				cv::Mat im2 = draw_segments_black_contour(i);
-				cv::waitKey(0);
+				cv::waitKey(1);
+
+				//}
 			}
 		}
 
@@ -394,19 +400,39 @@ std::vector<active_edge_t>& Population::get_edge_candidates(int ind_index) {
 void Population::merge_segments(int ind_index, edge merge_nodes) {
 	//std::cout << get_n_segment(entry1, ind_index, 0) << ", segment p1 size before merge" << std::endl;
 	//std::cout << get_n_segment(entry2, ind_index, 0) << ", segment p2 size before merge" << std::endl;
+	pos p1 = merge_nodes.p1;
+	pos p2 = merge_nodes.p2;
+	int old_segment_size = get_n_segment(merge_nodes.p1, ind_index, 0);
+	int old_segment_size_2 = get_n_segment(merge_nodes.p2, ind_index, 0);
 	if (!individual_uncolored(ind_index)) {
 		std::cout << "Individual " << ind_index << " doesn't have a uniform color before merge!" << std::endl;
 		std::cin.get();
 	}
-	merge_segment_properties(ind_index, merge_nodes.p1, merge_nodes.p2);
-	set_segment_entry(merge_nodes.p2, merge_nodes.p1, ind_index);
-	set_dir_edge(merge_nodes.p1, merge_nodes.p2, 1, ind_index);
+	if ((p1.x != merge_nodes.p1.x || p1.y != merge_nodes.p1.y) && (p2.x != merge_nodes.p2.x || p2.y != merge_nodes.p2.y)) {
+		std::cout << "p1 or p2 changed!" << std::endl;
+		std::cin.get();
+	}
+	merge_segment_properties(ind_index, p1, p2);
+	set_segment_entry(p2, p1, ind_index);
+	set_dir_edge(p1, p2, 1, ind_index);
 	if (!individual_uncolored(ind_index)) {
 		std::cout << "Individual " << ind_index << " doesn't have a uniform color after merge!" << std::endl;
 		std::cin.get();
 	}
-	int num_new_segment_size = get_n_segment(merge_nodes.p1, ind_index, 0);
-	int num_new_segment_size_2 = get_n_segment(merge_nodes.p2, ind_index, 0);
+	int new_segment_size = get_n_segment(merge_nodes.p1, ind_index, 0);
+	int new_segment_size_2 = get_n_segment(merge_nodes.p2, ind_index, 0);
+	if ((new_segment_size != old_segment_size + old_segment_size_2) || new_segment_size_2 != old_segment_size + old_segment_size_2) {
+		std::cout << "Different sized segments at " << ind_index << " with edge " << merge_nodes.p1.x << "," << merge_nodes.p1.y << " <-> " << merge_nodes.p2.x << "," << merge_nodes.p2.y << std::endl;
+		std::cout << "Sizes; new1 " << new_segment_size << ", new2 " << new_segment_size_2 << ", sum of old: " << old_segment_size + old_segment_size_2 << std::endl;
+		pos entry1 = population[ind_index][merge_nodes.p1.x][merge_nodes.p1.y].entry;
+		pos entry2 = population[ind_index][merge_nodes.p2.x][merge_nodes.p2.y].entry;
+		std::cout << "Respective entries: " << entry1.x << "," << entry1.y << " and " << entry2.x << "," << entry2.y << std::endl;
+		std::cin.get();
+	}
+	if ((p1.x != merge_nodes.p1.x || p1.y != merge_nodes.p1.y) && (p2.x != merge_nodes.p2.x || p2.y != merge_nodes.p2.y)) {
+		std::cout << "p1 or p2 changed!" << std::endl;
+		std::cin.get();
+	}
 	//if (num_new_segment_size  != num_in_merged_segment) std::cout << " different size new 1 " << num_new_segment_size  <<" new 2 " << num_new_segment_size_2 <<"old " << num_in_merged_segment <<  std::endl;
 }
 
@@ -416,17 +442,17 @@ void Population::merge_segments(int ind_index, int edge_index, edge merge_nodes)
 }
 
 void  Population::merge_segment_properties(int ind_index, pos first, pos second) {
-
 	std::cout << "*** SEGMENT PROPERTIES BEFORE MERGE ***" << std::endl;
 	print_entry_properties(ind_index, 0);
 	std::cout << "***************************************" << std::endl << std::endl;
-	std::cin.get();
+	validate_entry_properties(ind_index);
+	//std::cin.get();
 
 	// Fetch entries and properties before merge
 	pos first_entry = population[ind_index][first.x][first.y].entry;
 	pos second_entry = population[ind_index][second.x][second.y].entry;
 
-	std::cout << "Now mergin: " << first_entry.x << "," << first_entry.y << " annexing <- " << second_entry.x << "," << second_entry.y << std::endl;
+	std::cout << "Now mergin\': " << first_entry.x << "," << first_entry.y << " annexing <- " << second_entry.x << "," << second_entry.y << std::endl;
 
 	seg_prop_t *first_prop = &segment_prop[ind_index][first_entry];
 	seg_prop_t *second_prop = &segment_prop[ind_index][second_entry];
@@ -437,16 +463,21 @@ void  Population::merge_segment_properties(int ind_index, pos first, pos second)
 		std::cout << "illegal RGB" << std::endl;
 		std::cout << "avg_rgb: " << first_prop->avg_rgb.r << "," << first_prop->avg_rgb.g << "," << first_prop->avg_rgb.b << std::endl;
 		std::cout << "illegal RGB" << std::endl;
+		std::cout << "Sizes " << get_n_segment(first_entry, ind_index, 0) << ", " << get_n_segment(second_entry, ind_index, 0) << std::endl;
+		std::cout << "first entry vs first pos entry: " << first_entry.x << "," << first_entry.y << " vs " << population[ind_index][first.x][first.y].entry.x << "," << population[ind_index][first.x][first.y].entry.y << std::endl;
+		std::cout << "second entry vs second pos entry: " << second_entry.x << "," << second_entry.y << " vs " << population[ind_index][second.x][second.y].entry.x << "," << population[ind_index][second.x][second.y].entry.y << std::endl;
+
 		std::cin.get();
 	}
 
-	std::cout << "*** after set rgb_avg ***" << std::endl;
-	print_entry_properties(ind_index, 0);
-	std::cout << "*************************" << std::endl << std::endl;
-	std::cin.get();
+	//std::cout << "*** after set rgb_avg ***" << std::endl;
+	//print_entry_properties(ind_index, 0);
+	//std::cout << "*************************" << std::endl << std::endl;
+	//std::cin.get();
 
 	for (auto steal_entry_it = second_prop->neighbour_entries.begin(); steal_entry_it != second_prop->neighbour_entries.end(); ++steal_entry_it) {
-		if (steal_entry_it->x != first.x && steal_entry_it->y != first.y && std::find_if(first_prop->neighbour_entries.begin(), first_prop->neighbour_entries.end(), pos_comparator(*steal_entry_it)) == first_prop->neighbour_entries.end()) {
+		if (std::find_if(first_prop->neighbour_entries.begin(), first_prop->neighbour_entries.end(), pos_comparator(*steal_entry_it)) == first_prop->neighbour_entries.end()) {
+			if (steal_entry_it->x == first_entry.x && steal_entry_it->y == first_entry.y) continue;
 			first_prop->neighbour_entries.push_back(*steal_entry_it);
 		}
 	}
@@ -454,7 +485,7 @@ void  Population::merge_segment_properties(int ind_index, pos first, pos second)
 	std::cout << "*** after adding neighbour entries ***" << std::endl;
 	print_entry_properties(ind_index, 0);
 	std::cout << "**************************************" << std::endl << std::endl;
-	std::cin.get();
+	//std::cin.get();
 
 	for (std::map<pos, std::vector<edge>>::iterator pair_it = second_prop->borders.begin(); pair_it != second_prop->borders.end(); ++pair_it) {
 		if (pair_it->first.x == first_entry.x && pair_it->first.y == first_entry.y) {
@@ -493,40 +524,17 @@ void  Population::merge_segment_properties(int ind_index, pos first, pos second)
 	std::cout << "*** after adding neighbour EdgEs ***" << std::endl;
 	print_entry_properties(ind_index, 0);
 	std::cout << "*************************************" << std::endl << std::endl;
-	std::cin.get();
-
-	first_prop->borders.erase(second_entry);
-	// delete from neigbour array
-	//for (std::vector<pos>::iterator it = first_prop->neighbour_entries.begin(); it != first_prop->neighbour_entries.begin(); ++it) {
-	//	if (*it == second_entry) {
-	//		first_prop->neighbour_entries.erase(it); // must erase from this array
-	//	}
-	//}
-
-	std::cout << "*** after removing my border edges with annexed segment ***" << std::endl;
-	print_entry_properties(ind_index, 0);
-	std::cout << "***********************************************************" << std::endl << std::endl;
-	std::cin.get();
-
-	auto it1 = std::find_if(first_prop->neighbour_entries.begin(), first_prop->neighbour_entries.end(), pos_comparator(second_entry));
-	std::cout << "REMOVING: " << it1->x << "," << it1->y << " | Size: " << first_prop->neighbour_entries.size() << std::endl;
-	first_prop->neighbour_entries.erase(it1);
-	std::cout << "Size after delete: " << first_prop->neighbour_entries.size() << std::endl;
-
-	std::cout << "*** after removing the annexed segment form neighbour_entries ***" << std::endl;
-	print_entry_properties(ind_index, 0);
-	std::cout << "*****************************************************************" << std::endl << std::endl;
-	std::cin.get();
+	//std::cin.get();
 
 	// Update other's borders and neighbours to reflect the annexation
-	for (auto it = entry_s[ind_index].begin(); it != entry_s[ind_index].end(); ++it) {
+	for (auto it = second_prop->neighbour_entries.begin(); it != second_prop->neighbour_entries.end(); ++it) {
 
 		auto xt = std::find_if(segment_prop[ind_index][*it].neighbour_entries.begin(), segment_prop[ind_index][*it].neighbour_entries.end(), pos_comparator(second_entry));
 		if (xt != segment_prop[ind_index][*it].neighbour_entries.end()) {
 			segment_prop[ind_index][*it].neighbour_entries.erase(xt);
 		}
 
-		if (*it == first_entry) {
+		if ((it->x == first_entry.x && it->y == first_entry.y)) {
 			continue;
 		}
 
@@ -549,10 +557,27 @@ void  Population::merge_segment_properties(int ind_index, pos first, pos second)
 
 	}*/
 
+
 	std::cout << "*** after updating other segments to reflect on the annexation ***" << std::endl;
 	print_entry_properties(ind_index, 0);
 	std::cout << "******************************************************************" << std::endl << std::endl;
-	std::cin.get();
+	//std::cin.get();
+
+	first_prop->borders.erase(second_entry);
+	std::cout << "*** after removing my border edges with annexed segment ***" << std::endl;
+	print_entry_properties(ind_index, 0);
+	std::cout << "***********************************************************" << std::endl << std::endl;
+	//std::cin.get();
+
+	/*auto it1 = std::find_if(first_prop->neighbour_entries.begin(), first_prop->neighbour_entries.end(), pos_comparator(second_entry));
+	std::cout << "REMOVING: " << it1->x << "," << it1->y << " | Size: " << first_prop->neighbour_entries.size() << std::endl;
+	first_prop->neighbour_entries.erase(it1);
+	std::cout << "Size after delete: " << first_prop->neighbour_entries.size() << std::endl;
+
+	std::cout << "*** after removing the annexed segment form neighbour_entries ***" << std::endl;
+	print_entry_properties(ind_index, 0);
+	std::cout << "*****************************************************************" << std::endl << std::endl;
+	std::cin.get();*/
 
 
 	// Update global lists
@@ -564,14 +589,15 @@ void  Population::merge_segment_properties(int ind_index, pos first, pos second)
 	std::cout << "*** after removing annexed segment from entry_s ***" << std::endl;
 	print_entry_properties(ind_index, 0);
 	std::cout << "**************************************" << std::endl << std::endl;
-	std::cin.get();
+	//std::cin.get();
 
 	segment_prop[ind_index].erase(second_entry);
 
 	std::cout << "*** after removing segment from segment_prop - DONE DONE DONE ***" << std::endl;
 	print_entry_properties(ind_index, 0);
 	std::cout << "*****************************************************************" << std::endl << std::endl;
-	std::cin.get();
+	validate_entry_properties(ind_index);
+	//std::cin.get();
 }
 
 void Population::split_segment(int ind_index, int edge_index, edge split_nodes) {
@@ -790,7 +816,7 @@ void Population::draw_segments(int ind_index) {
 	cv::namedWindow("image", 1);
 	//std::cout << "show image" << std::endl;
 	cv::imshow("image", segment);
-	//cv::waitKey(0);
+	cv::waitKey(1);
 }
 
 cv::Mat Population::draw_segments_black_contour(int ind_index) {
@@ -885,7 +911,7 @@ cv::Mat test_image() {
 	cv::namedWindow("image", 1);
 	//std::cout << "show image" << std::endl;
 	cv::imshow("image", im);
-	cv::waitKey(0);
+	//cv::waitKey(0);
 	return im;
 }
 
@@ -1122,7 +1148,9 @@ bool Population::individual_uncolored(int ind_index) {
 	bool color = population[ind_index][0][0].color;
 	for (int x = 0; x < get_im_w(); x++) {
 		for (int y = 0; y < get_im_h(); y++) {
-			if (population[ind_index][x][y].color != color) return 0;
+			if (population[ind_index][x][y].color != color) {
+				return 0;
+			}
 		}
 	}
 	return 1;
@@ -1193,11 +1221,10 @@ void Population::print_entry_properties(int ind_index, bool cout_edges) {
 
 	std::sort(vec1.begin(), vec1.end(), pos_order_comparator());
 	std::sort(vec2.begin(), vec2.end(), pos_order_comparator());
-	if (vec1.size() != vec2.size()) std::cout << "Error, different lengths! : " << vec1.size() << " vs. " << vec2.size();
 	int size = (vec1.size() > vec2.size() ? vec1.size() : vec2.size());
 	for (int i = 0; i < size; i++) {
-		std::cout << "   entry_s   : " << i << " : " << vec1[i].x << "," << vec1[i].y << std::endl;
-		std::cout << "segment_prop : " << i << " : " << vec2[i].x << "," << vec2[i].y << std::endl;
+		if (i != vec1.size()) std::cout << "   entry_s   : " << i << " : " << vec1[i].x << "," << vec1[i].y << std::endl;
+		if (i != vec2.size()) std::cout << "segment_prop : " << i << " : " << vec2[i].x << "," << vec2[i].y << std::endl;
 	}
 
 
@@ -1205,5 +1232,40 @@ void Population::print_entry_properties(int ind_index, bool cout_edges) {
 	for (auto it = segment_prop[ind_index].begin(); it != segment_prop[ind_index].end(); ++it) {
 		std::cout << "i : " << i++ << std::endl;
 		print_entry_properties(ind_index, it->first, cout_edges);
+	}
+}
+
+void Population::validate_entry_properties(int ind_index) {
+	std::vector<pos> vec1;
+	std::vector<pos> vec2;
+	for (auto it = entry_s[ind_index].begin(); it != entry_s[ind_index].end(); ++it) {
+		vec1.push_back(*it);
+	}
+	for (auto it2 = segment_prop[ind_index].begin(); it2 != segment_prop[ind_index].end(); ++it2) {
+		vec2.push_back(it2->first);
+	}
+
+	std::sort(vec1.begin(), vec1.end(), pos_order_comparator());
+	std::sort(vec2.begin(), vec2.end(), pos_order_comparator());
+	if (vec1.size() != vec2.size()) {
+		std::cout << "Error, different global lengths! : " << vec1.size() << " vs. " << vec2.size();
+		std::cin.get();
+	}
+	
+	for (auto it = segment_prop[ind_index].begin(); it != segment_prop[ind_index].end(); ++it) {
+		if (std::find_if(segment_prop[ind_index][it->first].neighbour_entries.begin(), segment_prop[ind_index][it->first].neighbour_entries.end(), pos_comparator(it->first)) != segment_prop[ind_index][it->first].neighbour_entries.end()) {
+			std::cout << "Found segment_prop.neighbour_entries containing itself in " << it->first.x << ", " << it->first.y << std::endl;
+			std::cin.get();
+		}
+		for (auto xt = it->second.borders.begin(); xt != it->second.borders.end(); ++xt) {
+			if (xt->first.x == it->first.x && xt->first.y == it->first.y) {
+				std::cout << "Found segment_prop.borders containing itself in " << it->first.x << ", " << it->first.y << std::endl;
+				std::cin.get();
+			}
+		}
+		if (it->second.borders.size() != it->second.neighbour_entries.size()) {
+			std::cout << "neighbour_entries : " << it->second.neighbour_entries.size() << ", and borders: " << it->second.borders.size() << " ! Size different at " << it->first.x << "," << it->first.y << std::endl;
+		}
+
 	}
 }

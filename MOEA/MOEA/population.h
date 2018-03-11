@@ -95,6 +95,7 @@ public:
 	bool individual_uncolored(int ind_index);
 	void print_entry_properties(int ind_index, pos entry, bool cout_edges);
 	void print_entry_properties(int ind_index, bool cout_edges);
+	void validate_entry_properties(int ind_index);
 
 };
 
