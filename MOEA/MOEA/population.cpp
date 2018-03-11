@@ -1077,24 +1077,25 @@ void Population::print_entry_properties(int ind_index, pos entry, int cout_edges
 			}
 		}
 	}
-	/*int count = 0;
+	int count = 0;
 	for (auto it = segment_prop[ind_index][entry].borders.begin(); it != segment_prop[ind_index][entry].borders.end(); it++) {
 		std::cout << "neig \t" << it->first.x << " " << it->first.y << "\t num pixels " << it->second.size() << std::endl;
 		for (auto xt = it->second.begin(); xt != it->second.end(); ++xt) {
 			for (auto yt = segment_prop[ind_index][it->first].borders[entry].begin(); yt != segment_prop[ind_index][it->first].borders[entry].end(); ++yt) {
-				if (yt == xt) {
+				
+				if (*yt == *xt) {
+					//td::cout << xt->p1.x << " " << xt->p1.y << " => " << xt->p2.x << " " << xt->p2.y << " <=> " << yt->p1.x << " " << yt->p1.y << " => " << yt->p2.x << " " << yt->p2.y << std::endl;
 					count += 1;
-					continue;
+					//std::cout << " new serach " << std::endl;
 				}
-				std::cout << xt->p1.x << " " << xt->p1.y << " => " << xt->p2.x << " " << xt->p2.y << " <=> " << yt->p1.x << " " << yt->p1.y << " => " << yt->p2.x << " " << yt->p2.y << std::endl;
 			}
 		}
 		if(count != it->second.size()){
 			std::cout << " difference in edges" << count << " " << it->second.size() << std::endl;
-			count == 0;
-
+			std::cin.get();
 		}
-	}*/
+		count = 0;
+	}
 	std::cout << std::endl;
 
 
