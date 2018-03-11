@@ -121,7 +121,7 @@ int mutation_greedy_merge_segments(Population &p, int ind_index) {
 		neighbour_border_dist /= border_edges.size();
 
 		//std::cout << "Can i activate? : " << avg_RGB_dist << " " <<  neighbour_border_dist << std::endl;
-		if (avg_RGB_dist  < 100 && neighbour_border_dist < 150) {
+		if (avg_RGB_dist  < AVG_RGB_SEG_DEST_CRITERIA && neighbour_border_dist < AVG_RGB_BORDER_DEST_CRITERIA) {
 
 			//std::cout << min_edge.p1.x << " " << min_edge.p1.y << " <-> " << min_edge.p2.x << " " << min_edge.p2.y << std::endl;
 			//std::cout << p.get_node(ind_index, min_edge.p1)->entry.x << " " << p.get_node(ind_index, min_edge.p1)->entry.y << std::endl;

@@ -298,8 +298,11 @@ void Population::initialize_population() {
 
 	//Random number of initial mutations
 	for (int i = 0; i < N_IND; i++) {
-		int random_initial_mutations = rand() % (N_SMALL_SEGMENT - N_SMALL_SEGMENT/10) + N_SMALL_SEGMENT/11;
-		for (int j = 0; j < random_initial_mutations; j++) mutation_greedy_merge_segments(*this, i);
+		int random_initial_mutations = (rand() % (N_SMALL_SEGMENT - N_SMALL_SEGMENT/2)) + N_SMALL_SEGMENT/3;
+		for (int j = 0; j < random_initial_mutations; j++) {
+			int attempts = 0;
+			while(!mutation_greedy_merge_segments(*this, i) && 50 > attempts++);
+		}
 	}
 
 	// Calculating fitness and rank of individuals
@@ -840,8 +843,11 @@ void Population::draw_segments(int ind_index) {
 }
 
 cv::Mat Population::draw_segments_black_contour(int ind_index) {
+	//std::cout << "Begin:" << std::endl;
 
 	cv::Mat image(get_im_h(), get_im_w(), CV_8UC3, cv::Scalar(255, 255, 255));
+
+	//std::cout << "Begin: edge_segment" << std::endl;
 
 	std::vector<pos>* edge_segment = edges_segment(ind_index);
 	RGB color(0, 0, 0); // black
@@ -858,6 +864,7 @@ cv::Mat Population::draw_segments_black_contour(int ind_index) {
 	//std::string window_name = "contour " + to_string(name);
 	//cv::namedWindow(window_name, 1);
 	//cv::imshow(window_name, segment);
+	//std::cout << "Made it" << std::endl;
 	return image;
 }
 
@@ -954,8 +961,18 @@ std::vector<pos>* Population::edges_segment(int ind_index) {
 		}*/
 		while (next.x != static_cast<unsigned short>(-1)) {
 			if (check_if_edge(next, ind_index, cout) == 1) {
+				//std::cout << next.x << "," << next.y << std::endl;
+				if (next.x >= get_im_w() || next.x < 0 || next.y >= get_im_h() || next.y < 0) {
+					std::cout << "Illegal position at " << next.x << "," << next.y << std::endl;
+					std::cin.get();
+					continue;
+				}
 				segment[count].push_back(next);
 				//std::cout << " new edge" << std::endl;
+			}
+			if (segment[count].size() > 10000) {
+				std::cout << next.x << "," << next.y << std::endl;
+				std::cout << segment[cout].size() << std::endl;
 			}
 			next = traverse_ST(*this, ind_index, next, branch_points);
 			count_pixels++;

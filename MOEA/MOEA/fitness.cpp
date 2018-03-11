@@ -50,7 +50,7 @@ double overall_deviation_seg(Population &p, int ind_index, pos s_entry) {
 	// Calculate centroid
 	std::stack<pos> branch_points;
 	pos pos_i = s_entry;
-	int num_nodes_in_segment = 1;
+	int num_nodes_in_segment = 0;
 	int sum_R = 0;
 	int sum_G = 0;
 	int sum_B = 0;
@@ -63,7 +63,7 @@ double overall_deviation_seg(Population &p, int ind_index, pos s_entry) {
 	}
 
 	// This also doubles as removing the coloration of the segment
-	RGB centroid(sum_R / num_nodes_in_segment, sum_G / num_nodes_in_segment, sum_B / num_nodes_in_segment);
+	RGB centroid(sum_R / static_cast<double>(num_nodes_in_segment), sum_G / static_cast<double>(num_nodes_in_segment), sum_B / static_cast<double>(num_nodes_in_segment));
 	double fitness = 0;
 	pos_i = s_entry;
 	while (pos_i.x != static_cast<unsigned short>(-1)) {
@@ -71,7 +71,7 @@ double overall_deviation_seg(Population &p, int ind_index, pos s_entry) {
 		pos_i = traverse_ST(p, ind_index, pos_i, branch_points); 
 	}
 
-	return fitness;
+	return fitness / num_nodes_in_segment;
 }
 
 double overall_deviation_ind(Population &p, int ind_index, const std::vector<pos> &entry_s) {
@@ -84,7 +84,7 @@ double overall_deviation_ind(Population &p, int ind_index, const std::vector<pos
 	for (int seg_i = 0; seg_i < entry_s.size(); seg_i++) {
 		fitness += overall_deviation_seg(p, ind_index, entry_s[seg_i]);
 	}
-	return fitness;
+	return fitness / entry_s.size();
 }
 
 double edge_value_seg(Population &p, int ind_index, pos s_entry) {
@@ -93,6 +93,7 @@ double edge_value_seg(Population &p, int ind_index, pos s_entry) {
 	pos pos_i = s_entry;
 	double fitness = 0;
 
+	int num_edges_in_border = 0;
 	while (pos_i.x != static_cast<unsigned short>(-1)) {
 		node *node_i = p.get_node(ind_index, pos_i);
 
@@ -100,24 +101,28 @@ double edge_value_seg(Population &p, int ind_index, pos s_entry) {
 			node *node_j = p.get_node(ind_index, pos_i + UP);
 			if (node_i->entry.x != node_j->entry.x || node_i->entry.y != node_j->entry.y) { // Replace with proper func
 				fitness += dist(p.get_RGB(pos_i), p.get_RGB(pos_i + UP));
+				num_edges_in_border++;
 			}
 		}
 		if (pos_i.y < p.get_im_h() - 1) {
 			node *node_j = p.get_node(ind_index, pos_i + DOWN);
 			if (node_i->entry.x != node_j->entry.x || node_i->entry.y != node_j->entry.y) {
 				fitness += dist(p.get_RGB(pos_i), p.get_RGB(pos_i + DOWN));
+				num_edges_in_border++;
 			}
 		}
 		if (pos_i.x > 1) {
 			node *node_j = p.get_node(ind_index, pos_i + LEFT);
 			if (node_i->entry.x != node_j->entry.x || node_i->entry.y != node_j->entry.y) {
 				fitness += dist(p.get_RGB(pos_i), p.get_RGB(pos_i + LEFT));
+				num_edges_in_border++;
 			}
 		}
 		if (pos_i.x < p.get_im_w() - 1) {
 			node *node_j = p.get_node(ind_index, pos_i + RIGHT);
 			if (node_i->entry.x != node_j->entry.x || node_i->entry.y != node_j->entry.y) {
 				fitness += dist(p.get_RGB(pos_i), p.get_RGB(pos_i + RIGHT));
+				num_edges_in_border++;
 			}
 		}
 
@@ -126,7 +131,7 @@ double edge_value_seg(Population &p, int ind_index, pos s_entry) {
 
 	remove_color(p, ind_index, s_entry, branch_points);
 
-	return -fitness; // fitness defined negative in order to turn a maximation problem into a minimation problem
+	return -fitness/ num_edges_in_border; // fitness defined negative in order to turn a maximation problem into a minimation problem
 }
 
 double edge_value_ind(Population &p, int ind_index, const std::vector<pos> &entry_s) {
@@ -139,6 +144,6 @@ double edge_value_ind(Population &p, int ind_index, const std::vector<pos> &entr
 	for (int seg_i = 0; seg_i < entry_s.size(); seg_i++) {
 	fitness += edge_value_seg(p, ind_index, entry_s[seg_i]);
 	}
-	return fitness;
+	return fitness / entry_s.size();
 }
 
