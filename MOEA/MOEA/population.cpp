@@ -304,7 +304,7 @@ void Population::initialize_population() {
 
 }
 
-void Population::MOEA_next_generation() {
+void Population::MOEA_next_generation(int current_generation) {
 
 	// Select parents:
 	int n_pop = N_IND; // what is this variable? what is the differnce n_pop and N_IND? Is it the current number in population?
@@ -330,7 +330,7 @@ void Population::MOEA_next_generation() {
 	for (int i = N_IND; i < n_pop; i++) {
 		double rand_num = (rand() % 1000) / 1000.0;
 		if (rand_num < MUTATION_RATE) {
-			int num_mutations = 1000;
+			int num_mutations = rand() % (45 - current_generation);
 			for (int j = 0; j < num_mutations; j++) {
 				int attempts = 0;
 				while (!mutation_greedy_merge_segments(*this, i) && 50 >= attempts++);
@@ -339,13 +339,6 @@ void Population::MOEA_next_generation() {
 				//draw_segments_contour(i, i);
 				//cv::Mat im2 = draw_segments_black_contour(i);
 				//cv::waitKey(0);
-
-				//if (j == 700) {
-				draw_segments_contour(i, i);
-				cv::Mat im2 = draw_segments_black_contour(i);
-				cv::waitKey(1);
-
-				//}
 			}
 		}
 
@@ -413,7 +406,7 @@ void Population::merge_segments(int ind_index, edge merge_nodes) {
 		std::cin.get();
 	}
 	merge_segment_properties(ind_index, p1, p2);
-	set_segment_entry(p2, p1, ind_index);
+	set_segment_entry(p2, population[ind_index][p1.x][p1.y].entry, ind_index);
 	set_dir_edge(p1, p2, 1, ind_index);
 	if (!individual_uncolored(ind_index)) {
 		std::cout << "Individual " << ind_index << " doesn't have a uniform color after merge!" << std::endl;
@@ -442,9 +435,9 @@ void Population::merge_segments(int ind_index, int edge_index, edge merge_nodes)
 }
 
 void  Population::merge_segment_properties(int ind_index, pos first, pos second) {
-	std::cout << "*** SEGMENT PROPERTIES BEFORE MERGE ***" << std::endl;
-	print_entry_properties(ind_index, 0);
-	std::cout << "***************************************" << std::endl << std::endl;
+	//std::cout << "*** SEGMENT PROPERTIES BEFORE MERGE ***" << std::endl;
+	//print_entry_properties(ind_index, 0);
+	//std::cout << "***************************************" << std::endl << std::endl;
 	validate_entry_properties(ind_index);
 	//std::cin.get();
 
@@ -452,7 +445,7 @@ void  Population::merge_segment_properties(int ind_index, pos first, pos second)
 	pos first_entry = population[ind_index][first.x][first.y].entry;
 	pos second_entry = population[ind_index][second.x][second.y].entry;
 
-	std::cout << "Now mergin\': " << first_entry.x << "," << first_entry.y << " annexing <- " << second_entry.x << "," << second_entry.y << std::endl;
+	//std::cout << "Now mergin\': " << first_entry.x << "," << first_entry.y << " annexing <- " << second_entry.x << "," << second_entry.y << std::endl;
 
 	seg_prop_t *first_prop = &segment_prop[ind_index][first_entry];
 	seg_prop_t *second_prop = &segment_prop[ind_index][second_entry];
@@ -482,9 +475,9 @@ void  Population::merge_segment_properties(int ind_index, pos first, pos second)
 		}
 	}
 
-	std::cout << "*** after adding neighbour entries ***" << std::endl;
-	print_entry_properties(ind_index, 0);
-	std::cout << "**************************************" << std::endl << std::endl;
+	//std::cout << "*** after adding neighbour entries ***" << std::endl;
+	//print_entry_properties(ind_index, 0);
+	//std::cout << "**************************************" << std::endl << std::endl;
 	//std::cin.get();
 
 	for (std::map<pos, std::vector<edge>>::iterator pair_it = second_prop->borders.begin(); pair_it != second_prop->borders.end(); ++pair_it) {
@@ -521,9 +514,9 @@ void  Population::merge_segment_properties(int ind_index, pos first, pos second)
 		}
 	}
 
-	std::cout << "*** after adding neighbour EdgEs ***" << std::endl;
-	print_entry_properties(ind_index, 0);
-	std::cout << "*************************************" << std::endl << std::endl;
+	//std::cout << "*** after adding neighbour EdgEs ***" << std::endl;
+	//print_entry_properties(ind_index, 0);
+	//std::cout << "*************************************" << std::endl << std::endl;
 	//std::cin.get();
 
 	// Update other's borders and neighbours to reflect the annexation
@@ -558,15 +551,15 @@ void  Population::merge_segment_properties(int ind_index, pos first, pos second)
 	}*/
 
 
-	std::cout << "*** after updating other segments to reflect on the annexation ***" << std::endl;
-	print_entry_properties(ind_index, 0);
-	std::cout << "******************************************************************" << std::endl << std::endl;
+	//std::cout << "*** after updating other segments to reflect on the annexation ***" << std::endl;
+	//print_entry_properties(ind_index, 0);
+	//std::cout << "******************************************************************" << std::endl << std::endl;
 	//std::cin.get();
 
 	first_prop->borders.erase(second_entry);
-	std::cout << "*** after removing my border edges with annexed segment ***" << std::endl;
-	print_entry_properties(ind_index, 0);
-	std::cout << "***********************************************************" << std::endl << std::endl;
+	//std::cout << "*** after removing my border edges with annexed segment ***" << std::endl;
+	//print_entry_properties(ind_index, 0);
+	//std::cout << "***********************************************************" << std::endl << std::endl;
 	//std::cin.get();
 
 	/*auto it1 = std::find_if(first_prop->neighbour_entries.begin(), first_prop->neighbour_entries.end(), pos_comparator(second_entry));
@@ -586,17 +579,17 @@ void  Population::merge_segment_properties(int ind_index, pos first, pos second)
 		entry_s[ind_index].erase(it2);
 	}
 
-	std::cout << "*** after removing annexed segment from entry_s ***" << std::endl;
-	print_entry_properties(ind_index, 0);
-	std::cout << "**************************************" << std::endl << std::endl;
+	//std::cout << "*** after removing annexed segment from entry_s ***" << std::endl;
+	//print_entry_properties(ind_index, 0);
+	//std::cout << "**************************************" << std::endl << std::endl;
 	//std::cin.get();
 
 	segment_prop[ind_index].erase(second_entry);
 
-	std::cout << "*** after removing segment from segment_prop - DONE DONE DONE ***" << std::endl;
-	print_entry_properties(ind_index, 0);
-	std::cout << "*****************************************************************" << std::endl << std::endl;
-	validate_entry_properties(ind_index);
+	//std::cout << "*** after removing segment from segment_prop - DONE DONE DONE ***" << std::endl;
+	//print_entry_properties(ind_index, 0);
+	//std::cout << "*****************************************************************" << std::endl << std::endl;
+	//validate_entry_properties(ind_index);
 	//std::cin.get();
 }
 
@@ -693,7 +686,7 @@ int Population::set_start_segment_entry(pos& entry, int ind_index) {
 	}
 }
 
-int Population::set_segment_entry(pos& entry, pos& set, int ind_index) {
+int Population::set_segment_entry(const pos& entry, const pos& set, int ind_index) {
 	stack<pos> branch_points;
 	pos invalid_pos(-1, -1);
 	//std::cout << "Merging" << std::endl;

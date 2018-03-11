@@ -7,7 +7,7 @@
 #include<vector>
 #include<map>
 
-const int N_GENERATIONS = 100; //100
+const int N_GENERATIONS = 43; //100
 const int N_IND = 20;
 const int N_SEG_TYPES = 2;
 
@@ -27,7 +27,7 @@ const int N_MERGE_SMALL_SEGMENT = 1990; // 2990*/
 
 // Circle
 const int SMALL_SEGMENT_SIZE = 100; // 4, 100
-const int N_SMALL_SEGMENT = 15; // 2000, 600
+const int N_SMALL_SEGMENT = 600; // 2000, 600
 const int N_MERGE_SMALL_SEGMENT = 0; // 1950
 
  // Tiger

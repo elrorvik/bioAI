@@ -27,7 +27,7 @@ int main() {
 	time_t seconds = time(NULL);
 	
 	while (generation < N_GENERATIONS) {
-		p.MOEA_next_generation();
+		p.MOEA_next_generation(generation);
 		std::cout << "generation nr " << generation << std::endl;
 		generation++;
 	}

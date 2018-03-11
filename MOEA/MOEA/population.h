@@ -46,7 +46,7 @@ public:
 	void test_prim();
 	void test_segment(pos& entry, int ind_index);
 
-	void MOEA_next_generation();
+	void MOEA_next_generation(int current_generation);
 
 	node* get_node(int ind_index, pos node_pos);
 	RGB get_RGB(int y, int x);
@@ -79,7 +79,7 @@ public:
 	void set_dir_edge(pos& parent, pos& child, int on, int ind_index);
 	void set_dir_edge_and_parent(pos& parent, pos& child, int on, int ind_index);
 	int set_start_segment_entry(pos& entry, int ind_index);
-	int set_segment_entry(pos& entry, pos& set, int ind_index);
+	int set_segment_entry(const pos& entry, const pos& set, int ind_index);
 
 
 	int split_MST_segment(int ind_index,  edge_priority_que& que, r_edge_priority_que& merge_que);
