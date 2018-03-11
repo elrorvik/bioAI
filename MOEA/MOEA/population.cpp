@@ -330,7 +330,8 @@ void Population::MOEA_next_generation(int current_generation) {
 	for (int i = N_IND; i < n_pop; i++) {
 		double rand_num = (rand() % 1000) / 1000.0;
 		if (rand_num < MUTATION_RATE) {
-			int num_mutations = rand() % (45 - current_generation);
+			//int num_mutations = rand() % (45 - current_generation);
+			int num_mutations = 1000;
 			for (int j = 0; j < num_mutations; j++) {
 				int attempts = 0;
 				while (!mutation_greedy_merge_segments(*this, i) && 50 >= attempts++);
@@ -339,6 +340,12 @@ void Population::MOEA_next_generation(int current_generation) {
 				//draw_segments_contour(i, i);
 				//cv::Mat im2 = draw_segments_black_contour(i);
 				//cv::waitKey(0);
+
+				if ((j % 50) == 0) {
+					draw_segments_contour(i, i);
+					cv::Mat im2 = draw_segments_black_contour(i);
+					cv::waitKey(0);
+				}
 			}
 		}
 	}
@@ -406,6 +413,9 @@ void Population::merge_segments(int ind_index, edge merge_nodes) {
 	merge_segment_properties(ind_index, p1, p2);
 	set_segment_entry(p2, population[ind_index][p1.x][p1.y].entry, ind_index);
 	set_dir_edge(p1, p2, 1, ind_index);
+	segment_prop[ind_index][population[ind_index][p1.x][p1.y].entry].avg_rgb = avg_rgb_seg(*this, ind_index, population[ind_index][p1.x][p1.y].entry);
+	std::stack<pos> branch_points;
+	remove_color(*this, ind_index, population[ind_index][p1.x][p1.y].entry, branch_points);
 	if (!individual_uncolored(ind_index)) {
 		std::cout << "Individual " << ind_index << " doesn't have a uniform color after merge!" << std::endl;
 		std::cin.get();
