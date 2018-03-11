@@ -246,7 +246,7 @@ void Population::initialize_individual_PrimsMST(int ind_index){
 		//std::cout << " i " << i << std::endl;
 	}
 	for (auto it = entry_s[ind_index].begin(); it != entry_s[ind_index].end(); ++it) {
-		print_entry_properties(ind_index, *it);
+		print_entry_properties(ind_index, *it,0);
 	}
 	
 	std::cout << "total " << total_segment_size << "should be " << get_im_h()*get_im_w() << std::endl;
@@ -1048,7 +1048,7 @@ bool Population::individual_uncolored(int ind_index) {
 	return 1;
 }
 
-void Population::print_entry_properties(int ind_index, pos entry) {
+void Population::print_entry_properties(int ind_index, pos entry, int cout_edges) {
 	std::cout << "********** entry: \t" << entry.x << " " << entry.y << std::endl;
 	std::cout << "RGB avg: \t" << segment_prop[ind_index][entry].avg_rgb.r  << " " << segment_prop[ind_index][entry].avg_rgb.g << " " << segment_prop[ind_index][entry].avg_rgb.b <<std::endl;
 
@@ -1056,12 +1056,48 @@ void Population::print_entry_properties(int ind_index, pos entry) {
 	std::cout << "boarders check " << std::endl;
 	for (auto it = segment_prop[ind_index][entry].borders.begin(); it != segment_prop[ind_index][entry].borders.end(); it++) {
 		std::cout << "neig \t" << it->first.x << " " << it->first.y << "\t num pixels " << it->second.size() << std::endl;
+		for (auto xt = it->second.begin(); xt != it->second.end(); xt++) {
+			if (xt->RGBdist > sqrt(255 * 255 * 3) || xt->RGBdist < 0) {
+				std::cout << " wrong color on " << xt->p1.x << " " << xt->p1.y << " => " << xt->p2.x << " " << xt->p2.y << " with " << xt->RGBdist <<std::endl;
+			}
+			//std::cout << xt->p1.x << " " << xt->p1.y << " => " << xt->p2.x << " " << xt->p2.y << std::endl;
+		}
 	}
 
 	std::cout << " neighbours entries check " << std::endl;
 	for (auto it = segment_prop[ind_index][entry].neighbour_entries.begin(); it != segment_prop[ind_index][entry].neighbour_entries.end(); it++) {
 		std::cout << "neig \t " << it->x << " " << it->y << std::endl;
 	}
+
+	if (cout_edges == 1) {
+		for (auto it = segment_prop[ind_index][entry].borders.begin(); it != segment_prop[ind_index][entry].borders.end(); it++) {
+			std::cout << "neig \t" << it->first.x << " " << it->first.y << "\t num pixels " << it->second.size() << std::endl;
+			for (auto xt = it->second.begin(); xt != it->second.end(); xt++) {
+				std::cout << xt->p1.x << " " << xt->p1.y << " => " << xt->p2.x << " " << xt->p2.y << std::endl;
+			}
+		}
+	}
+	/*int count = 0;
+	for (auto it = segment_prop[ind_index][entry].borders.begin(); it != segment_prop[ind_index][entry].borders.end(); it++) {
+		std::cout << "neig \t" << it->first.x << " " << it->first.y << "\t num pixels " << it->second.size() << std::endl;
+		for (auto xt = it->second.begin(); xt != it->second.end(); ++xt) {
+			for (auto yt = segment_prop[ind_index][it->first].borders[entry].begin(); yt != segment_prop[ind_index][it->first].borders[entry].end(); ++yt) {
+				if (yt == xt) {
+					count += 1;
+					continue;
+				}
+				std::cout << xt->p1.x << " " << xt->p1.y << " => " << xt->p2.x << " " << xt->p2.y << " <=> " << yt->p1.x << " " << yt->p1.y << " => " << yt->p2.x << " " << yt->p2.y << std::endl;
+			}
+		}
+		if(count != it->second.size()){
+			std::cout << " difference in edges" << count << " " << it->second.size() << std::endl;
+			count == 0;
+
+		}
+	}*/
 	std::cout << std::endl;
+
+
+
 	
 }

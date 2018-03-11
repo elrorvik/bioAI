@@ -100,6 +100,15 @@ bool operator<(pos p1, pos p2) {
 	return p1.y < p2.y;
 }
 
+bool operator ==(edge e1, edge e2) {
+	if (e1.p1 == e2.p2 && e1.p2 == e2.p1) {
+		return true;
+	}if (e1.p1 == e2.p1 && e1.p2 == e2.p2) {
+		return true;
+	}
+	return false;
+}
+
 
 direction get_neighbor_dir(pos& origin, pos& neighbor) {
 	bool up = origin.y - 1 == neighbor.y;

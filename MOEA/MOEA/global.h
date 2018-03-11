@@ -182,6 +182,7 @@ bool operator==(pos& left, pos & right);
 bool operator!=(pos& left, pos & right);
 pos operator+(pos& left, pos& right);
 bool operator<(pos p1, pos p2);
+bool operator==(edge e1, edge e2);
 
 bool operator<(edge e1, edge e2);
 
