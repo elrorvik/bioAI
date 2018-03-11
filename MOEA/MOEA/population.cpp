@@ -406,8 +406,9 @@ void Population::merge_segments(int ind_index, edge merge_nodes) {
 		std::cout << "Individual " << ind_index << " doesn't have a uniform color after merge!" << std::endl;
 		std::cin.get();
 	}
-	int num_new_segment_size = get_n_segment(merge_nodes.p1, ind_index, 0);
-	int num_new_segment_size_2 = get_n_segment(merge_nodes.p2, ind_index, 0);
+	print_entry_properties(ind_index, merge_nodes.p1, 0);
+	//int num_new_segment_size = get_n_segment(merge_nodes.p1, ind_index, 0);
+	//int num_new_segment_size_2 = get_n_segment(merge_nodes.p2, ind_index, 0);
 	//if (num_new_segment_size  != num_in_merged_segment) std::cout << " different size new 1 " << num_new_segment_size  <<" new 2 " << num_new_segment_size_2 <<"old " << num_in_merged_segment <<  std::endl;
 }
 
@@ -1049,6 +1050,7 @@ bool Population::individual_uncolored(int ind_index) {
 }
 
 void Population::print_entry_properties(int ind_index, pos entry, int cout_edges) {
+
 	std::cout << "********** entry: \t" << entry.x << " " << entry.y << std::endl;
 	std::cout << "RGB avg: \t" << segment_prop[ind_index][entry].avg_rgb.r  << " " << segment_prop[ind_index][entry].avg_rgb.g << " " << segment_prop[ind_index][entry].avg_rgb.b <<std::endl;
 
