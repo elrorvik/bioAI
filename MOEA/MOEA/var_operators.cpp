@@ -84,7 +84,15 @@ int mutation_greedy_merge_segments(Population &p, int ind_index) {
 	pos best_entry;
 	
 	for (int i = 0; i < segment_properties.neighbour_entries.size(); i++) {
+
+		segment_properties = p.get_segment_property(ind_index, seg_entries[entry_index]);
+		if (segment_properties.neighbour_entries.size() <= i) {
+			std::cout << " to short list " << std::endl;
+			return 0;
+		}
+		std::cout <<"segment_neighbours size " <<  i <<" " << segment_properties.neighbour_entries.size() << std::endl;
 		pos entry_other = segment_properties.neighbour_entries[i];
+		std::cout << " Merge " << entry_other.x << entry_other.y << " and " << seg_entries[entry_index].x << " " << seg_entries[entry_index].y << std::endl;
 		edge min_edge = { { -1, -1 },{ -1, -1 }, DBL_MAX };
 
 		// Calculate avg rgb dist in between segments
@@ -93,6 +101,7 @@ int mutation_greedy_merge_segments(Population &p, int ind_index) {
 		if (avg_rgb_other.r > 255 || avg_rgb_other.g > 255 || avg_rgb_other.b > 255) {
 			std::cout << "illegal RGB" << std::endl;
 			std::cout << avg_rgb_other.r << ", " << avg_rgb_other.g << ", " << avg_rgb_other.b << std::endl;
+			std::cout << segment_properties.avg_rgb.r << ", " << segment_properties.avg_rgb.g << ", " << segment_properties.avg_rgb.b << std::endl;
 			std::cin.get();
 		}
 
