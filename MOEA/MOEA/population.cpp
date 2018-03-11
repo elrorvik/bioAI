@@ -341,48 +341,46 @@ void Population::MOEA_next_generation(int current_generation) {
 				//cv::waitKey(0);
 			}
 		}
-
-		// Calculate fitness of offspring
-		for (int offspring_index = N_IND; offspring_index < N_IND + N_OFFSPRING; offspring_index++) {
-			fitness_1[offspring_index].first = overall_deviation_ind(*this, offspring_index, entry_s[offspring_index]);
-			fitness_1[offspring_index].second = offspring_index;
-			fitness_2[offspring_index].first = edge_value_ind(*this, offspring_index, entry_s[offspring_index]);
-			fitness_1[offspring_index].second = offspring_index;
-		}
-
-		MOEA_rank(n_pop, rank, fitness_1, fitness_2);
-		std::vector<int> survivors = NSGAII(*this, entry_s, n_pop, rank, fitness_1, fitness_2);
-		std::vector<int> non_survivors;
-		std::vector<int> survivors_offspring;
-
-		for (int i = 0; i < n_pop; i++) {
-			if (find(survivors.begin(), survivors.end(), i) == survivors.end()) {
-				if (i < N_IND) {
-					non_survivors.push_back(i); // don't care if it is higher than N_IND
-				}
-			}
-			else {
-				if (i >= N_IND) {
-					survivors_offspring.push_back(i);
-				}
-			}
-		}
-
-		//if (survivors_offspring.size() != non_survivors.size()) std::cout << "different size" << survivors_offspring.size() << " " << non_survivors.size() << std::endl;
-		//std::cin.get();
-		for (int i = 0; i < survivors_offspring.size(); i++) {
-			//std::cout << " switch " << non_survivors[i] << " " << survivors_offspring[i] << std::endl;
-			copy_individual(non_survivors[i], survivors_offspring[i]);
-
-		}
-
-		/*for (int i = 0; i < N_IND; i++) {
-		std::cout << " rank " << rank[i].first << "," << rank[i].second << " fitness 1: " << fitness_1[i].first << "," << fitness_1[i].second << " fitness 2: " << fitness_2[i].first << "," << fitness_2[i].second << std::endl;
-		}*/
-
-		// return pareto rank 0 ? ( to main loop ? or ??)
-
 	}
+
+	// Calculate fitness of offspring
+	for (int offspring_index = N_IND; offspring_index < N_IND + N_OFFSPRING; offspring_index++) {
+		fitness_1[offspring_index].first = overall_deviation_ind(*this, offspring_index, entry_s[offspring_index]);
+		fitness_1[offspring_index].second = offspring_index;
+		fitness_2[offspring_index].first = edge_value_ind(*this, offspring_index, entry_s[offspring_index]);
+		fitness_1[offspring_index].second = offspring_index;
+	}
+
+	MOEA_rank(n_pop, rank, fitness_1, fitness_2);
+	std::vector<int> survivors = NSGAII(*this, entry_s, n_pop, rank, fitness_1, fitness_2);
+	std::vector<int> non_survivors;
+	std::vector<int> survivors_offspring;
+
+	for (int i = 0; i < n_pop; i++) {
+		if (find(survivors.begin(), survivors.end(), i) == survivors.end()) {
+			if (i < N_IND) {
+				non_survivors.push_back(i); // don't care if it is higher than N_IND
+			}
+		}
+		else {
+			if (i >= N_IND) {
+				survivors_offspring.push_back(i);
+			}
+		}
+	}
+	std::cout << "num_offspring survivors: " << survivors_offspring.size() << std::endl;
+	//if (survivors_offspring.size() != non_survivors.size()) std::cout << "different size" << survivors_offspring.size() << " " << non_survivors.size() << std::endl;
+	//std::cin.get();
+	for (int i = 0; i < survivors_offspring.size(); i++) {
+		//std::cout << " switch " << non_survivors[i] << " " << survivors_offspring[i] << std::endl;
+		copy_individual(non_survivors[i], survivors_offspring[i]);
+	}
+
+	/*for (int i = 0; i < N_IND; i++) {
+	std::cout << " rank " << rank[i].first << "," << rank[i].second << " fitness 1: " << fitness_1[i].first << "," << fitness_1[i].second << " fitness 2: " << fitness_2[i].first << "," << fitness_2[i].second << std::endl;
+	}*/
+
+	// return pareto rank 0 ? ( to main loop ? or ??)
 }
 
 
