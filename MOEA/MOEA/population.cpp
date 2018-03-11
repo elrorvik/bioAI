@@ -418,6 +418,10 @@ void Population::merge_segments(int ind_index, int edge_index, edge merge_nodes)
 
 void  Population::merge_segment_properties(int ind_index, pos first, pos second) {
 	
+	std::cout << "*** SEGMENT PROPERTIES BEFORE MERGE ***" << std::endl;
+	//print_entry_properties(ind_index, 0);
+	std::cout << "***************************************" << std::endl;
+
 	// Fetch entries and properties before merge
 	pos first_entry = population[ind_index][first.x][first.y].entry;
 	pos second_entry = population[ind_index][second.x][second.y].entry;
@@ -511,6 +515,11 @@ void  Population::merge_segment_properties(int ind_index, pos first, pos second)
 	}
 
 	segment_prop[ind_index].erase(second_entry);
+
+	std::cout << "*** SEGMENT PROPERTIES AFTER MERGE ***" << std::endl;
+	//print_entry_properties(ind_index, 0);
+	std::cout << "**************************************" << std::endl;
+
 }
 
 void Population::split_segment(int ind_index, int edge_index, edge split_nodes) {
@@ -1122,9 +1131,9 @@ void Population::print_entry_properties(int ind_index, pos entry, bool cout_edge
 	
 }
 
-
+/*
 void Population::print_entry_properties(int ind_index, bool cout_edges) {
-	/*std::vector<pos> vec1;
+	std::vector<pos> vec1;
 	std::vector<pos> vec2;
 	auto it2 = segment_prop[ind_index].begin();
 	for (auto it = entry_s[ind_index].begin(); it != entry_s[ind_index].end() && it2 != segment_prop[ind_index].end(); ++it, ++it2) {
@@ -1132,9 +1141,15 @@ void Population::print_entry_properties(int ind_index, bool cout_edges) {
 		vec2.push_back(it2->first);
 	}
 	std::sort(vec1.begin(), vec1.end(), pos_order_comparator());
+	std::sort(vec2.begin(), vec2.end(), pos_order_comparator());
+	if (vec1.size() != vec2.size()) std::cout << "Error, different lengths! : " << vec1.size() << " vs. " << vec2.size();
+	for (int i = 0; i < vec1.size(); i++) {
+		std::cout << "   entry_s   : " << i << " : " << vec1[i].x << "," << vec1[i].y << std::endl;
+		std::cout << "segment_prop : " << i << " : " << vec2[i].x << "," << vec2[i].y << std::endl;
+	}
 
 
-	for (auto it = segment_prop[ind_index].begin(); it != entry_s[ind_index].end(); ++it) {
-		print_entry_properties(ind_index, *it, 0);
-	}*/
-}
+	for (auto it = segment_prop[ind_index].begin(); it != segment_prop[ind_index].end(); ++it) {
+		print_entry_properties(ind_index, it->first, cout_edges);
+	}
+}*/

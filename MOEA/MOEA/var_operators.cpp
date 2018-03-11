@@ -84,8 +84,10 @@ int mutation_greedy_merge_segments(Population &p, int ind_index) {
 	pos best_entry;
 	
 	for (int i = 0; i < segment_properties.neighbour_entries.size(); i++) {
+
 		segment_properties = p.get_segment_property(ind_index, seg_entries[entry_index]);
 		if (segment_properties.neighbour_entries.size() <= i) {
+			std::cout << " to short list " << std::endl;
 			return 0;
 		}
 		std::cout <<"segment_neighbours size " <<  i <<" " << segment_properties.neighbour_entries.size() << std::endl;

@@ -22,7 +22,7 @@ int main() {
 	//operator ==(edge e1, edge e2)
 
 	p.initialize_population();
-	
+
 	int generation = 0;
 	time_t seconds = time(NULL);
 	
