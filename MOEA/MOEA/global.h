@@ -95,7 +95,12 @@ struct RGB {
 	unsigned short b;
 	RGB() : r(-1), b(-1), g(-1) {};
 	RGB(unsigned short r, unsigned short g, unsigned short b) : r(r), b(b), g(g) {};
+	void operator=(RGB other);
 };
+
+RGB operator+(RGB a, RGB b);
+RGB operator/(RGB numerator, double denominator);
+bool operator==(RGB& left, RGB& right);
 
 struct pos {
 	unsigned short x;
@@ -168,24 +173,17 @@ struct seg_prop_t {
 	seg_prop_t() :avg_rgb(-1, -1, -1) {};
 };
 
-pos operator+(pos coord, direction dir);
 
 void operator+(node &n, direction d);
 void operator-(node &n, direction d);
 
+pos operator+(pos coord, direction dir);
 bool operator==(pos& left, pos & right);
-
-bool operator==(RGB& left, RGB& right);
-
 bool operator!=(pos& left, pos & right);
 pos operator+(pos& left, pos& right);
-
-bool operator<(edge e1, edge e2);
 bool operator<(pos p1, pos p2);
 
-RGB operator+(RGB a, RGB b);
-RGB operator/(RGB numerator, double denominator);
-
+bool operator<(edge e1, edge e2);
 
 direction get_neighbor_dir(pos& origin, pos& neighbor);
 

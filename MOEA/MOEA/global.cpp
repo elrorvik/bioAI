@@ -1,6 +1,22 @@
 #include"global.h"
 #include<vector>
 
+void RGB::operator=(RGB other) {
+	this->r = other.r;
+	this->g = other.g;
+	this->b = other.b;
+}
+
+RGB operator+(RGB a, RGB b) {
+	return RGB(a.r + b.r, a.g + b.g, a.b + b.b);
+}
+RGB operator/(RGB numerator, double denominator) {
+	return RGB(numerator.r / denominator, numerator.g / denominator, numerator.b / denominator);
+}
+bool operator==(RGB& left, RGB& right) {
+	return (left.r == right.r) && (left.g == right.g) && (left.b == right.b);
+}
+
 pos operator+(pos coord, direction dir) {
 switch (dir) {
 case SELF:
@@ -63,10 +79,6 @@ bool operator==(pos& left, pos& right) {
 	return (left.x == right.x) && (left.y == right.y);
 }
 
-bool operator==(RGB& left, RGB& right) {
-	return (left.r == right.r) && (left.g == right.g) && (left.b == right.b);
-}
-
 pos operator+(pos& left, pos& right) {
 	pos temp;
 	temp.x = left.x + right.x;
@@ -77,17 +89,10 @@ bool operator!=(pos& left, pos & right) {
 	return !(left==right);
 }
 
-RGB operator+(RGB a, RGB b) {
-	return RGB(a.r + b.r, a.g + b.g, a.b + b.b);
-}
-RGB operator/(RGB numerator, double denominator) {
-	return RGB(numerator.r / denominator, numerator.g / denominator, numerator.b / denominator);
-}
-
-
 bool operator<(edge e1, edge e2) {
 	return e1.RGBdist < e2.RGBdist;
 }
+
 bool operator<(pos p1, pos p2) {
 	if (p1.y == p2.y) {
 		return p1.x < p2.x;
