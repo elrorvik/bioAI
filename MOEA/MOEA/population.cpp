@@ -320,6 +320,7 @@ void Population::MOEA_next_generation() {
 		//	edge_candidates[n_pop - 1] = crossover_uniform_list_representation(*this, parents[i - 1], parents[i - 2], n_pop - 1);
 		//}
 	}
+
 	// mutations:
 	double mutation_rate = MUT_SPLIT_PERC + MUT_MERGE_PERC;
 	if (mutation_rate > 1.0) std::cout << " to high mutation rate" << std::endl;
@@ -336,11 +337,9 @@ void Population::MOEA_next_generation() {
 				//cv::Mat im2 = draw_segments_black_contour(i);
 				//cv::waitKey(0);
 
-				if (j == 700) {
-					draw_segments_contour(i, i);
-					cv::Mat im2 = draw_segments_black_contour(i);
-					cv::waitKey(0);
-				}
+				draw_segments_contour(i, i);
+				cv::Mat im2 = draw_segments_black_contour(i);
+				cv::waitKey(0);
 			}
 		}
 
@@ -417,26 +416,67 @@ void Population::merge_segments(int ind_index, int edge_index, edge merge_nodes)
 }
 
 void  Population::merge_segment_properties(int ind_index, pos first, pos second) {
-	//static int called = 0;
-	//std::cout << called++ << std::endl;
+	
+	// Fetch entries and properties before merge
 	pos first_entry = population[ind_index][first.x][first.y].entry;
 	pos second_entry = population[ind_index][second.x][second.y].entry;
 
 	seg_prop_t *first_prop = &segment_prop[ind_index][first_entry];
 	seg_prop_t *second_prop = &segment_prop[ind_index][second_entry];
 
-	// Calculate segment properties of the combined segment
-	first_prop->avg_rgb = (first_prop->avg_rgb + second_prop->avg_rgb) / 2.0;
+	// Calculate average RGB of overtaking / prevailing segment after merge
+	first_prop->avg_rgb = RGB((first_prop->avg_rgb.r + second_prop->avg_rgb.r) / 2.0, (first_prop->avg_rgb.g + second_prop->avg_rgb.g) / 2.0, (first_prop->avg_rgb.b + second_prop->avg_rgb.b) / 2.0);
 	if (first_prop->avg_rgb.b > 255 || first_prop->avg_rgb.g > 255 || first_prop->avg_rgb.r > 255) {
+		std::cout << "illegal RGB" << std::endl;
+		std::cout << "avg_rgb: " << first_prop->avg_rgb.r << "," << first_prop->avg_rgb.g << "," << first_prop->avg_rgb.b << std::endl;
 		std::cout << "illegal RGB" << std::endl;
 		std::cin.get();
 	}
-	
-	//std::cout << "avg_rgb: " << first_prop->avg_rgb.r << "," << first_prop->avg_rgb.g << "," << first_prop->avg_rgb.b << std::endl;;
+
+
+	for (auto steal_entry_it = second_prop->neighbour_entries.begin(); steal_entry_it != second_prop->neighbour_entries.begin(); ++steal_entry_it) {
+		if (*steal_entry_it != first && std::find_if(first_prop->neighbour_entries.begin(), first_prop->neighbour_entries.end(), pos_comparator(*steal_entry_it)) == first_prop->neighbour_entries.end()) {
+			first_prop->neighbour_entries.push_back(*steal_entry_it);
+		}
+	}
+
+	for (std::map<pos, std::vector<edge>>::iterator pair_it = second_prop->borders.begin(); pair_it != second_prop->borders.end(); ++pair_it) {
+		if (pair_it->first.x == first_entry.x && pair_it->first.y == first_entry.y) {
+			continue;
+		}
+		else if (pair_it->first.x == second_entry.x && pair_it->first.y == second_entry.y){
+			std::cout << "hmm.... second = it " << std::endl;
+			continue;
+		}
+		else {
+			//std::cout << " size " <<  it->second.size() << std::endl;
+			int j = 0;
+			for (int i = 0; i < pair_it->second.size(); i++) {
+				
+				if (abs(pair_it->second[i].p1.x - pair_it->second[i].p2.x) > 1 || abs(pair_it->second[i].p1.y - pair_it->second[i].p2.y) > 1) {
+					std::cout << pair_it->second[i].p1.x << " " << pair_it->second[i].p1.y << " not neigh" << pair_it->second[i].p2.x << " " << pair_it->second[i].p2.x << std::endl;
+					std::cin.get();
+				}
+				if (get_neighbor_dir(pair_it->second[i].p1, pair_it->second[i].p2) == SELF) {
+					std:cout << pair_it->second[i].p1.x << "," << pair_it->second[i].p1.y << " og " << pair_it->second[i].p2.x << "," << pair_it->second[i].p2.y << std::endl;
+					std::cout << j << " i " << i <<std::endl;
+					std::cout << second_prop->borders[pair_it->first].size() << std::endl;
+					std::cin.get();
+				}
+				if (i >= pair_it->second.size()) {
+					std::cout << i << " vs. size " << std::endl;
+					
+				}
+				first_prop->borders[pair_it->first].push_back(pair_it->second[i]);
+				j++;
+			}
+			//std::cout << first_prop->borders[it->first].size() << ", resultant size" << std::endl;
+		}
+	}
+
+
 
 	first_prop->borders.erase(second_entry);
-
-
 	// delete from neigbour array
 	for (std::vector<pos>::iterator it = first_prop->neighbour_entries.begin(); it != first_prop->neighbour_entries.begin(); ++it) {
 		if (*it == second_entry) {
@@ -444,54 +484,13 @@ void  Population::merge_segment_properties(int ind_index, pos first, pos second)
 		}
 	}
 
-	// set in edges
-
-	for (std::map<pos, std::vector<edge>>::iterator it = second_prop->borders.begin(); it != second_prop->borders.end(); ++it) {
-		if (it->first.x == first_entry.x && it->first.y == first_entry.y) {
-			continue;
-		}
-		else if (it->first.x == second_entry.x && it->first.y == second_entry.y){
-			std::cout << "hmm.... second = it " << std::endl;
-			continue;
-		}
-		else {
-			//std::cout << " size " <<  it->second.size() << std::endl;
-			int j = 0;
-			for (int i = 0; i < it->second.size(); i++) {
-				
-				if (abs(it->second[i].p1.x - it->second[i].p2.x) > 1 || abs(it->second[i].p1.y - it->second[i].p2.y) > 1) {
-					std::cout << it->second[i].p1.x << " " << it->second[i].p1.y << " not neigh" << it->second[i].p2.x << " " << it->second[i].p2.x << std::endl;
-					std::cin.get();
-				}
-				if (get_neighbor_dir(it->second[i].p1, it->second[i].p2) == SELF) {
-					std:cout << it->second[i].p1.x << "," << it->second[i].p1.y << " og " << it->second[i].p2.x << "," << it->second[i].p2.y << std::endl;
-					std::cout << j << " i " << i <<std::endl;
-					std::cout << second_prop->borders[it->first].size() << std::endl;
-					std::cin.get();
-				}
-				if (i >= it->second.size()) {
-					std::cout << i << " vs. size " << std::endl;
-					
-				}
-				first_prop->borders[it->first].push_back(it->second[i]);
-				j++;
-			}
-			//std::cout << first_prop->borders[it->first].size() << ", resultant size" << std::endl;
-		}
-	}
-
-	for (auto it = second_prop->neighbour_entries.begin(); it != second_prop->neighbour_entries.begin(); ++it) {
-		if (*it != first && std::find_if(segment_prop[ind_index][first_entry].neighbour_entries.begin(), segment_prop[ind_index][first_entry].neighbour_entries.end(), pos_comparator(*it)) != segment_prop[ind_index][first_entry].neighbour_entries.end()) {
-			first_prop->neighbour_entries.push_back(*it);
-		}
-	}
-
-	segment_prop[ind_index].erase(second_entry);
-
+	// Update global lists
 	auto it = std::find_if(entry_s[ind_index].begin(), entry_s[ind_index].end(), pos_comparator(second_entry));
 	if(it != entry_s[ind_index].end()) {
 		entry_s[ind_index].erase(it);
 	}
+
+	segment_prop[ind_index].erase(second_entry);
 }
 
 void Population::split_segment(int ind_index, int edge_index, edge split_nodes) {
@@ -1048,7 +1047,7 @@ bool Population::individual_uncolored(int ind_index) {
 	return 1;
 }
 
-void Population::print_entry_properties(int ind_index, pos entry, int cout_edges) {
+void Population::print_entry_properties(int ind_index, pos entry, bool cout_edges) {
 	std::cout << "********** entry: \t" << entry.x << " " << entry.y << std::endl;
 	std::cout << "RGB avg: \t" << segment_prop[ind_index][entry].avg_rgb.r  << " " << segment_prop[ind_index][entry].avg_rgb.g << " " << segment_prop[ind_index][entry].avg_rgb.b <<std::endl;
 
@@ -1096,8 +1095,22 @@ void Population::print_entry_properties(int ind_index, pos entry, int cout_edges
 		}
 	}*/
 	std::cout << std::endl;
-
-
-
 	
+}
+
+
+void Population::print_entry_properties(int ind_index, bool cout_edges) {
+	/*std::vector<pos> vec1;
+	std::vector<pos> vec2;
+	auto it2 = segment_prop[ind_index].begin();
+	for (auto it = entry_s[ind_index].begin(); it != entry_s[ind_index].end() && it2 != segment_prop[ind_index].end(); ++it, ++it2) {
+		vec1.push_back(*it);
+		vec2.push_back(it2->first);
+	}
+	std::sort(vec1.begin(), vec1.end(), pos_order_comparator());
+
+
+	for (auto it = segment_prop[ind_index].begin(); it != entry_s[ind_index].end(); ++it) {
+		print_entry_properties(ind_index, *it, 0);
+	}*/
 }

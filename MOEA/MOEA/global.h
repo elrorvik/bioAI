@@ -150,6 +150,18 @@ struct pos_comparator {
 private:
 	const pos p1;
 };
+
+struct pos_order_comparator {
+	bool operator()(const pos &rhs) {
+		if (p1.x < rhs.x) return true;
+		if (p1.x == rhs.x) return (p1.y < rhs.y);
+		return false;
+	}
+	pos_order_comparator(const pos p1) : p1(p1) {};
+private:
+	const pos p1;
+};
+
 struct edge_equal_comparator {
 	bool operator()(const edge &rhs) {
 		return rhs.p1.x == e1.p1.x && rhs.p1.y == e1.p1.y && rhs.p2.x == e1.p2.x && rhs.p2.y == e1.p2.y;
