@@ -296,6 +296,12 @@ void Population::initialize_population() {
 		}
 	}
 
+	//Random number of initial mutations
+	for (int i = 0; i < N_IND; i++) {
+		int random_initial_mutations = rand() % (N_SMALL_SEGMENT - N_SMALL_SEGMENT/10) + N_SMALL_SEGMENT/11;
+		for (int j = 0; j < random_initial_mutations; j++) mutation_greedy_merge_segments(*this, i);
+	}
+
 	// Calculating fitness and rank of individuals
 
 	MOEA_fitness(*this, N_IND, entry_s, fitness_1, fitness_2);
@@ -387,7 +393,6 @@ void Population::MOEA_next_generation(int current_generation) {
 	}
 	std::cout << endl;
 
-	std::cout << "num_offspring survivors: " << survivors_offspring.size() << std::endl;
 	//if (survivors_offspring.size() != non_survivors.size()) std::cout << "different size" << survivors_offspring.size() << " " << non_survivors.size() << std::endl;
 	//std::cin.get();
 	for (int i = 0; i < survivors_offspring.size(); i++) {
@@ -398,6 +403,8 @@ void Population::MOEA_next_generation(int current_generation) {
 	for (int i = 0; i < N_IND+N_OFFSPRING; i++) {
 	std::cout << " rank " << rank[i].first << "," << rank[i].second << " fitness 1: " << fitness_1[i].first << "," << fitness_1[i].second << " fitness 2: " << fitness_2[i].first << "," << fitness_2[i].second << std::endl;
 	}
+	std::cout << "num_offspring survivors: " << survivors_offspring.size() << std::endl;
+
 
 	// return pareto rank 0 ? ( to main loop ? or ??)
 }
