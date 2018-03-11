@@ -182,6 +182,7 @@ pos operator+(pos& left, pos& right);
 
 bool operator<(edge e1, edge e2);
 bool operator<(pos p1, pos p2);
+bool operator==(edge e1, edge e2);
 
 RGB operator+(RGB a, RGB b);
 RGB operator/(RGB numerator, double denominator);

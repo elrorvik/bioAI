@@ -93,7 +93,7 @@ public:
 	void copy_individual(int l_index, int r_index);
 	void draw_pareto_front();
 	bool individual_uncolored(int ind_index);
-	void print_entry_properties(int ind_index, pos entry);
+	void print_entry_properties(int ind_index, pos entry, int cout_edges);
 
 };
 
