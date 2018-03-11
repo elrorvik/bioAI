@@ -312,6 +312,11 @@ void Population::MOEA_next_generation(int current_generation) {
 
 	// find parentss
 	std::vector<int> parents = rank_tournament_selection(*this, entry_s, n_pop, tournament_size, N_OFFSPRING, rank); // returns list of parent index
+	std::cout << "Parents: ";
+	for (int i = 0; i < parents.size(); i++) {
+		std::cout << parents[i] << ", ";
+	}
+	std::cout << endl;
 	for (int i = 0; i < N_OFFSPRING;) {
 		//double rand_num = (rand() % 1000) / 1000.0;
 		copy_individual(n_pop++, parents[i++]);
@@ -330,8 +335,8 @@ void Population::MOEA_next_generation(int current_generation) {
 	for (int i = N_IND; i < n_pop; i++) {
 		double rand_num = (rand() % 1000) / 1000.0;
 		if (rand_num < MUTATION_RATE) {
-			//int num_mutations = rand() % (45 - current_generation);
-			int num_mutations = 1000;
+			int num_mutations = rand() % (45 - current_generation);
+			//int num_mutations = 1000;
 			for (int j = 0; j < num_mutations; j++) {
 				int attempts = 0;
 				while (!mutation_greedy_merge_segments(*this, i) && 50 >= attempts++);
@@ -341,11 +346,11 @@ void Population::MOEA_next_generation(int current_generation) {
 				//cv::Mat im2 = draw_segments_black_contour(i);
 				//cv::waitKey(0);
 
-				if ((j % 50) == 0) {
-					draw_segments_contour(i, i);
-					cv::Mat im2 = draw_segments_black_contour(i);
-					cv::waitKey(0);
-				}
+				//if ((j % 50) == 0) {
+				//	draw_segments_contour(i, i);
+				//	cv::Mat im2 = draw_segments_black_contour(i);
+				//	cv::waitKey(0);
+				//}
 			}
 		}
 	}
@@ -375,6 +380,13 @@ void Population::MOEA_next_generation(int current_generation) {
 			}
 		}
 	}
+
+	std::cout << "Survivors: ";
+	for (int i = 0; i < survivors.size(); i++) {
+		std::cout << survivors[i] << ", ";
+	}
+	std::cout << endl;
+
 	std::cout << "num_offspring survivors: " << survivors_offspring.size() << std::endl;
 	//if (survivors_offspring.size() != non_survivors.size()) std::cout << "different size" << survivors_offspring.size() << " " << non_survivors.size() << std::endl;
 	//std::cin.get();
@@ -383,9 +395,9 @@ void Population::MOEA_next_generation(int current_generation) {
 		copy_individual(non_survivors[i], survivors_offspring[i]);
 	}
 
-	/*for (int i = 0; i < N_IND; i++) {
+	for (int i = 0; i < N_IND+N_OFFSPRING; i++) {
 	std::cout << " rank " << rank[i].first << "," << rank[i].second << " fitness 1: " << fitness_1[i].first << "," << fitness_1[i].second << " fitness 2: " << fitness_2[i].first << "," << fitness_2[i].second << std::endl;
-	}*/
+	}
 
 	// return pareto rank 0 ? ( to main loop ? or ??)
 }
