@@ -267,7 +267,7 @@ void Population::initialize_population() {
 		//draw_segments_black_contour_from_prop(i);
 		//cv::Mat im = draw_segments_black_contour(i);
 		//write_image_to_file(i, im);
-		cv::waitKey(0);
+		cv::waitKey(CONTINUE_WHEN_DRAWING);
 
 	}
 	int init_index = 0;
