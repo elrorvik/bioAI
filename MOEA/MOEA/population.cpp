@@ -375,7 +375,8 @@ void Population::MOEA_next_generation(int current_generation) {
 	}
 
 	MOEA_rank(n_pop, rank, fitness_1, fitness_2);
-	std::vector<int> survivors = NSGAII(*this, entry_s, n_pop, rank, fitness_1, fitness_2);
+	//std::vector<int> survivors = NSGAII(*this, entry_s, n_pop, rank, fitness_1, fitness_2);
+	std::vector<int> survivors = fitness_tournament_selection(*this, entry_s, n_pop, N_IND + N_OFFSPRING, N_IND, WEIGHT_OD, WEIGHT_EV);
 	std::vector<int> non_survivors;
 	std::vector<int> survivors_offspring;
 

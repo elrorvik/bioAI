@@ -101,8 +101,8 @@ const std::string img_path = "..//test_img//147091//Test image.jpg";
 const std::string WRITE_PATH = "..//Segmentation_Evaluation//147091_student//";
 */
 
-// Valley
-///*
+// Valley - COIMPLETELY SATISFIED, do not touch!
+/*
 const int N_IND = 10;
 const int N_OFFSPRING = 10;
 const int N_GENERATIONS = 10;
@@ -113,6 +113,22 @@ const int AVG_RGB_SEG_DEST_CRITERIA = 70;
 const int AVG_RGB_BORDER_DEST_CRITERIA = 100;
 const std::string img_path = "..//test_img//176035//Test image.jpg";
 const std::string WRITE_PATH = "..//Segmentation_Evaluation//176035_student//";
+*/
+
+// Valley - weighted GA
+///*
+const int N_IND = 10;
+const int N_OFFSPRING = 10;
+const int N_GENERATIONS = 10;
+const int SMALL_SEGMENT_SIZE = 500;  // 50
+const int N_SMALL_SEGMENT = 600; // 1000
+const int N_MERGE_SMALL_SEGMENT = 0; // 30
+const int AVG_RGB_SEG_DEST_CRITERIA = 70;
+const int AVG_RGB_BORDER_DEST_CRITERIA = 100;
+const std::string img_path = "..//test_img//176035//Test image.jpg";
+const std::string WRITE_PATH = "..//Segmentation_Evaluation//176035_student//";
+const double WEIGHT_OD = 1;
+const double WEIGHT_EV = 1;
 //*/
 
 
