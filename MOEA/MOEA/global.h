@@ -45,19 +45,76 @@ const std::string img_path  = "..//test_img//86016//Test image.jpg"; // circle
 const std::string WRITE_PATH = "..//Segmentation_Evaluation//86016_student//"; 
 */
 
- // Tiger // N_GENERATIONS = 3, N_SMALL_SEGMENT = 300, SMALL_SEGMENT_SIZE = 500, AVG_RGB_SEG = 70, AVG_RGB_BORDER = 100 -> 67.64%
-///*
+ // Tiger // N_GENERATIONS = 3, N_SMALL_SEGMENT = 300, SMALL_SEGMENT_SIZE = 400, AVG_RGB_SEG = 70, AVG_RGB_BORDER = 100 -> 67.64%
+/*
 const int N_IND = 10;
 const int N_OFFSPRING = 10;
-const int N_GENERATIONS = 3;
-const int SMALL_SEGMENT_SIZE = 400;  // 50
+const int N_GENERATIONS = 10;
+const int SMALL_SEGMENT_SIZE = 300;  // 50
 const int N_SMALL_SEGMENT = 300; // 1000
 const int N_MERGE_SMALL_SEGMENT = 0; // 30
 const int AVG_RGB_SEG_DEST_CRITERIA = 70;
 const int AVG_RGB_BORDER_DEST_CRITERIA = 100;
-const std::string img_path = "..//test_img//160068//Test image.jpg"; // circle
+const std::string img_path = "..//test_img//160068//Test image.jpg"; 
 const std::string WRITE_PATH = "..//Segmentation_Evaluation//160068_student//";
+*/
+
+// Rock in desert - COMPLETELY SATISFIED, do not touch!
+/*
+const int N_IND = 10;
+const int N_OFFSPRING = 10;
+const int N_GENERATIONS = 10;
+const int SMALL_SEGMENT_SIZE = 500;  // 50
+const int N_SMALL_SEGMENT = 300; // 1000
+const int N_MERGE_SMALL_SEGMENT = 0; // 30
+const int AVG_RGB_SEG_DEST_CRITERIA = 70;
+const int AVG_RGB_BORDER_DEST_CRITERIA = 100;
+const std::string img_path = "..//test_img//216066//Test image.jpg";
+const std::string WRITE_PATH = "..//Segmentation_Evaluation//216066_student//";
+*/
+
+// Flower - COIMPLETELY SATISFIED, do not touch!
+/*
+const int N_IND = 10;
+const int N_OFFSPRING = 10;
+const int N_GENERATIONS = 10;
+const int SMALL_SEGMENT_SIZE = 500;  // 50
+const int N_SMALL_SEGMENT = 300; // 1000
+const int N_MERGE_SMALL_SEGMENT = 0; // 30
+const int AVG_RGB_SEG_DEST_CRITERIA = 70;
+const int AVG_RGB_BORDER_DEST_CRITERIA = 100;
+const std::string img_path = "..//test_img//353013//Test image.jpg";
+const std::string WRITE_PATH = "..//Segmentation_Evaluation//353013_student//";
+*/
+
+// Tree - 88% - COIMPLETELY SATISFIED, do not touch!
+/*
+const int N_IND = 10;
+const int N_OFFSPRING = 10;
+const int N_GENERATIONS = 10;
+const int SMALL_SEGMENT_SIZE = 500;  // 50
+const int N_SMALL_SEGMENT = 300; // 1000
+const int N_MERGE_SMALL_SEGMENT = 0; // 30
+const int AVG_RGB_SEG_DEST_CRITERIA = 70;
+const int AVG_RGB_BORDER_DEST_CRITERIA = 100;
+const std::string img_path = "..//test_img//147091//Test image.jpg";
+const std::string WRITE_PATH = "..//Segmentation_Evaluation//147091_student//";
+*/
+
+// Valley
+///*
+const int N_IND = 10;
+const int N_OFFSPRING = 10;
+const int N_GENERATIONS = 10;
+const int SMALL_SEGMENT_SIZE = 500;  // 50
+const int N_SMALL_SEGMENT = 300; // 1000
+const int N_MERGE_SMALL_SEGMENT = 0; // 30
+const int AVG_RGB_SEG_DEST_CRITERIA = 70;
+const int AVG_RGB_BORDER_DEST_CRITERIA = 100;
+const std::string img_path = "..//test_img//176035//Test image.jpg";
+const std::string WRITE_PATH = "..//Segmentation_Evaluation//176035_student//";
 //*/
+
 
 const int SEGMENT_SIZE[N_SEG_TYPES] = { 1000,5000 };
 const int N_PIX_SEGMENT[N_SEG_TYPES] = { 1000,1 };
