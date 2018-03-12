@@ -34,8 +34,8 @@ int main() {
 	std::cout << "finished " << std::endl;
 	std::cout << seconds - time(NULL) << std::endl;
 	seconds = time(NULL);
-	//p.draw_pareto_front();
-	p.draw_fitness_top();
+	if(MOEA_NOT_WGA) p.draw_pareto_front();
+	else p.draw_fitness_top();
 	cv::waitKey(0);
 
 	/*std::vector<int> survivors;

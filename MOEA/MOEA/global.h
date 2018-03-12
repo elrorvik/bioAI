@@ -102,7 +102,7 @@ const std::string WRITE_PATH = "..//Segmentation_Evaluation//147091_student//";
 */
 
 // Valley - COIMPLETELY SATISFIED, do not touch!
-/*
+///*
 const int N_IND = 10;
 const int N_OFFSPRING = 10;
 const int N_GENERATIONS = 10;
@@ -113,10 +113,13 @@ const int AVG_RGB_SEG_DEST_CRITERIA = 70;
 const int AVG_RGB_BORDER_DEST_CRITERIA = 100;
 const std::string img_path = "..//test_img//176035//Test image.jpg";
 const std::string WRITE_PATH = "..//Segmentation_Evaluation//176035_student//";
-*/
+const bool MOEA_NOT_WGA = true;
+const double WEIGHT_OD = 1;
+const double WEIGHT_EV = 1;
+//*/
 
 // Valley - weighted GA
-///*
+/*
 const int N_IND = 20;
 const int N_OFFSPRING = 10;
 const int N_GENERATIONS = 43;
@@ -129,7 +132,9 @@ const std::string img_path = "..//test_img//176035//Test image.jpg";
 const std::string WRITE_PATH = "..//Segmentation_Evaluation//176035_student//";
 const double WEIGHT_OD = 1;
 const double WEIGHT_EV = 1;
-//*/
+const bool MOEA_NOT_WGA = false;
+
+*/
 
 
 const int SEGMENT_SIZE[N_SEG_TYPES] = { 1000,5000 };

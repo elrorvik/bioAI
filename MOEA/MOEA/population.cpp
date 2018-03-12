@@ -322,8 +322,9 @@ void Population::MOEA_next_generation(int current_generation) {
 	int tournament_size = 10;
 
 	// find parentss
-	//std::vector<int> parents = rank_tournament_selection(*this, entry_s, n_pop, tournament_size, N_OFFSPRING, rank); // returns list of parent index
-	std::vector<int> parents = fitness_tournament_selection(*this, entry_s, n_pop, tournament_size, N_OFFSPRING, fitness_1, fitness_2, WEIGHT_OD, WEIGHT_EV);
+	std::vector<int> parents;
+	if (MOEA_NOT_WGA) parents = rank_tournament_selection(*this, entry_s, n_pop, tournament_size, N_OFFSPRING, rank); // returns list of parent index
+	else parents = fitness_tournament_selection(*this, entry_s, n_pop, tournament_size, N_OFFSPRING, fitness_1, fitness_2, WEIGHT_OD, WEIGHT_EV);
 	std::cout << "Parents: ";
 	for (int i = 0; i < parents.size(); i++) {
 		std::cout << parents[i] << ", ";
@@ -376,8 +377,9 @@ void Population::MOEA_next_generation(int current_generation) {
 	}
 
 	MOEA_rank(n_pop, rank, fitness_1, fitness_2);
-	//std::vector<int> survivors = NSGAII(*this, entry_s, n_pop, rank, fitness_1, fitness_2);
-	std::vector<int> survivors = fitness_tournament_selection(*this, entry_s, n_pop, N_IND + N_OFFSPRING, N_IND, fitness_1, fitness_2, WEIGHT_OD, WEIGHT_EV);
+	std::vector<int> survivors;
+	if(MOEA_NOT_WGA) survivors = NSGAII(*this, entry_s, n_pop, rank, fitness_1, fitness_2);
+	else survivors = fitness_tournament_selection(*this, entry_s, n_pop, N_IND + N_OFFSPRING, N_IND, fitness_1, fitness_2, WEIGHT_OD, WEIGHT_EV);
 	std::vector<int> non_survivors;
 	std::vector<int> survivors_offspring;
 
@@ -1242,6 +1244,7 @@ void Population::draw_pareto_front() {
 			//std::string window_name = "contour from prop " + to_string(rank[i].second);
 			//cv::namedWindow(window_name, 1);
 			//cv::imshow(window_name, img);
+			std::cout << "Fitness: " << fitness_1[rank[i].second].first << ", " << fitness_2[rank[i].second].first << std::endl;
 			if (best_fitness_1 > fitness_1[rank[i].second].first) best_fitness_1 = fitness_1[rank[i].second].first;
 			if (best_fitness_2 > fitness_2[rank[i].second].first) best_fitness_2 = fitness_2[rank[i].second].first;
 		}
