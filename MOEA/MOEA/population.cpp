@@ -895,6 +895,28 @@ cv::Mat Population::draw_segments_black_contour_from_prop(int ind_index) {
 			}
 		}
 	}
+	// frame
+	for (int x = 0; x < get_im_w(); x++) {
+		int y = 0;
+		image.at<cv::Vec3b>(y, x)[2] = color.r;
+		image.at<cv::Vec3b>(y, x)[1] = color.g;
+		image.at<cv::Vec3b>(y, x)[0] = color.b;
+		y = get_im_h() - 1;
+		image.at<cv::Vec3b>(y, x)[2] = color.r;
+		image.at<cv::Vec3b>(y, x)[1] = color.g;
+		image.at<cv::Vec3b>(y, x)[0] = color.b;
+	}
+
+	for (int y = 0; y < get_im_h(); y++) {
+		int x = 0;
+		image.at<cv::Vec3b>(y, x)[2] = color.r;
+		image.at<cv::Vec3b>(y, x)[1] = color.g;
+		image.at<cv::Vec3b>(y, x)[0] = color.b;
+		x = get_im_w() - 1;
+		image.at<cv::Vec3b>(y, x)[2] = color.r;
+		image.at<cv::Vec3b>(y, x)[1] = color.g;
+		image.at<cv::Vec3b>(y, x)[0] = color.b;
+	}
 	return image;
 }
 
