@@ -117,11 +117,11 @@ const std::string WRITE_PATH = "..//Segmentation_Evaluation//176035_student//";
 
 // Valley - weighted GA
 ///*
-const int N_IND = 10;
+const int N_IND = 20;
 const int N_OFFSPRING = 10;
-const int N_GENERATIONS = 10;
-const int SMALL_SEGMENT_SIZE = 500;  // 50
-const int N_SMALL_SEGMENT = 600; // 1000
+const int N_GENERATIONS = 43;
+const int SMALL_SEGMENT_SIZE = 50;  // 50
+const int N_SMALL_SEGMENT = 1000; // 1000
 const int N_MERGE_SMALL_SEGMENT = 0; // 30
 const int AVG_RGB_SEG_DEST_CRITERIA = 70;
 const int AVG_RGB_BORDER_DEST_CRITERIA = 100;

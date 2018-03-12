@@ -322,7 +322,8 @@ void Population::MOEA_next_generation(int current_generation) {
 	int tournament_size = 10;
 
 	// find parentss
-	std::vector<int> parents = rank_tournament_selection(*this, entry_s, n_pop, tournament_size, N_OFFSPRING, rank); // returns list of parent index
+	//std::vector<int> parents = rank_tournament_selection(*this, entry_s, n_pop, tournament_size, N_OFFSPRING, rank); // returns list of parent index
+	std::vector<int> parents = fitness_tournament_selection(*this, entry_s, n_pop, tournament_size, N_OFFSPRING, fitness_1, fitness_2, WEIGHT_OD, WEIGHT_EV);
 	std::cout << "Parents: ";
 	for (int i = 0; i < parents.size(); i++) {
 		std::cout << parents[i] << ", ";
@@ -376,7 +377,7 @@ void Population::MOEA_next_generation(int current_generation) {
 
 	MOEA_rank(n_pop, rank, fitness_1, fitness_2);
 	//std::vector<int> survivors = NSGAII(*this, entry_s, n_pop, rank, fitness_1, fitness_2);
-	std::vector<int> survivors = fitness_tournament_selection(*this, entry_s, n_pop, N_IND + N_OFFSPRING, N_IND, WEIGHT_OD, WEIGHT_EV);
+	std::vector<int> survivors = fitness_tournament_selection(*this, entry_s, n_pop, N_IND + N_OFFSPRING, N_IND, fitness_1, fitness_2, WEIGHT_OD, WEIGHT_EV);
 	std::vector<int> non_survivors;
 	std::vector<int> survivors_offspring;
 
@@ -1247,6 +1248,36 @@ void Population::draw_pareto_front() {
 	}
 
 	std::cout << "Best fitness of run.   F1: " << best_fitness_1 << ", F2: " << best_fitness_2 << std::endl;
+}
+
+void Population::draw_fitness_top() {
+	std::vector<std::pair<double, int>> weighted_fitness;
+
+	for (int i = 0; i < N_IND; i++) {
+		weighted_fitness.push_back(std::make_pair((fitness_1[i].first*WEIGHT_OD + fitness_2[i].first*WEIGHT_EV), i));
+	}
+
+	struct descending_comparator {
+		bool operator() (const std::pair<double, int> p1, const std::pair<double, int> p2) {
+			return p1.first < p2.first;
+		}
+		bool operator() (const std::pair<int, int> p1, const std::pair<int, int> p2) {
+			return p1.first < p2.first;
+		}
+	};
+	descending_comparator comp;
+	std::sort(weighted_fitness.begin(), weighted_fitness.end(), comp);
+
+	for (int i = 0; i < 5; i++) {
+		int ind_index = weighted_fitness[i].second;
+		cv::Mat img = draw_segments_black_contour_from_prop(ind_index);
+		write_image_to_file(ind_index, img);
+		std::cout << "Fitness of individual: " << weighted_fitness[i].first << std::endl;
+		//std::string window_name = "contour from prop " + to_string(rank[i].second);
+		//cv::namedWindow(window_name, 1);
+		//cv::imshow(window_name, img);
+		
+	}
 }
 
 bool Population::individual_uncolored(int ind_index) {
