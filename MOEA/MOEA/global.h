@@ -8,32 +8,33 @@
 #include<map>
 
 const int CONTINUE_WHEN_DRAWING = 1; // For cv::WaitKey()
-const int N_IND = 20;
 const int N_SEG_TYPES = 2;
-
 const double CROSSOVER_RATE = 0.6;
 const double MUTATION_RATE = 0.9;
-const int N_OFFSPRING = 10;
 const double MUT_SPLIT_PERC = 0.1;
 const double MUT_MERGE_PERC = 0.9;
 //const int SEGMENT_SIZE[N_SEG_TYPES] = { 1000,5000 };
 //const int N_PIX_SEGMENT[N_SEG_TYPES] = { 20,20};
 
 
-// dessert
+// dessert - COMPLETELY SATISFIED, do not touch!
 /*
-const int N_GENERATIONS = 50; //100
+const int N_IND = 10;
+const int N_OFFSPRING = 10;
+const int N_GENERATIONS = 60; //100
 const int SMALL_SEGMENT_SIZE = 100; // 20
-const int N_SMALL_SEGMENT = 600; // 3000
+const int N_SMALL_SEGMENT = 1000; // 3000
 const int N_MERGE_SMALL_SEGMENT = 0; // 2990
-const int AVG_RGB_SEG_DEST_CRITERIA = 50;
-const int AVG_RGB_BORDER_DEST_CRITERIA = 50;
+const int AVG_RGB_SEG_DEST_CRITERIA = 70;
+const int AVG_RGB_BORDER_DEST_CRITERIA = 70;
 const std::string img_path = "..//test_img//178054//Test image.jpg"; // Desert
 const std::string WRITE_PATH = "..//Segmentation_Evaluation//178054_student//"; // Desert
 */
 
 // Circle
-///*
+/*
+const int N_IND = 20;
+const int N_OFFSPRING = 10;
 const int N_GENERATIONS = 60; // with 600 N_SMALL_SEGMENT -> 43 gives 69.73%
 const int SMALL_SEGMENT_SIZE = 100; // 4, 100
 const int N_SMALL_SEGMENT = 1000; // 600 -> 69.73%
@@ -42,13 +43,21 @@ const int AVG_RGB_SEG_DEST_CRITERIA = 100;
 const int AVG_RGB_BORDER_DEST_CRITERIA = 150;
 const std::string img_path  = "..//test_img//86016//Test image.jpg"; // circle
 const std::string WRITE_PATH = "..//Segmentation_Evaluation//86016_student//"; 
+*/
+
+ // Tiger // N_GENERATIONS = 3, N_SMALL_SEGMENT = 300, SMALL_SEGMENT_SIZE = 500, AVG_RGB_SEG = 70, AVG_RGB_BORDER = 100 -> 67.64%
+///*
+const int N_IND = 10;
+const int N_OFFSPRING = 10;
+const int N_GENERATIONS = 3;
+const int SMALL_SEGMENT_SIZE = 400;  // 50
+const int N_SMALL_SEGMENT = 300; // 1000
+const int N_MERGE_SMALL_SEGMENT = 0; // 30
+const int AVG_RGB_SEG_DEST_CRITERIA = 70;
+const int AVG_RGB_BORDER_DEST_CRITERIA = 100;
+const std::string img_path = "..//test_img//160068//Test image.jpg"; // circle
+const std::string WRITE_PATH = "..//Segmentation_Evaluation//160068_student//";
 //*/
-
- // Tiger
-//const int SMALL_SEGMENT_SIZE = 2000;  // 1000
-//const int N_SMALL_SEGMENT = 10; // 40
-//const int N_MERGE_SMALL_SEGMENT =0; // 30
-
 
 const int SEGMENT_SIZE[N_SEG_TYPES] = { 1000,5000 };
 const int N_PIX_SEGMENT[N_SEG_TYPES] = { 1000,1 };

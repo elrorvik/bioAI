@@ -36,6 +36,7 @@ Population::Population() {
 	if (!im.data)                              // Check for invalid input
 	{
 		std::cout << "Could not open or find the image" << std::endl;
+		std::cin.get();
 		exit(0);
 	}
 
@@ -299,7 +300,7 @@ void Population::initialize_population() {
 
 	//Random number of initial mutations
 	for (int i = 0; i < N_IND; i++) {
-		int random_initial_mutations = (rand() % (N_SMALL_SEGMENT - N_SMALL_SEGMENT/2)) + N_SMALL_SEGMENT/3;
+		int random_initial_mutations = (rand() % (N_SMALL_SEGMENT - N_SMALL_SEGMENT/4)) + 3*N_SMALL_SEGMENT/4;
 		for (int j = 0; j < random_initial_mutations; j++) {
 			int attempts = 0;
 			while(!mutation_greedy_merge_segments(*this, i) && 50 > attempts++);
@@ -408,6 +409,12 @@ void Population::MOEA_next_generation(int current_generation) {
 	std::cout << " rank " << rank[i].first << "," << rank[i].second << " fitness 1: " << fitness_1[i].first << "," << fitness_1[i].second << " fitness 2: " << fitness_2[i].first << "," << fitness_2[i].second << std::endl;
 	}
 	std::cout << "num_offspring survivors: " << survivors_offspring.size() << std::endl;*/
+	//for (int i = 0; i < N_IND; i++) {
+	//	if (rank[i].first == 0) {
+	//		std::cout << "Ind: " << i << ", F1 " << fitness_1[i].first << ", F2 " << fitness_2[i].first << " ";
+	//	}
+	//}
+	std::cout << std::endl;
 }
 
 
@@ -1223,6 +1230,8 @@ void Population::copy_individual(int l_index, int r_index) {
 }
 
 void Population::draw_pareto_front() {
+	double best_fitness_1 = DBL_MAX;
+	double best_fitness_2 = DBL_MAX;
 	for (int i = 0; i < N_IND; i++) {
 		if (rank[i].first == 0) {
 			std::cout << " num segments" << segment_prop[rank[i].second].size() << std::endl;
@@ -1231,9 +1240,12 @@ void Population::draw_pareto_front() {
 			//std::string window_name = "contour from prop " + to_string(rank[i].second);
 			//cv::namedWindow(window_name, 1);
 			//cv::imshow(window_name, img);
-			
+			if (best_fitness_1 > fitness_1[rank[i].second].first) best_fitness_1 = fitness_1[rank[i].second].first;
+			if (best_fitness_2 > fitness_2[rank[i].second].first) best_fitness_2 = fitness_2[rank[i].second].first;
 		}
 	}
+
+	std::cout << "Best fitness of run.   F1: " << best_fitness_1 << ", F2: " << best_fitness_2 << std::endl;
 }
 
 bool Population::individual_uncolored(int ind_index) {
