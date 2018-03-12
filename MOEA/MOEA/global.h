@@ -7,8 +7,7 @@
 #include<vector>
 #include<map>
 
-const int CONTINUE_WHEN_DRAWING = 0;
-const int N_GENERATIONS = 43; //100
+const int CONTINUE_WHEN_DRAWING = 1; // For cv::WaitKey()
 const int N_IND = 20;
 const int N_SEG_TYPES = 2;
 
@@ -23,6 +22,7 @@ const double MUT_MERGE_PERC = 0.9;
 
 // dessert
 /*
+const int N_GENERATIONS = 50; //100
 const int SMALL_SEGMENT_SIZE = 100; // 20
 const int N_SMALL_SEGMENT = 600; // 3000
 const int N_MERGE_SMALL_SEGMENT = 0; // 2990
@@ -34,8 +34,9 @@ const std::string WRITE_PATH = "..//Segmentation_Evaluation//178054_student//"; 
 
 // Circle
 ///*
+const int N_GENERATIONS = 60; // with 600 N_SMALL_SEGMENT -> 43 gives 69.73%
 const int SMALL_SEGMENT_SIZE = 100; // 4, 100
-const int N_SMALL_SEGMENT = 600; // 2000, 600
+const int N_SMALL_SEGMENT = 1000; // 600 -> 69.73%
 const int N_MERGE_SMALL_SEGMENT = 0; // 1950
 const int AVG_RGB_SEG_DEST_CRITERIA = 100;
 const int AVG_RGB_BORDER_DEST_CRITERIA = 150;
