@@ -8,12 +8,12 @@ from fileReader import readTextFile
 #studentFolder = "86016_student" 
 #optimalFolder = "147091" # three
 #studentFolder = "147091_student" 
-optimalFolder = "160068" # tiger
-studentFolder = "160068_student" 
+#optimalFolder = "160068" # tiger
+#studentFolder = "160068_student" 
 #optimalFolder = "176035" # you may have to specify the complete path
 #studentFolder = "176035_student" # you may have to specify the complete path
-#optimalFolder = "178054" # you may have to specify the complete path
-#studentFolder = "178054_student" # you may have to specify the complete path
+optimalFolder = "178054" # dessert
+studentFolder = "178054_student" 
 #optimalFolder = "216066" # you may have to specify the complete path
 #studentFolder = "216066_student" # you may have to specify the complete path
 #optimalFolder = "353013" # you may have to specify the complete path
