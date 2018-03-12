@@ -96,6 +96,7 @@ public:
 	void print_entry_properties(int ind_index, pos entry, bool cout_edges);
 	void print_entry_properties(int ind_index, bool cout_edges);
 	void validate_entry_properties(int ind_index);
+	cv::Mat draw_segments_black_contour_from_prop(int ind_index);
 
 };
 

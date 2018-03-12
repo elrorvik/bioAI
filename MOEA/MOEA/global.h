@@ -7,7 +7,7 @@
 #include<vector>
 #include<map>
 
-const int N_GENERATIONS = 43; //100
+const int N_GENERATIONS = 100; //100
 const int N_IND = 20;
 const int N_SEG_TYPES = 2;
 
@@ -25,7 +25,7 @@ const int SMALL_SEGMENT_SIZE = 100; // 20
 const int N_SMALL_SEGMENT = 600; // 3000
 const int N_MERGE_SMALL_SEGMENT = 0; // 2990
 const int AVG_RGB_SEG_DEST_CRITERIA = 50;
-const int AVG_RGB_BORDER_DEST_CRITERIA = 150;
+const int AVG_RGB_BORDER_DEST_CRITERIA = 50;
 
 // Circle
 //const int SMALL_SEGMENT_SIZE = 100; // 4, 100

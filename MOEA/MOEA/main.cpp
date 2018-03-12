@@ -35,6 +35,7 @@ int main() {
 	std::cout << seconds - time(NULL) << std::endl;
 	seconds = time(NULL);
 	p.draw_pareto_front();
+	cv::waitKey(0);
 
 	/*std::vector<int> survivors;
 	survivors.push_back(0);

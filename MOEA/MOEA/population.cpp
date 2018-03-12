@@ -264,9 +264,10 @@ void Population::initialize_population() {
 		fitness_2.push_back(std::make_pair(0.0, i));
 		rank.push_back(std::make_pair(0, i));
 		draw_segments_contour(i, i);
-		cv::Mat im = draw_segments_black_contour(i);
-		write_image_to_file(i, im);
-		cv::waitKey(1);
+		//draw_segments_black_contour_from_prop(i);
+		//cv::Mat im = draw_segments_black_contour(i);
+		//write_image_to_file(i, im);
+		cv::waitKey(0);
 
 	}
 	int init_index = 0;
@@ -344,7 +345,7 @@ void Population::MOEA_next_generation(int current_generation) {
 	for (int i = N_IND; i < n_pop; i++) {
 		double rand_num = (rand() % 1000) / 1000.0;
 		if (rand_num < MUTATION_RATE) {
-			int num_mutations = rand() % (45 - current_generation);
+			int num_mutations = rand() % (N_GENERATIONS + 2 - current_generation);
 			//int num_mutations = 1000;
 			for (int j = 0; j < num_mutations; j++) {
 				int attempts = 0;
@@ -403,13 +404,10 @@ void Population::MOEA_next_generation(int current_generation) {
 		copy_individual(non_survivors[i], survivors_offspring[i]);
 	}
 
-	for (int i = 0; i < N_IND+N_OFFSPRING; i++) {
+	/*for (int i = 0; i < N_IND+N_OFFSPRING; i++) {
 	std::cout << " rank " << rank[i].first << "," << rank[i].second << " fitness 1: " << fitness_1[i].first << "," << fitness_1[i].second << " fitness 2: " << fitness_2[i].first << "," << fitness_2[i].second << std::endl;
 	}
-	std::cout << "num_offspring survivors: " << survivors_offspring.size() << std::endl;
-
-
-	// return pareto rank 0 ? ( to main loop ? or ??)
+	std::cout << "num_offspring survivors: " << survivors_offspring.size() << std::endl;*/
 }
 
 
@@ -444,6 +442,7 @@ void Population::merge_segments(int ind_index, edge merge_nodes) {
 	}
 	int new_segment_size = get_n_segment(merge_nodes.p1, ind_index, 0);
 	int new_segment_size_2 = get_n_segment(merge_nodes.p2, ind_index, 0);
+
 	if ((new_segment_size != old_segment_size + old_segment_size_2) || new_segment_size_2 != old_segment_size + old_segment_size_2) {
 		std::cout << "Different sized segments at " << ind_index << " with edge " << merge_nodes.p1.x << "," << merge_nodes.p1.y << " <-> " << merge_nodes.p2.x << "," << merge_nodes.p2.y << std::endl;
 		std::cout << "Sizes; new1 " << new_segment_size << ", new2 " << new_segment_size_2 << ", sum of old: " << old_segment_size + old_segment_size_2 << std::endl;
@@ -868,6 +867,37 @@ cv::Mat Population::draw_segments_black_contour(int ind_index) {
 	return image;
 }
 
+cv::Mat Population::draw_segments_black_contour_from_prop(int ind_index) {
+	std::cout << "Begin: " << ind_index << std::endl;
+
+	cv::Mat image(get_im_h(), get_im_w(), CV_8UC3, cv::Scalar(255, 255, 255));
+
+	//std::cout << "Begin: edge_segment" << std::endl;
+
+	RGB color(0, 0, 0); // black
+
+	//std::cout << " test contour plot imshow " << std::endl;
+	for (int i = 0; i < entry_s[ind_index].size(); i++) {
+		for (auto it = segment_prop[ind_index].begin(); it != segment_prop[ind_index].end(); ++it) {
+			for (auto xt = it->second.borders.begin(); xt != it->second.borders.end(); ++xt) {
+				for (auto yt = xt->second.begin(); yt != xt->second.end(); yt++) {
+					int y1 = yt->p1.y;
+					int x1 = yt->p1.x;
+					int y2 = yt->p2.y;
+					int x2 = yt->p2.x;
+					if (image.at<cv::Vec3b>(y1, x1)[2] == color.r || image.at<cv::Vec3b>(y2, x2)[2] == color.r) {
+						continue;
+					}
+					image.at<cv::Vec3b>(y1, x1)[2] = color.r;
+					image.at<cv::Vec3b>(y1, x1)[1] = color.g;
+					image.at<cv::Vec3b>(y1, x1)[0] = color.b;
+				}
+			}
+		}
+	}
+	return image;
+}
+
 void Population::draw_segments_contour(int ind_index, int name) {
 	cv::Mat segment = cv::imread(img_path, 1);
 
@@ -1173,10 +1203,13 @@ void Population::copy_individual(int l_index, int r_index) {
 void Population::draw_pareto_front() {
 	for (int i = 0; i < N_IND; i++) {
 		if (rank[i].first == 0) {
-			cv::Mat img = draw_segments_black_contour(rank[i].second);
-			write_image_to_file(rank[i].second, img);
-
 			std::cout << " num segments" << segment_prop[rank[i].second].size() << std::endl;
+			cv::Mat img = draw_segments_black_contour_from_prop(rank[i].second);
+			write_image_to_file(rank[i].second, img);
+			//std::string window_name = "contour from prop " + to_string(rank[i].second);
+			//cv::namedWindow(window_name, 1);
+			//cv::imshow(window_name, img);
+			
 		}
 	}
 }
