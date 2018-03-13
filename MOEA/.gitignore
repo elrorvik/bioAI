@@ -5,21 +5,32 @@ Release
 x64
 
 
-*.db
+*
+.db
 
-*.exe
+*
+.exe
 
-*.ilk
+*
+.ilk
 
-*.pdb
+*
+.pdb
 
-*.obj
+*
+.obj
 
-*.log
+*
+.log
 
-*.tlog
+*
+.tlog
 
-*.lastbuildstate
+*
+.lastbuildstate
 
-*.idb
+*
+.idb
 
+
+test_img/
