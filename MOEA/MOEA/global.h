@@ -102,7 +102,7 @@ const std::string WRITE_PATH = "..//Segmentation_Evaluation//147091_student//";
 */
 
 // Valley - COIMPLETELY SATISFIED, do not touch!
-///*
+/*
 const int N_IND = 10;
 const int N_OFFSPRING = 10;
 const int N_GENERATIONS = 10;
@@ -116,26 +116,41 @@ const std::string WRITE_PATH = "..//Segmentation_Evaluation//176035_student//";
 const bool MOEA_NOT_WGA = true;
 const double WEIGHT_OD = 1;
 const double WEIGHT_EV = 1;
-//*/
+*/
 
 // Valley - weighted GA
-/*
-const int N_IND = 20;
+///*
+const int N_IND = 30;
 const int N_OFFSPRING = 10;
-const int N_GENERATIONS = 43;
-const int SMALL_SEGMENT_SIZE = 50;  // 50
-const int N_SMALL_SEGMENT = 1000; // 1000
+const int N_GENERATIONS = 100;
+const int SMALL_SEGMENT_SIZE = 100;  // 50
+const int N_SMALL_SEGMENT = 400; // 1000
 const int N_MERGE_SMALL_SEGMENT = 0; // 30
 const int AVG_RGB_SEG_DEST_CRITERIA = 70;
 const int AVG_RGB_BORDER_DEST_CRITERIA = 100;
 const std::string img_path = "..//test_img//176035//Test image.jpg";
 const std::string WRITE_PATH = "..//Segmentation_Evaluation//176035_student//";
-const double WEIGHT_OD = 1;
+const double WEIGHT_OD = 1000;
 const double WEIGHT_EV = 1;
 const bool MOEA_NOT_WGA = false;
+//*/
 
+// Circle - weighted GA
+/*
+const int N_IND = 20;
+const int N_OFFSPRING = 10;
+const int N_GENERATIONS = 150; // with 600 N_SMALL_SEGMENT -> 43 gives 69.73%
+const int SMALL_SEGMENT_SIZE = 100; // 4, 100
+const int N_SMALL_SEGMENT = 1000; // 600 -> 69.73%
+const int N_MERGE_SMALL_SEGMENT = 0; // 1950
+const int AVG_RGB_SEG_DEST_CRITERIA = 100;
+const int AVG_RGB_BORDER_DEST_CRITERIA = 150;
+const std::string img_path = "..//test_img//86016//Test image.jpg"; // circle
+const std::string WRITE_PATH = "..//Segmentation_Evaluation//86016_student//";
+const double WEIGHT_OD = 1;
+const double WEIGHT_EV = 100;
+const bool MOEA_NOT_WGA = false;
 */
-
 
 const int SEGMENT_SIZE[N_SEG_TYPES] = { 1000,5000 };
 const int N_PIX_SEGMENT[N_SEG_TYPES] = { 1000,1 };

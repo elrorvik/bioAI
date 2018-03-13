@@ -156,7 +156,7 @@ std::vector<int> rank_tournament_selection(Population &p, const std::vector<pos>
 
 std::vector<int> fitness_tournament_selection(Population &p, const std::vector<pos> * entry_s, int n_pop, int tournament_size, int num_chosen, const std::vector<std::pair<double, int>> &fitness_1, const std::vector<std::pair<double, int>> &fitness_2, double weight_1, double weight_2) {
 
-	const double CHANCE = 0.6;
+	const double CHANCE = 0.5;
 
 	std::vector<std::pair<double, int>> fitness;
 	fitness.reserve(2 * N_IND);
@@ -172,12 +172,19 @@ std::vector<int> fitness_tournament_selection(Population &p, const std::vector<p
 	std::vector<int> selected_individuals;
 	selected_individuals.reserve(num_chosen);
 	for (int i = 0; i < tournament_size; i++) {
-		if (num_chosen - selected_individuals.size() >= tournament_size - i) {
+		if (i < num_chosen / 2) {
 			selected_individuals.push_back(fitness[i].second);
+			std::cout << fitness[i].first << std::endl;
+		}
+		else if (num_chosen - selected_individuals.size() >= tournament_size - i) {
+			selected_individuals.push_back(fitness[i].second);
+			std::cout << fitness[i].first << std::endl;
 		}
 		else {
 			double outcome = (rand() % 1000) / 1000.0;
 			if (outcome < CHANCE*pow(1 - CHANCE, i)) selected_individuals.push_back(fitness[i].second);
+			std::cout << fitness[i].first << std::endl;
+
 		}
 		if (selected_individuals.size() == num_chosen) break;
 	}

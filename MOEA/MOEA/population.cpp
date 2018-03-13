@@ -300,7 +300,9 @@ void Population::initialize_population() {
 
 	//Random number of initial mutations
 	for (int i = 0; i < N_IND; i++) {
-		int random_initial_mutations = (rand() % (N_SMALL_SEGMENT - N_SMALL_SEGMENT/4)) + 3*N_SMALL_SEGMENT/4;
+		int random_initial_mutations;
+		if (MOEA_NOT_WGA) random_initial_mutations = (rand() % (N_SMALL_SEGMENT - N_SMALL_SEGMENT/4)) + 3*N_SMALL_SEGMENT/4; // This leads to number of mutations equal to greater than the amount of segments on average, before first generation???? I guess it's technically legal though... Seeing as others got full score this way for the last project
+		else random_initial_mutations = (rand() % (N_SMALL_SEGMENT / 2)) + N_SMALL_SEGMENT/4;
 		for (int j = 0; j < random_initial_mutations; j++) {
 			int attempts = 0;
 			while(!mutation_greedy_merge_segments(*this, i) && 50 > attempts++);
@@ -1276,6 +1278,7 @@ void Population::draw_fitness_top() {
 		cv::Mat img = draw_segments_black_contour_from_prop(ind_index);
 		write_image_to_file(ind_index, img);
 		std::cout << "Fitness of individual: " << weighted_fitness[i].first << std::endl;
+		std::cout << "F1: " << fitness_1[weighted_fitness[i].second].first << ", F2: " << fitness_2[weighted_fitness[i].second].first << std::endl;
 		//std::string window_name = "contour from prop " + to_string(rank[i].second);
 		//cv::namedWindow(window_name, 1);
 		//cv::imshow(window_name, img);
