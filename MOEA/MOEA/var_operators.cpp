@@ -25,18 +25,38 @@ std::vector<active_edge_t> crossover_uniform_list_representation(Population &p, 
 	return offspring_chromosome;
 }
 
-std::vector<active_edge_t> crossover_uniform_fluid_list_representation(Population &p, int parent_A, int parent_B, int offspring_index) {
-	int crossover_point_seperator_line = rand() % p.get_im_w();
+int crossover_merge(Population &p, int parent_index, int offspring_index) {
+	std::vector<pos> seg_entries = p.get_segment_entries(offspring_index);
+	int rand_num_segments = (seg_entries.size() / 10) + rand() % seg_entries.size() / 4;
+	int i = 0;
+	bool any_segment_merged = false; // For return value
 
-	std::vector<active_edge_t> parent_A_chromosome = p.get_edge_candidates(parent_A);
-	std::vector<active_edge_t> parent_B_chromosome = p.get_edge_candidates(parent_B);
-	std::vector<active_edge_t> offspring_chromosome = parent_A_chromosome;
+	// Merge segments in the offspring if the parent doesn't have the border, and if chance allows it
+	while (rand_num_segments - i >= 0) {
+		int entry_index = rand() % seg_entries.size();
+		seg_prop_t segment_properties = p.get_segment_property(offspring_index, seg_entries[entry_index]);
+		bool segment_merged = false;
+		for (auto segment_it = segment_properties.neighbour_entries.begin(); segment_it != segment_properties.neighbour_entries.end(); ++segment_it) {
+			if (0.5 > (rand() % 1000) / 1000.0) continue; // By chance, skip this neighbour even if they can be merged
 
-	for (int i = 0; i < parent_A_chromosome.size(); i++) {
+			// Check if parent has this border. If not, merge.
+			for (auto edge_it = segment_properties.borders[*segment_it].begin(); edge_it != segment_properties.borders[*segment_it].end(); ++edge_it) {
+				pos entry1_parent = p.get_node(parent_index, edge_it->p1)->entry;
+				pos entry2_parent = p.get_node(parent_index, edge_it->p2)->entry;
+
+				// If the segment border edge in the offspring isn't a border edge in the parent: merge
+				if (entry1_parent.x != entry2_parent.x || entry1_parent.y != entry2_parent.y) {
+					p.merge_segments(offspring_index, *edge_it);
+					segment_merged = true;
+					any_segment_merged = true;
+					break;
+				}
+			}
+			if (segment_merged) break;
+		}
 
 	}
-
-	return offspring_chromosome;
+	return any_segment_merged;
 }
 
 int  mutation_split_segments(Population &p, int ind_index) {
