@@ -300,9 +300,9 @@ void Population::initialize_population() {
 
 	//Random number of initial mutations
 	for (int i = 0; i < N_IND; i++) {
-		int random_initial_mutations;
-		if (MOEA_NOT_WGA) random_initial_mutations = (rand() % (N_SMALL_SEGMENT - N_SMALL_SEGMENT/4)) + 3*N_SMALL_SEGMENT/4; // This leads to number of mutations equal to greater than the amount of segments on average, before first generation???? I guess it's technically legal though... Seeing as others got full score this way for the last project
-		else random_initial_mutations = (rand() % (N_SMALL_SEGMENT / 2)) + N_SMALL_SEGMENT/4;
+		int random_initial_mutations = 0;
+		if (MOEA_NOT_WGA) random_initial_mutations = (rand() % (N_SMALL_SEGMENT/4)) + 3*N_SMALL_SEGMENT/4; // This leads to number of mutations equal to greater than the amount of segments on average, before first generation???? I guess it's technically legal though... Seeing as others got full score this way for the last project
+		else random_initial_mutations = (rand() % (N_SMALL_SEGMENT / 4)) + 3 * N_SMALL_SEGMENT / 4;//(rand() % (N_SMALL_SEGMENT / 2)) + N_SMALL_SEGMENT/4;
 		for (int j = 0; j < random_initial_mutations; j++) {
 			int attempts = 0;
 			while(!mutation_greedy_merge_segments(*this, i) && 50 > attempts++);
@@ -333,9 +333,20 @@ void Population::MOEA_next_generation(int current_generation) {
 	}
 	std::cout << endl;
 	for (int i = 0; i < N_OFFSPRING;) {
-		//double rand_num = (rand() % 1000) / 1000.0;
+		double rand_num = (rand() % 1000) / 1000.0;
+
 		copy_individual(n_pop++, parents[i++]);
 		individual_uncolored(n_pop - 1);
+		if (i >= N_OFFSPRING) break;
+		copy_individual(n_pop++, parents[i++]);
+		individual_uncolored(n_pop - 1);
+
+		if (rand_num < CROSSOVER_RATE) {
+			crossover_merge(*this, parents[i - 1], n_pop - 2);
+			crossover_merge(*this, parents[i - 2], n_pop - 1);
+		}
+
+
 		//if (i >= N_OFFSPRING) break;
 		//copy_individual(n_pop++, parents[i++]);
 		//if (rand_num < CROSSOVER_RATE) {
@@ -631,7 +642,7 @@ void  Population::merge_segment_properties(int ind_index, pos first, pos second)
 	//std::cout << "*** after removing segment from segment_prop - DONE DONE DONE ***" << std::endl;
 	//print_entry_properties(ind_index, 0);
 	//std::cout << "*****************************************************************" << std::endl << std::endl;
-	//validate_entry_properties(ind_index);
+	validate_entry_properties(ind_index);
 	//std::cin.get();
 }
 

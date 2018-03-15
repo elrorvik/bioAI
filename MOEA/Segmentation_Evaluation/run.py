@@ -4,8 +4,8 @@ import numpy as np
 from fileReader import readImage
 from fileReader import readTextFile
 
-optimalFolder = "GT_3" # you may have to specify the complete path
-studentFolder = "GT_3_student" # you may have to specify the complete path
+optimalFolder = "86016" # you may have to specify the complete path
+studentFolder = "86016_student" # you may have to specify the complete path
 colorValueSlackRange = 40
 blackValueThreshold = 100 # colors below 100 is black
 pixelRangeCheck = 4

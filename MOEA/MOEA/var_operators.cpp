@@ -27,12 +27,16 @@ std::vector<active_edge_t> crossover_uniform_list_representation(Population &p, 
 
 int crossover_merge(Population &p, int parent_index, int offspring_index) {
 	std::vector<pos> seg_entries = p.get_segment_entries(offspring_index);
-	int rand_num_segments = (seg_entries.size() / 10) + rand() % seg_entries.size() / 4;
-	int i = 0;
+	if (seg_entries.size() == 0) return false;
+	int rand_num_segments = rand() % 6;//(seg_entries.size() / 10) + rand() % seg_entries.size() / 4;
+	int i = -1;
 	bool any_segment_merged = false; // For return value
 
 	// Merge segments in the offspring if the parent doesn't have the border, and if chance allows it
-	while (rand_num_segments - i >= 0) {
+	while (rand_num_segments - ++i >= 0) {
+		seg_entries = p.get_segment_entries(offspring_index);
+		//std::cout << rand_num_segments - i << std::endl;
+
 		int entry_index = rand() % seg_entries.size();
 		seg_prop_t segment_properties = p.get_segment_property(offspring_index, seg_entries[entry_index]);
 		bool segment_merged = false;
