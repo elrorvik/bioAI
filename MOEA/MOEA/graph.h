@@ -6,22 +6,19 @@ using namespace std;
 
 # define INF 0x3f3f3f3f
 
-// iPair ==>  Integer Pair
-typedef pair<int,double> idPair;
+//typedef pair<int,double> idPair;
 typedef pair<double, int> diPair;
 
-// This class represents a directed graph using
-// adjacency list representation
 class Graph
 {
-	int V;    // No. of vertices
-	list<diPair> *adj; //  adjencency list
+	int V;    
+	list<diPair> *adj; 
 
 public:
-	Graph(int V);  // Constructor
+	Graph(int V);  
 	~Graph();
-	void addEdge(int u, int v, double w);  // function to add an edge to graph
-	vector<int> primMST(int start_index); // creating MST returning parents
+	void addEdge(int u, int v, double w);  
+	vector<int> primMST(int start_index); 
 };
 
 class Population;

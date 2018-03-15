@@ -7,6 +7,8 @@
 #include<vector>
 #include<map>
 
+const std::string PATH_WRITE_PARETO_FRONT = "..//Draw_Pareto_Front//pareto_front.txt"; // 
+
 const int CONTINUE_WHEN_DRAWING = 1; // For cv::WaitKey()
 const int N_SEG_TYPES = 2;
 const double CROSSOVER_RATE = 0.6;
@@ -119,7 +121,7 @@ const double WEIGHT_EV = 1;
 */
 
 // Valley - weighted GA
-///*
+/*
 const int N_IND = 30;
 const int N_OFFSPRING = 10;
 const int N_GENERATIONS = 100;
@@ -152,51 +154,39 @@ const double WEIGHT_EV = 100;
 const bool MOEA_NOT_WGA = false;
 */
 
-const int SEGMENT_SIZE[N_SEG_TYPES] = { 1000,5000 };
-const int N_PIX_SEGMENT[N_SEG_TYPES] = { 1000,1 };
-const int N_EDGES = 60;
-
-//const int SEGMENT_SIZE[N_SEG_TYPES] = { 1000,5000 };
-//const int N_PIX_SEGMENT[N_SEG_TYPES] = { 3,3 };
-
-/*
-//const int N_GENERATIONS = 100;
-const int N_IND = 10;
-const int N_SEG_TYPES = 2;
-const double CROSSOVER_RATE = 0.5;
-const double MUTATION_RATE = 0.5;
-const int N_OFFSPRING = 6;
-const double MUT_SPLIT_PERC = 0.1;
-const double MUT_MERGE_PERC = 0.9;
-
-//Desert Circle
-const int N_GENERATIONS = 200;
-const int SEGMENT_SIZE[N_SEG_TYPES] = { 1000,10000 };
-const int N_PIX_SEGMENT[N_SEG_TYPES] = { 60,20 };
-const std::string img_path = "..//test_img//86016//Test image.jpg";
-const std::string WRITE_PATH = "..//Segmentation_Evaluation//86016_student//";
-
-//Flowers, low amount of starting segments
-//const int SEGMENT_SIZE[N_SEG_TYPES] = { 1000,10000 };
-//const int N_PIX_SEGMENT[N_SEG_TYPES] = { 60,20 };
-//const std::string img_path  = "..//test_img//353013//Test image.jpg"; // blomst
-//const std::string WRITE_PATH = "..//Segmentation_Evaluation//353013_student//";
-*/
-
 //const std::string img_path = "..//test_img//147091//Test image.jpg"; // three
 //const std::string WRITE_PATH = "..//Segmentation_Evaluation//147091_student//"; 
 //const std::string img_path  = "..//test_img//160068//Test image.jpg"; // Leopart
 //const std::string WRITE_PATH = "..//Segmentation_Evaluation//160068_student//"; 
 //const std::string img_path  = "..//test_img//176035//Test image.jpg"; // Land
+//const std::string WRITE_PATH = "..//Segmentation_Evaluation//176035_student//"; 
 //const std::string img_path  = "..//test_img//216066//Test image.jpg"; // stein og �rken
+//const std::string WRITE_PATH = "..//Segmentation_Evaluation//216066_student//"; 
 //const std::string img_path  = "..//test_img//353013//Test image.jpg"; // blomst
-//const std::string WRITE_PATH = "..//Segmentation_Evaluation//353013_student//"; // �rken
-//const std::string WRITE_PATH = "..//Segmentation_Evaluation//353013_student//";
+//const std::string WRITE_PATH = "..//Segmentation_Evaluation//353013_student//"; // 
 
-//const std::string img_path = "..//2000px-Checkerboard_pattern_2.png";
-//const std::string img_path = "..//test_2.jpg";
-//const std::string img_path = "..//test_3.png";
+// Church!
 
+const int N_IND = 10;
+const int N_OFFSPRING = 10;
+const int N_GENERATIONS = 10;
+const int SMALL_SEGMENT_SIZE = 500;  // 50
+const int N_SMALL_SEGMENT = 300; // 1000
+const int N_MERGE_SMALL_SEGMENT = 0; // 30
+const int AVG_RGB_SEG_DEST_CRITERIA = 70;
+const int AVG_RGB_BORDER_DEST_CRITERIA = 100;
+const bool MOEA_NOT_WGA = true;
+const double WEIGHT_OD = 1;
+const double WEIGHT_EV = 1;
+
+//const std::string img_path  = "..//test_img//Test Image//test image_1.jpg"; // church
+//const std::string WRITE_PATH = "..//Segmentation_Evaluation//GT_1_student//"; // 
+
+const std::string img_path = "..//test_img//Test Image//test image_2.jpg"; // salvador
+const std::string WRITE_PATH = "..//Segmentation_Evaluation//GT_2_student//"; // 
+
+//const std::string img_path = "..//test_img//Test Image//test image_3.jpg"; // house
+//const std::string WRITE_PATH = "..//Segmentation_Evaluation//GT_3_student//"; // 
 
 
 enum direction { SELF, UP, DOWN, LEFT, RIGHT };

@@ -12,15 +12,6 @@ int main() {
 	srand(time(0));
 
 	Population p;
-
-	edge e1(pos(438, 314), pos(438, 313), 0);
-	edge e2(pos(438, 313), pos(438, 314), 0);
-	if (e2 == e1) {
-		std::cout << " allike " << std::endl;
-	}
-
-	//operator ==(edge e1, edge e2)
-
 	p.initialize_population();
 
 	int generation = 0;
@@ -34,8 +25,13 @@ int main() {
 	std::cout << "finished " << std::endl;
 	std::cout << seconds - time(NULL) << std::endl;
 	seconds = time(NULL);
-	if(MOEA_NOT_WGA) p.draw_pareto_front();
+	if (MOEA_NOT_WGA) {
+		p.draw_pareto_front();
+		//p.show_green_pareto_front();
+		p.write_pareto_front(PATH_WRITE_PARETO_FRONT);
+	}
 	else p.draw_fitness_top();
+
 	cv::waitKey(0);
 
 	/*std::vector<int> survivors;

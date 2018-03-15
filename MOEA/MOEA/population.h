@@ -47,6 +47,7 @@ public:
 	void test_segment(pos& entry, int ind_index);
 
 	void MOEA_next_generation(int current_generation);
+	void write_pareto_front(std::string filename);
 
 	node* get_node(int ind_index, pos node_pos);
 	RGB get_RGB(int y, int x);
@@ -67,6 +68,7 @@ public:
 	void draw_segments_contour(int ind_index, int name);
 	cv::Mat draw_segments_black_contour(int ind_index);
 	std::vector<pos>* edges_segment(int ind_index);
+	void show_green_pareto_front();
 	
 	//int check_if_edge(pos curr, int ind_index);
 	int check_if_edge(pos curr, int ind_index, int cout); // checkk if boarder
@@ -98,6 +100,7 @@ public:
 	void print_entry_properties(int ind_index, bool cout_edges);
 	void validate_entry_properties(int ind_index);
 	cv::Mat draw_segments_black_contour_from_prop(int ind_index);
+	cv::Mat draw_segments_green_contour_from_prop(int ind_index);
 
 };
 

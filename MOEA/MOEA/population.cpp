@@ -135,7 +135,7 @@ void Population::initialize_individual_PrimsMST(int ind_index) {
 	int start_mst_x = rand() % get_im_w();
 	int start_mst_y = rand() % get_im_h();
 	int start_index = start_mst_x * get_im_h() + start_mst_y;
-	std::cout << " start index " << start_index << std::endl;
+	//std::cout << " start index " << start_index << std::endl;
 
 
 	std::vector<int> mst_parents = g.primMST(start_index); // MAKE PRIM MST
@@ -175,12 +175,12 @@ void Population::initialize_individual_PrimsMST(int ind_index) {
 
 	// setting number of children in graph below a parent
 	set_num_children(*this, ind_index, pos(start_mst_x, start_mst_y));
-	int i = 10;
-	std::cout << " start node num children " << population[ind_index][start_mst_x][start_mst_y].num_children << std::endl;
-	if (population[ind_index][start_mst_x][start_mst_y].left) std::cout << " random left " << population[ind_index][start_mst_x - 1][start_mst_y].num_children << std::endl;
-	if (population[ind_index][start_mst_x][start_mst_y].right)std::cout << " random right " << population[ind_index][start_mst_x + 1][start_mst_y].num_children << std::endl;
-	if (population[ind_index][start_mst_x][start_mst_y].up)std::cout << " random up " << population[ind_index][start_mst_x][start_mst_y - 1].num_children << std::endl;
-	if (population[ind_index][start_mst_x][start_mst_y].down)std::cout << " random down " << population[ind_index][start_mst_x][start_mst_y + 1].num_children << std::endl;
+	//int i = 10;
+	//std::cout << " start node num children " << population[ind_index][start_mst_x][start_mst_y].num_children << std::endl;
+	//if (population[ind_index][start_mst_x][start_mst_y].left) std::cout << " random left " << population[ind_index][start_mst_x - 1][start_mst_y].num_children << std::endl;
+	//if (population[ind_index][start_mst_x][start_mst_y].right)std::cout << " random right " << population[ind_index][start_mst_x + 1][start_mst_y].num_children << std::endl;
+	//if (population[ind_index][start_mst_x][start_mst_y].up)std::cout << " random up " << population[ind_index][start_mst_x][start_mst_y - 1].num_children << std::endl;
+	//if (population[ind_index][start_mst_x][start_mst_y].down)std::cout << " random down " << population[ind_index][start_mst_x][start_mst_y + 1].num_children << std::endl;
 
 	// creating segments
 	r_edge_priority_que merge_que;
@@ -204,7 +204,7 @@ void Population::initialize_individual_PrimsMST(int ind_index) {
 			continue;
 		}
 		else {
-			std::cout << "segment " << it->x << " " << it->y << " " << segment_size << std::endl;
+			//std::cout << "segment " << it->x << " " << it->y << " " << segment_size << std::endl;
 			it++;
 		}
 		total_segment_size += segment_size;
@@ -881,7 +881,6 @@ cv::Mat Population::draw_segments_black_contour(int ind_index) {
 }
 
 cv::Mat Population::draw_segments_black_contour_from_prop(int ind_index) {
-	std::cout << "Begin: " << ind_index << std::endl;
 
 	cv::Mat image(get_im_h(), get_im_w(), CV_8UC3, cv::Scalar(255, 255, 255));
 
@@ -890,6 +889,56 @@ cv::Mat Population::draw_segments_black_contour_from_prop(int ind_index) {
 	RGB color(0, 0, 0); // black
 
 	//std::cout << " test contour plot imshow " << std::endl;
+	for (int i = 0; i < entry_s[ind_index].size(); i++) {
+		for (auto it = segment_prop[ind_index].begin(); it != segment_prop[ind_index].end(); ++it) {
+			for (auto xt = it->second.borders.begin(); xt != it->second.borders.end(); ++xt) {
+				for (auto yt = xt->second.begin(); yt != xt->second.end(); yt++) {
+					int y1 = yt->p1.y;
+					int x1 = yt->p1.x;
+					int y2 = yt->p2.y;
+					int x2 = yt->p2.x;
+					if (image.at<cv::Vec3b>(y1, x1)[2] == color.r || image.at<cv::Vec3b>(y2, x2)[2] == color.r) {
+						continue;
+					}
+					image.at<cv::Vec3b>(y1, x1)[2] = color.r;
+					image.at<cv::Vec3b>(y1, x1)[1] = color.g;
+					image.at<cv::Vec3b>(y1, x1)[0] = color.b;
+				}
+			}
+		}
+	}
+	// frame
+	for (int x = 0; x < get_im_w(); x++) {
+		int y = 0;
+		image.at<cv::Vec3b>(y, x)[2] = color.r;
+		image.at<cv::Vec3b>(y, x)[1] = color.g;
+		image.at<cv::Vec3b>(y, x)[0] = color.b;
+		y = get_im_h() - 1;
+		image.at<cv::Vec3b>(y, x)[2] = color.r;
+		image.at<cv::Vec3b>(y, x)[1] = color.g;
+		image.at<cv::Vec3b>(y, x)[0] = color.b;
+	}
+
+	for (int y = 0; y < get_im_h(); y++) {
+		int x = 0;
+		image.at<cv::Vec3b>(y, x)[2] = color.r;
+		image.at<cv::Vec3b>(y, x)[1] = color.g;
+		image.at<cv::Vec3b>(y, x)[0] = color.b;
+		x = get_im_w() - 1;
+		image.at<cv::Vec3b>(y, x)[2] = color.r;
+		image.at<cv::Vec3b>(y, x)[1] = color.g;
+		image.at<cv::Vec3b>(y, x)[0] = color.b;
+	}
+	return image;
+}
+
+cv::Mat Population::draw_segments_green_contour_from_prop(int ind_index) {
+	cv::Mat image = cv::imread(img_path, 1);
+
+	RGB color(0, 255, 0); 
+
+
+						//std::cout << " test contour plot imshow " << std::endl;
 	for (int i = 0; i < entry_s[ind_index].size(); i++) {
 		for (auto it = segment_prop[ind_index].begin(); it != segment_prop[ind_index].end(); ++it) {
 			for (auto xt = it->second.borders.begin(); xt != it->second.borders.end(); ++xt) {
@@ -1240,7 +1289,7 @@ void Population::draw_pareto_front() {
 	double best_fitness_2 = DBL_MAX;
 	for (int i = 0; i < N_IND; i++) {
 		if (rank[i].first == 0) {
-			std::cout << " num segments" << segment_prop[rank[i].second].size() << std::endl;
+			//std::cout << " num segments" << segment_prop[rank[i].second].size() << std::endl;
 			cv::Mat img = draw_segments_black_contour_from_prop(rank[i].second);
 			write_image_to_file(rank[i].second, img);
 			//std::string window_name = "contour from prop " + to_string(rank[i].second);
@@ -1254,6 +1303,38 @@ void Population::draw_pareto_front() {
 
 	std::cout << "Best fitness of run.   F1: " << best_fitness_1 << ", F2: " << best_fitness_2 << std::endl;
 }
+
+void Population::show_green_pareto_front() {
+	double best_fitness_1 = DBL_MAX;
+	double best_fitness_2 = DBL_MAX;
+	for (int i = 0; i < N_IND; i++) {
+		if (rank[i].first == 0) {
+			//std::cout << " num segments" << segment_prop[rank[i].second].size() << std::endl;
+			cv::Mat img = draw_segments_green_contour_from_prop(rank[i].second);
+			std::string window_name = "green contour individual " + to_string(rank[i].second);
+			cv::namedWindow(window_name, 1);
+			cv::imshow(window_name, img);
+			//std::cout << "Fitness: " << fitness_1[rank[i].second].first << ", " << fitness_2[rank[i].second].first << std::endl;
+			//if (best_fitness_1 > fitness_1[rank[i].second].first) best_fitness_1 = fitness_1[rank[i].second].first;
+			//if (best_fitness_2 > fitness_2[rank[i].second].first) best_fitness_2 = fitness_2[rank[i].second].first;
+		}
+	}
+
+	//std::cout << "Best fitness of run.   F1: " << best_fitness_1 << ", F2: " << best_fitness_2 << std::endl;
+}
+
+void Population::write_pareto_front(std::string filename) {
+	std::ofstream outfile(filename, std::ofstream::binary);
+
+	for (int i = 0; i < N_IND; i++) {
+		if (rank[i].first == 0) {
+			outfile << fitness_1[rank[i].second].first << " " << -fitness_2[rank[i].second].first << std::endl;
+		}
+	}
+	outfile.close();
+}
+
+
 
 void Population::draw_fitness_top() {
 	std::vector<std::pair<double, int>> weighted_fitness;
