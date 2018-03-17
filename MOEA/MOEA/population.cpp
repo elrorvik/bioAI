@@ -1303,10 +1303,12 @@ void Population::draw_pareto_front() {
 			//std::cout << " num segments" << segment_prop[rank[i].second].size() << std::endl;
 			cv::Mat img = draw_segments_black_contour_from_prop(rank[i].second);
 			write_image_to_file(rank[i].second, img);
+			img = draw_segments_green_contour_from_prop(rank[i].second);
+			write_image_to_file(rank[i].second+100, img);
 			//std::string window_name = "contour from prop " + to_string(rank[i].second);
 			//cv::namedWindow(window_name, 1);
 			//cv::imshow(window_name, img);
-			std::cout << "Fitness: " << fitness_1[rank[i].second].first << ", " << fitness_2[rank[i].second].first << std::endl;
+			std::cout <<"Individual: " << rank[i].second << ", Fitness: " << fitness_1[rank[i].second].first << ", " << fitness_2[rank[i].second].first <<", Num segments: " << segment_prop[rank[i].second].size()<<  std::endl;
 			if (best_fitness_1 > fitness_1[rank[i].second].first) best_fitness_1 = fitness_1[rank[i].second].first;
 			if (best_fitness_2 > fitness_2[rank[i].second].first) best_fitness_2 = fitness_2[rank[i].second].first;
 		}
@@ -1369,8 +1371,13 @@ void Population::draw_fitness_top() {
 		int ind_index = weighted_fitness[i].second;
 		cv::Mat img = draw_segments_black_contour_from_prop(ind_index);
 		write_image_to_file(ind_index, img);
+
+		img = draw_segments_green_contour_from_prop(rank[i].second);
+		write_image_to_file(rank[i].second + 100, img);
+
 		std::cout << "Fitness of individual: " << weighted_fitness[i].first << std::endl;
 		std::cout << "F1: " << fitness_1[weighted_fitness[i].second].first << ", F2: " << fitness_2[weighted_fitness[i].second].first << std::endl;
+		std::cout << " Num segments: " << segment_prop[ind_index].size() << std::endl;
 		//std::string window_name = "contour from prop " + to_string(rank[i].second);
 		//cv::namedWindow(window_name, 1);
 		//cv::imshow(window_name, img);

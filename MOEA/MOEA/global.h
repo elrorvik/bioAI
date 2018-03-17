@@ -34,7 +34,7 @@ const std::string WRITE_PATH = "..//Segmentation_Evaluation//178054_student//"; 
 */
 
 // Circle - Completely satisfied, do not touch!
-
+/*
 const int N_IND = 20;
 const int N_OFFSPRING = 10;
 const int N_GENERATIONS = 60; // with 600 N_SMALL_SEGMENT -> 43 gives 69.73%
@@ -47,7 +47,7 @@ const std::string img_path  = "..//test_img//86016//Test image.jpg"; // circle
 const std::string WRITE_PATH = "..//Segmentation_Evaluation//86016_student//";
 const bool MOEA_NOT_WGA = true;
 const double WEIGHT_OD = 1;
-const double WEIGHT_EV = 100000;
+const double WEIGHT_EV = 100000;*/
 
 
  // Tiger // N_GENERATIONS = 3, N_SMALL_SEGMENT = 300, SMALL_SEGMENT_SIZE = 400, AVG_RGB_SEG = 70, AVG_RGB_BORDER = 100 -> 67.64%
@@ -157,6 +157,32 @@ const double WEIGHT_EV = 100;
 const bool MOEA_NOT_WGA = false;
 */
 
+// Tree - weighted GA
+
+//const int N_IND = 30;
+//const int N_OFFSPRING = 10;
+//const int N_GENERATIONS = 100;
+//const int SMALL_SEGMENT_SIZE = 100;  // 50
+//const int N_SMALL_SEGMENT = 400; // 1000
+
+//
+const int N_IND = 10;
+const int N_OFFSPRING = 10;
+const int N_GENERATIONS = 10;
+const int SMALL_SEGMENT_SIZE = 500;  // 50
+const int N_SMALL_SEGMENT = 300; // 1000
+const int N_MERGE_SMALL_SEGMENT = 0; // 30
+const int AVG_RGB_SEG_DEST_CRITERIA = 70;
+const int AVG_RGB_BORDER_DEST_CRITERIA = 100;
+
+
+const std::string img_path = "..//test_img//Test Image//test image_1.jpg";
+const std::string WRITE_PATH = "..//Segmentation_Evaluation//1_student//";
+const double WEIGHT_OD = 1;
+const double WEIGHT_EV = 0;
+const bool MOEA_NOT_WGA = false;
+//*/
+
 //const std::string img_path = "..//test_img//147091//Test image.jpg"; // three
 //const std::string WRITE_PATH = "..//Segmentation_Evaluation//147091_student//"; 
 //const std::string img_path  = "..//test_img//160068//Test image.jpg"; // Leopart
@@ -168,20 +194,6 @@ const bool MOEA_NOT_WGA = false;
 //const std::string img_path  = "..//test_img//353013//Test image.jpg"; // blomst
 //const std::string WRITE_PATH = "..//Segmentation_Evaluation//353013_student//"; // 
 
-
-/*
-const int N_IND = 10;
-const int N_OFFSPRING = 10;
-const int N_GENERATIONS = 10;
-const int SMALL_SEGMENT_SIZE = 500;  // 50
-const int N_SMALL_SEGMENT = 300; // 1000
-const int N_MERGE_SMALL_SEGMENT = 0; // 30
-const int AVG_RGB_SEG_DEST_CRITERIA = 70;
-const int AVG_RGB_BORDER_DEST_CRITERIA = 100;
-const bool MOEA_NOT_WGA = true;
-const double WEIGHT_OD = 1;
-const double WEIGHT_EV = 1;
-*/
 
 
 
