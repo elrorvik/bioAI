@@ -1,8 +1,9 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <sstream>
 
-void read_file(std::string filename) {
+void read_file(std::string filename, int &n_jobs, int &n_machines, int ) {
 	std::fstream f(filename);
 	if (!f.is_open()) {
 		std::cout << "Could not find file path" << std::endl;
@@ -10,9 +11,9 @@ void read_file(std::string filename) {
 	}
 
 	std::string line;
-	/*std::stringstream ss_line;
+	std::stringstream ss_line;
 	std::getline(f, line);
-	ss_line << line;
+	/*ss_line << line;
 	ss_line >> numJobs;
 	ss_line >> numMachines;
 	ss_line.str(string());
