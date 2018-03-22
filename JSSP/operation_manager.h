@@ -5,7 +5,7 @@ struct operation_t {
 	double start_time;
 	const double duration;
 	const int machine_id;
-	const int task_id;
+	const int operation_id;
 	operation_t(double duration, int machine_id, int task_id) : start_time(-1.0), duration(duration), machine_id(machine_id), task_id(task_id) {};
 	operation_t(double start_time,double duration, int machine_id, int task_id) : start_time(start_time), duration(duration), machine_id(machine_id), task_id(task_id) {};
 };
