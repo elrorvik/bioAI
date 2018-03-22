@@ -23,5 +23,7 @@ private:
 public:
 	Operation_manager(std::string file_name);
 	void print_operation_sequence();
+	int get_n_machines() { return n_machines; };
+	int get_n_jobs() { return n_jobs; };
 };
 
