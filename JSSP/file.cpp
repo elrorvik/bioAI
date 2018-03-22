@@ -4,39 +4,34 @@
 #include <sstream>
 #include "operation_manager.h"
 
-void read_file(std::string filename, Operation_manager& om,  int &n_jobs, int &n_machines, int ) {
+void read_file(std::string filename,  int &n_jobs, int &n_machines, operation_seq_t& operation_seq ) {
 	std::fstream f(filename);
 	if (!f.is_open()) {
 		std::cout << "Could not find file path" << std::endl;
 		return;
 	}
 
-	/*std::string line;
-	std::stringstream ss_line;
+	std::string line;
+	std::stringstream ss;
 	std::getline(f, line);
-	ss_line << line;
-	ss_line >> n_jobs;
-	ss_line >> n_machines;
-	ss_line.str(std::string());
-	ss_line.clear();
-
-
+	ss << line;
+	ss >> n_jobs;
+	ss >> n_machines;
+	ss.clear();
+	
 	int machine_id;
-	double process_time;
-	int taskId;
+	double duration;
+	operation_seq = operation_seq_t(n_jobs, std::vector<operation_t>());
 	for (int job_id = 0; job_id < n_jobs; ++job_id) {
 		std::getline(f, line);
-		ss_line << line;
-		taskId = 0;
-		while (!ss_line.eof()) {
-			ss_line >> machine_id;
-			ss_line >> process_time;
-			jobs[job_id].push_back(Task(machine_id, job_id, taskId, process_time));
-			taskId++;
+		ss<< line;
+		int operation_id = 0;
+		while (!ss.eof()) {
+			ss >> machine_id;
+			ss >> duration;
+			operation_seq[job_id].push_back(operation_t(duration, machine_id, operation_id));
+			operation_id++;
 		}
-		ss_line.str(string());
-		ss_line.clear();
+		ss.clear();
 	}
-	current_job_index = vector<char>(numJobs, 0);*/
-
 }
