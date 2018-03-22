@@ -23,6 +23,8 @@ public:
 	Operation_manager();
 	~Operation_manager();
 
+	void set_n_machines(int n_machines) { this->n_machines = n_machines; };
+	void set_n_jobs(int n_jobs) { this->n_jobs = n_jobs; };
 
 
 };
