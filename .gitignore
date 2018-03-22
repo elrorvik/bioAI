@@ -18,3 +18,9 @@ MOEA/\.vs/MOEA/v15/
 *.lastbuildstate
 
 *.idb
+
+JSSP/\.vs/JSSP/v15/\.suo
+
+JSSP/\.vs/JSSP/v15/Browse\.VC\.opendb
+
+JSSP/\.vs/JSSP/v15/ipch/AutoPCH/46af9437f1c55bb5/MAIN\.ipch
