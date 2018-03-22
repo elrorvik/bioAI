@@ -12,7 +12,7 @@ struct operation_t {
 
 typedef std::vector<std::vector<operation_t>> operation_seq_t;
 
-class Opeartion_manager
+class Operation_manager
 {
 private:
 	int n_machines;
@@ -20,8 +20,8 @@ private:
 	operation_seq_t operation_seq;
 	std::vector<int> current_operation_index;
 public:
-	Opeartion_manager();
-	~Opeartion_manager();
+	Operation_manager();
+	~Operation_manager();
 
 
 
