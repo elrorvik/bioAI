@@ -1,8 +1,8 @@
 
-.vs/
-.vs/JSSP/
-Debug/
-Release/
+.vs
+.vs
+Debug
+Release
 
 *.db
 
