@@ -27,6 +27,12 @@
     <ClCompile Include="bee.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="ACO.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ACO.h">
+      <Filter>Header Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="file.h">

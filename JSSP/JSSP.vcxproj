@@ -115,10 +115,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="ACO.cpp" />
     <ClCompile Include="bee.cpp" />
     <ClCompile Include="file.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="operation_manager.cpp" />
+    <ClCompile Include="ACO.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="bee.h" />

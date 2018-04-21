@@ -25,5 +25,6 @@ public:
 	void print_operation_sequence();
 	int get_n_machines() { return n_machines; };
 	int get_n_jobs() { return n_jobs; };
+	int get_op_size(int i) { return operation_seq[i].size(); }
 };
 
