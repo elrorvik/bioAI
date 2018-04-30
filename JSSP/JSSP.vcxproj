@@ -120,9 +120,9 @@
     <ClCompile Include="file.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="operation_manager.cpp" />
-    <ClCompile Include="ACO.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="ACO.h" />
     <ClInclude Include="BCA.h" />
     <ClInclude Include="file.h" />
     <ClInclude Include="operation_manager.h" />

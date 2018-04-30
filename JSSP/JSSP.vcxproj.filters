@@ -27,9 +27,6 @@
     <ClCompile Include="ACO.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ACO.h">
-      <Filter>Header Files</Filter>
-    </ClCompile>
     <ClCompile Include="BCA.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -45,6 +42,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="BCA.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ACO.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
