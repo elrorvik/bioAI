@@ -45,4 +45,5 @@ public:
 	int get_jobs_current_machine_id(int job_index) {return operation_seq[job_index][current_job_index[job_index]].machine_id; }
 	void set_job_start_time(int job_index, double start_time) { operation_seq[job_index][current_job_index[job_index]].start_time = start_time; };
 	double get_operation_finish_time();
+	void test();
 };

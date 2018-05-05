@@ -1,9 +1,15 @@
 #include<algorithm>
 #include<iostream>
 #include"BCA.h"
+#include"scheduler.h"
+
+struct bee {
+	std::vector<int> tasks;
+	double fitness;
+};
 
 struct flowerpatch {
-	std::vector<std::vector<int>> bees;
+	std::vector<bee> bees;
 	int num_bees = 0;
 	double prev_best_fitness = DBL_MAX;
 	int steps_since_improvement = 0;
@@ -12,11 +18,10 @@ struct flowerpatch {
 	// How to assign onlooker bees?
 };
 
-bool bee_fitness_comparator(const std::vector<int> &bee_A, const std::vector<int> &bee_B);
+bool bee_fitness_comparator(const bee &bee_A, const bee &bee_B);
 bool flowerpatch_fitness_comparator(const flowerpatch &patch_A, const flowerpatch &patch_B);
-double fitness(const std::vector<int> &bee);
-void mutate_bee(std::vector<int> &bee);
-void print_bee(const std::vector<int> &bee);
+void mutate_bee(bee &bee);
+void print_bee(const bee &bee);
 
 void bee_colony_algorithm(Operation_manager& om) {
 
@@ -28,8 +33,8 @@ void bee_colony_algorithm(Operation_manager& om) {
 
 	// Initialize flowerpatches and bees
 	//std::cout << "Initialize!" << std::endl << std::endl;
-	
-	std::vector<std::vector<int>> retired_employees;
+
+	std::vector<bee> retired_employees;
 
 	std::vector<flowerpatch> flowerpatches;
 	for (int i = 0; i < NUM_EMPLOYEES; i++) {
@@ -41,12 +46,12 @@ void bee_colony_algorithm(Operation_manager& om) {
 
 	for (int i = 0; i < om.get_n_jobs(); i++) {
 		for (int j = 0; j < om.get_op_size(i); j++) {
-			flowerpatches[0].bees[0].push_back(i);
+			flowerpatches[0].bees[0].tasks.push_back(i);
 		}
 	}
 	for (int i = 1; i < NUM_EMPLOYEES; i++) {
 		flowerpatches[i].bees[0] = flowerpatches[0].bees[0];
-		std::random_shuffle(flowerpatches[i].bees[0].begin(), flowerpatches[i].bees[0].end());
+		std::random_shuffle(flowerpatches[i].bees[0].tasks.begin(), flowerpatches[i].bees[0].tasks.end());
 	}	
 	
 	// Search algorithm
@@ -89,9 +94,12 @@ void bee_colony_algorithm(Operation_manager& om) {
 		}
 
 		// Swap best employed with its best owned onlooker
-		for (int i = 0; i < NUM_EMPLOYEES; i++) {
-			std::vector<std::vector<int>>::iterator begin = flowerpatches[i].bees.begin();
-			std::vector<std::vector<int>>::iterator end = begin + flowerpatches[i].num_bees;
+		for (int patch_index = 0; patch_index < NUM_EMPLOYEES; patch_index++) {
+			for (int bee_index = 0; bee_index < flowerpatches[patch_index].bees.size(); bee_index++) {
+				flowerpatches[patch_index].bees[bee_index].fitness = calc_makespan(om, flowerpatches[patch_index].bees[bee_index].tasks);
+			}
+			std::vector<bee>::iterator begin = flowerpatches[patch_index].bees.begin();
+			std::vector<bee>::iterator end = begin + flowerpatches[patch_index].num_bees;
 			std::sort(begin, end, bee_fitness_comparator);
 		}
 
@@ -99,14 +107,14 @@ void bee_colony_algorithm(Operation_manager& om) {
 		// If too similar, turn least fitness patch into scout bee
 		for (int i = 0; i < NUM_EMPLOYEES; i++) {
 			if (i >= NUM_EMPLOYEES - 2) {
-				std::random_shuffle(flowerpatches[i].bees[0].begin(), flowerpatches[i].bees[0].end());
+				std::random_shuffle(flowerpatches[i].bees[0].tasks.begin(), flowerpatches[i].bees[0].tasks.end());
 				flowerpatches[i].steps_since_improvement = 0;
 				continue;
 			}
 
 			//for (int j = i + 1; j < NUM_EMPLOYEES; j++) { // Too similar to eachother
 			//	if (bee_similar(flowerpatches[i].bees[0], flowerpatches[j].bees[0])) {
-			//		if (fitness(flowerpatches[i].bees[0]) < fitness(flowerpatches[j].bees[0])) std::random_shuffle(flowerpatches[j].bees[0].begin(), flowerpatches[j].bees[0].end());
+			//		if (calc_makespan(om, flowerpatches[i].bees[0]) < calc_makespan(om, flowerpatches[j].bees[0])) std::random_shuffle(flowerpatches[j].bees[0].begin(), flowerpatches[j].bees[0].end());
 			//		else std::random_shuffle(flowerpatches[i].bees[0].begin(), flowerpatches[i].bees[0].end());
 			//	}
 			//}
@@ -114,51 +122,47 @@ void bee_colony_algorithm(Operation_manager& om) {
 			//	if (bee_similar(flowerpatches[i].bees[0], retired_employees[j])) flowerpatches[i].bees[0].begin(), flowerpatches[i].bees[0].end();
 			//}
 
-			if (flowerpatches[i].prev_best_fitness >= fitness(flowerpatches[i].bees[0])) flowerpatches[i].steps_since_improvement += 1;
+			if (flowerpatches[i].prev_best_fitness >= flowerpatches[i].bees[0].fitness) flowerpatches[i].steps_since_improvement += 1;
 			else flowerpatches[i].steps_since_improvement = 0;
 			if (flowerpatches[i].steps_since_improvement >= 5) {
 				retired_employees.push_back(flowerpatches[i].bees[0]);
-				std::random_shuffle(flowerpatches[i].bees[0].begin(), flowerpatches[i].bees[0].end());
+				std::random_shuffle(flowerpatches[i].bees[0].tasks.begin(), flowerpatches[i].bees[0].tasks.end());
 				flowerpatches[i].steps_since_improvement = 0;
 			}
 		}
 
 		// Put the employed bee and its corresponding flower patch in the correct priority bracket
 		std::sort(flowerpatches.begin(), flowerpatches.end(), flowerpatch_fitness_comparator);
-		//std::cout << "Best fitness: " << fitness(flowerpatches[0].bees[0]) << std::endl;
+		//std::cout << "Best fitness: " << calc_makespan(om, flowerpatches[0].bees[0]) << std::endl;
 		if (retired_employees.size() > 50) break;
 	}
 	std::sort(retired_employees.begin(), retired_employees.end(), bee_fitness_comparator);
-	double max_fitness = fitness(flowerpatches[0].bees[0]) >= fitness(retired_employees[0]) ? fitness(flowerpatches[0].bees[0]) : fitness(retired_employees[0]);
+	double max_fitness = flowerpatches[0].bees[0].fitness >= retired_employees[0].fitness ? flowerpatches[0].bees[0].fitness : retired_employees[0].fitness;
 	// DEBUG:
 	//std::cout << std::endl << std::endl << "Best fitness: " << max_fitness << std::endl;
 	//for (int i = 0; i < retired_employees.size(); i++) {
-	//	std::cout << "Retired fitness: " << fitness(retired_employees[i]) << std::endl;
+	//	std::cout << "Retired fitness: " << calc_makespan(om, retired_employees[i]) << std::endl;
 	//}
 	//for (int i = 0; i < flowerpatches[0].num_bees; i++) {
-	//	std::cout << "Flowerpatch 0 fitness: " << fitness(flowerpatches[0].bees[i]) << std::endl;
+	//	std::cout << "Flowerpatch 0 fitness: " << calc_makespan(om, flowerpatches[0].bees[i]) << std::endl;
 	//}
 	//for (int i = 0; i < flowerpatches[1].num_bees; i++) {
-	//	std::cout << "Flowerpatch 1 fitness: " << fitness(flowerpatches[1].bees[i]) << std::endl;
+	//	std::cout << "Flowerpatch 1 fitness: " << calc_makespan(om, flowerpatches[1].bees[i]) << std::endl;
 	//}
 	// :DEBUG
 
 
 }
 
-bool bee_fitness_comparator(const std::vector<int> &bee_A, const std::vector<int> &bee_B) {
-	return fitness(bee_A) > fitness(bee_B);
+bool bee_fitness_comparator(const bee &bee_A, const bee &bee_B) {
+	return bee_A.fitness > bee_B.fitness;
 }
 
 bool flowerpatch_fitness_comparator(const flowerpatch &patch_A, const flowerpatch &patch_B) {
-	return fitness(patch_A.bees[0]) > fitness(patch_B.bees[0]);
+	return patch_A.bees[0].fitness > patch_B.bees[0].fitness;
 }
 
-double fitness(const std::vector<int> &bee) { // Dummy fitness function
-	return bee[0] * 3.14 + bee[5] * 3.14 + bee[10] * 3.14 + bee[15] * 3.14 - bee[3] - bee[18] - bee[11];
-}
-
-void mutate_bee(std::vector<int> &bee) {
+void mutate_bee(bee &bee) {
 	int num_mutations = (rand() % 5) + 1;
 	int mutation_index = 0;
 	while (mutation_index < num_mutations) {
@@ -166,34 +170,34 @@ void mutate_bee(std::vector<int> &bee) {
 		if (mutation_outcome < 0.5) { // Swap
 			//std::cout << "Swapping" << std::endl;
 			//print_bee(bee);
-			int pos_A = rand() % bee.size();
+			int pos_A = rand() % bee.tasks.size();
 			int pos_B;
 			do {
-				pos_B = rand() % bee.size();
+				pos_B = rand() % bee.tasks.size();
 			} while (pos_A == pos_B);
 			//std::cout << "Pos A: " << pos_A << ", with Pos B: " << pos_B << std::endl;
-			int temp = bee[pos_A];
-			bee[pos_A] = bee[pos_B];
-			bee[pos_B] = temp;
+			int temp = bee.tasks[pos_A];
+			bee.tasks[pos_A] = bee.tasks[pos_B];
+			bee.tasks[pos_B] = temp;
 			//print_bee(bee);
 		}
 		else { // Invert
 			//std::cout << "Inverting!" << std::endl;
-			int pos_A = rand() % bee.size();
+			int pos_A = rand() % bee.tasks.size();
 			int pos_B;
 			do {
 				int sign = rand() % 2;
 				int diff = (rand() % 2) + 2;
 				pos_B = pos_A + diff - 2 * diff*sign;
-			} while (pos_B >= bee.size() || pos_B < 0);
+			} while (pos_B >= bee.tasks.size() || pos_B < 0);
 			if (pos_A > pos_B) {
 				int temp = pos_A;
 				pos_A = pos_B;
 				pos_B = temp;
 			}
 			//std::cout << "Pos A: " << pos_A << ", to Pos B: " << pos_B << std::endl;
-			std::vector<int>::iterator bee_it_A = bee.begin() + pos_A;
-			std::vector<int>::iterator bee_it_B = bee.begin() + pos_B;
+			std::vector<int>::iterator bee_it_A = bee.tasks.begin() + pos_A;
+			std::vector<int>::iterator bee_it_B = bee.tasks.begin() + pos_B;
 			//print_bee(bee);
 			std::reverse(bee_it_A, bee_it_B);
 			//print_bee(bee);
