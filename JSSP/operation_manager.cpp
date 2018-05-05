@@ -8,7 +8,7 @@ Operation_manager::Operation_manager(std::string filename) {
 
 	read_file(filename, this->n_jobs, this->n_machines, this->operation_seq);
 	current_job_index = std::vector<int>(n_jobs, 0);
-	//print_operation_sequence();
+	print_operation_sequence();
 }
 
 void Operation_manager::print_operation_sequence() {
@@ -22,5 +22,15 @@ void Operation_manager::print_operation_sequence() {
 			std::cout << "Operation id: " << it->operation_id <<  " ,Machine id: " <<it->machine_id << " ,Duration: " << it->duration << " ,Start time: " << it->start_time <<  std::endl;
 		}
 	}
+}
 
+double Operation_manager::get_operation_finish_time() {
+	double max_finish_time = -DBL_MAX;
+	for (int job_index; job_index < n_jobs; job_index++) {
+		double finish_time = operation_seq[job_index][n_jobs - 1].start_time + operation_seq[job_index][n_jobs - 1].duration;
+		if (finish_time > max_finish_time) {
+			max_finish_time = finish_time;
+		}
+	}
+	return max_finish_time;
 }

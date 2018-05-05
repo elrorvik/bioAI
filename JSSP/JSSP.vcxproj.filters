@@ -30,6 +30,9 @@
     <ClCompile Include="BCA.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="scheduler.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="file.h">

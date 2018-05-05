@@ -18,7 +18,7 @@ double fitness(const std::vector<int> &bee);
 void mutate_bee(std::vector<int> &bee);
 void print_bee(const std::vector<int> &bee);
 
-void bee_colony_algorithm(Operation_manager &om) {
+void bee_colony_algorithm(Operation_manager& om) {
 
 	// Note:
 	// Three things that can be improved:
@@ -34,7 +34,7 @@ void bee_colony_algorithm(Operation_manager &om) {
 	std::vector<flowerpatch> flowerpatches;
 	for (int i = 0; i < NUM_EMPLOYEES; i++) {
 		flowerpatches.emplace_back();
-		for (int j = 0; j < NUM_ONLOOKERS; j++) {
+		for (int j = 0; j < NUM_ONLOOKERS; j++) {	
 			flowerpatches[i].bees.emplace_back();
 		}
 	}
@@ -142,6 +142,8 @@ void bee_colony_algorithm(Operation_manager &om) {
 	//	std::cout << "Flowerpatch 1 fitness: " << fitness(flowerpatches[1].bees[i]) << std::endl;
 	//}
 	// :DEBUG
+
+
 }
 
 bool bee_fitness_comparator(const std::vector<int> &bee_A, const std::vector<int> &bee_B) {

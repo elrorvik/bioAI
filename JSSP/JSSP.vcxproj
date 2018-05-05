@@ -120,6 +120,7 @@
     <ClCompile Include="file.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="operation_manager.cpp" />
+    <ClCompile Include="scheduler.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ACO.h" />
