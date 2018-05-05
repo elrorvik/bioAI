@@ -6,13 +6,13 @@
 
 int main() {
 	srand(time(0));
-	std::string filename = "test_data\\6.txt";
+	std::string filename = "test_data\\10.txt";
 	Operation_manager om(filename);
 	//om.test();
 
 	//ACO(om); // bug in program
 	std::cout << std::endl << std::endl;
-	bee_colony_algorithm(om, true);
+	bee_colony_algorithm(om, 1000, true);
 	std::cout << "finished" << std::endl;
 	
 	system("pause");

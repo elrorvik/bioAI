@@ -1,7 +1,7 @@
 #pragma once
 #include"operation_manager.h"
 
-void bee_colony_algorithm(Operation_manager& om, bool minimize);
+void bee_colony_algorithm(Operation_manager& om, double target, bool minimize);
 const int NUM_BEES = 100;
 const int NUM_EMPLOYEES = 10;
 const int NUM_ONLOOKERS = NUM_BEES - NUM_EMPLOYEES;
