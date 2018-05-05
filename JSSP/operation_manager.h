@@ -1,4 +1,6 @@
 #pragma once
+#ifndef OPERATION_MANAGER_H
+#define OPERATION_MANAGER_H
 #include <vector>
 #include <string>
 
@@ -47,3 +49,7 @@ public:
 	double get_operation_finish_time();
 	void test();
 };
+
+void test_JSSP_sol(const std::vector<int> &sol, int n_jobs, int n_machines);
+
+#endif

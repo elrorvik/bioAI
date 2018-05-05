@@ -18,12 +18,13 @@ struct flowerpatch {
 	// How to assign onlooker bees?
 };
 
+// Local functions, should not be visible to other modules
 bool bee_fitness_comparator(const bee &bee_A, const bee &bee_B);
 bool flowerpatch_fitness_comparator(const flowerpatch &patch_A, const flowerpatch &patch_B);
 void mutate_bee(bee &bee);
 void print_bee(const bee &bee);
 
-void bee_colony_algorithm(Operation_manager& om) {
+void bee_colony_algorithm(Operation_manager& om, bool minimize) {
 
 	// Note:
 	// Three things that can be improved:
@@ -33,6 +34,9 @@ void bee_colony_algorithm(Operation_manager& om) {
 
 	// Initialize flowerpatches and bees
 	//std::cout << "Initialize!" << std::endl << std::endl;
+
+	double sign = 1;
+	if (minimize) sign = -1;
 
 	std::vector<bee> retired_employees;
 
@@ -87,16 +91,18 @@ void bee_colony_algorithm(Operation_manager& om) {
 
 		// Position onlooker bees near employed bee of its patch
 		for (int i = 0; i < NUM_EMPLOYEES; i++) {
+			test_JSSP_sol(flowerpatches[i].bees[0].tasks, om.get_n_jobs(), om.get_n_machines());
 			for (int j = 1; j < flowerpatches[i].num_bees; j++) {
 				flowerpatches[i].bees[j] = flowerpatches[i].bees[0];
 				mutate_bee(flowerpatches[i].bees[j]);
+				test_JSSP_sol(flowerpatches[i].bees[j].tasks, om.get_n_jobs(), om.get_n_machines());
 			}
 		}
 
 		// Swap best employed with its best owned onlooker
 		for (int patch_index = 0; patch_index < NUM_EMPLOYEES; patch_index++) {
-			for (int bee_index = 0; bee_index < flowerpatches[patch_index].bees.size(); bee_index++) {
-				flowerpatches[patch_index].bees[bee_index].fitness = calc_makespan(om, flowerpatches[patch_index].bees[bee_index].tasks);
+			for (int bee_index = 0; bee_index < flowerpatches[patch_index].num_bees; bee_index++) {
+				flowerpatches[patch_index].bees[bee_index].fitness = sign*calc_makespan(om, flowerpatches[patch_index].bees[bee_index].tasks);
 			}
 			std::vector<bee>::iterator begin = flowerpatches[patch_index].bees.begin();
 			std::vector<bee>::iterator end = begin + flowerpatches[patch_index].num_bees;
@@ -136,8 +142,8 @@ void bee_colony_algorithm(Operation_manager& om) {
 		//std::cout << "Best fitness: " << calc_makespan(om, flowerpatches[0].bees[0]) << std::endl;
 		if (retired_employees.size() > 50) break;
 	}
+	retired_employees.push_back(flowerpatches[0].bees[0]);
 	std::sort(retired_employees.begin(), retired_employees.end(), bee_fitness_comparator);
-	double max_fitness = flowerpatches[0].bees[0].fitness >= retired_employees[0].fitness ? flowerpatches[0].bees[0].fitness : retired_employees[0].fitness;
 	// DEBUG:
 	//std::cout << std::endl << std::endl << "Best fitness: " << max_fitness << std::endl;
 	//for (int i = 0; i < retired_employees.size(); i++) {
@@ -151,7 +157,9 @@ void bee_colony_algorithm(Operation_manager& om) {
 	//}
 	// :DEBUG
 
-
+	std::cout << "Bee algorithm terminated with best fitness: " << sign*retired_employees[0].fitness << " with solution:" << std::endl;
+	calc_makespan(om, retired_employees[0].tasks);
+	om.print_operation_sequence();
 }
 
 bool bee_fitness_comparator(const bee &bee_A, const bee &bee_B) {
@@ -212,8 +220,3 @@ void print_bee(const std::vector<int> &bee) {
 	}
 	std::cout << std::endl;
 }
-
-//bool bee_similar(std::vector<int> bee_A, std::vector<int> bee_B) { // ONLY IF NEEDED!
-	// If they have L amount of jobs in similar order, or K*P amount of jobs in P similar order K times or something, they are too similar
-//}
-
