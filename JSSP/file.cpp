@@ -26,8 +26,8 @@ void read_file(std::string filename,  int &n_jobs, int &n_machines, operation_se
 		std::getline(f, line);
 		ss<< line;
 		int operation_id = 0;
-		while (!ss.eof()) {
-			ss >> machine_id;
+		std::cout << job_id << std::endl;
+		while (ss >> machine_id) {
 			ss >> duration;
 			operation_seq[job_id].push_back(operation_t(duration, machine_id, operation_id));
 			operation_id++;
