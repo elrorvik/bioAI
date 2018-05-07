@@ -1,6 +1,5 @@
 #pragma once
 
-#pragma once
 
 #include "operation_manager.h"
 
