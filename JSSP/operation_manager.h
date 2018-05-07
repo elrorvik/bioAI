@@ -81,7 +81,6 @@ public:
 
 	double get_operation_finish_time();
 	void test();
-
 };
 
 void test_JSSP_sol(const std::vector<int> &sol, int n_jobs, int n_machines);
