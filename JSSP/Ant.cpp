@@ -6,6 +6,15 @@
 #include <algorithm>
 using namespace std;
 
+struct start_duration_pair {
+	double start;
+	double duration;
+	start_duration_pair(double start, double duration) : start(start), duration(duration) {};
+	bool operator<(const start_duration_pair& rhs) {
+		return this->start < rhs.start;
+	}
+};
+
 struct Ant {
 	std::vector<int> gene;
 	float finish_time;
@@ -19,11 +28,11 @@ struct Ant {
 
 void init_pheromone(Operation_manager& jobs, vector<vector<vector<float>>>& phi, vector<vector<vector<float>>>& delta_phi, int& total_operations);
 void calc_start_time(Operation_manager& tabu, operation_seq_t& schedule);
-void make_roulette_board(Operation_manager& tabu, vector<interval_roulett>& roulette, float tau_sum, vector<float>& tau_ij);
 int pin_on_roulette(vector<interval_roulett>& roulette);
+void make_roulette_board(Operation_manager& tabu, vector<interval_roulett>& roulette, vector<float>& P);
+void calc_transition_probability(Operation_manager& tabu, vector<Ant>& colony, vector<vector<vector<float>>>& phi, int ant_k, vector<float>& P, double ALPHA, double BETHA);
 
 void ants(Operation_manager& om, float target) {
-
 	int n_jobs = om.get_n_jobs();
 	int m = om.get_n_machines();
 	const int K_ANTS = 500; //n_jobs / 2;
@@ -39,13 +48,15 @@ void ants(Operation_manager& om, float target) {
 	bestSolution.finish_time = INFINITY;
 	Operation_manager om_init = om;
 
-	int itterations = 0;
-	int percent_10 = 0;
+	int iterations = 0;
 	int percent_20 = 0;
 	int percent_30 = 0;
+	int percent_10 = 0;
 
 	while (1) {
 		for (int ant_k = 0; ant_k < K_ANTS; ++ant_k) {
+			double ALPHA = (rand() % 99) / 100 + 0.01;
+			double BETHA = 1.0 - ALPHA;
 			Operation_manager tabu = om_init; 
 			colony[ant_k].gene.clear();
 
@@ -60,17 +71,11 @@ void ants(Operation_manager& om, float target) {
 				//calculations for stepcounter
 				calc_start_time( tabu, schedule);
 			
-				// pre values for pheromone
-				vector<float> tau_ij(n_jobs, 0.0);
-				float tau_sum = 0.0;
-				for (int edge = 0; edge < n_jobs; ++edge) {
-					if (tabu.job_complete(edge)) continue;
-					int current_job = colony[ant_k].gene.back();
-					tau_ij[edge] += phi[current_job][tabu.get_current_job_index(current_job)][edge];
-					tau_sum += pow(tau_ij[edge], ALPHA)*pow(1 / (tabu.get_jobs_current_start_time(edge) + tabu.get_jobs_current_process_time(edge)), BETHA);
-				}
+				vector<float> P(n_jobs, 0.0);
+				calc_transition_probability(tabu, colony, phi, ant_k, P, ALPHA,BETHA);
+
 				vector<interval_roulett> roulette;
-				make_roulette_board(tabu, roulette, tau_sum, tau_ij);
+				make_roulette_board(tabu, roulette, P);
 				int roulette_id = pin_on_roulette(roulette);
 
 				schedule.at(tabu.get_jobs_current_machine_id(roulette_id)).push_back(tabu.get_jobs_current_operation(roulette_id));
@@ -79,9 +84,10 @@ void ants(Operation_manager& om, float target) {
 			}
 			colony[ant_k].finish_time = calc_makespan(tabu, colony[ant_k].gene);
 
-			
+			int scale = 1;
 			if (colony[ant_k] < bestSolution) {
 				bestSolution = colony[ant_k];
+				scale = 10;
 			}
 
 			// calculate pheromone
@@ -89,8 +95,8 @@ void ants(Operation_manager& om, float target) {
 			for (int i = 1; i < colony[ant_k].gene.size(); ++i) {
 
 				if (current_job_index[colony[ant_k].gene[i - 1]]> m) continue;
-				delta_phi[colony[ant_k].gene[i - 1]][current_job_index[colony[ant_k].gene[i - 1]]][colony[ant_k].gene[i]] += Q / colony[ant_k].finish_time; 
-
+				delta_phi[colony[ant_k].gene[i - 1]][current_job_index[colony[ant_k].gene[i - 1]]][colony[ant_k].gene[i]] += Q *scale/ colony[ant_k].finish_time; 
+				//std::cout << delta_phi[colony[ant_k].gene[i - 1]][current_job_index[colony[ant_k].gene[i - 1]]][colony[ant_k].gene[i]] << std::endl;
 				current_job_index[colony[ant_k].gene[i]]++;
 			}
 		}
@@ -116,20 +122,14 @@ void ants(Operation_manager& om, float target) {
 			cout << "within 20% " << bestSolution.finish_time << std::endl;
 			percent_20 = 1;
 		}
-		else if (percent_20 == 1 && itterations % 100 == 0) {
+		else if (percent_20 == 1 && iterations % 100 == 0) {
 			std::cout << bestSolution.finish_time << " ";
-		}else if (target*1.1 > bestSolution.finish_time && percent_10 == 0) {
-			cout << "within 10% " << bestSolution.finish_time << std::endl;
-			percent_10 = 1;
 		}
-		else if (percent_10 == 1 && itterations % 100 == 0) {
-			std::cout << bestSolution.finish_time << " " ;
-		}
-		else if (target >= bestSolution.finish_time) {
-			std::cout << "on target " << bestSolution.finish_time << " " << std::endl;
+		else if (target*1.1 > bestSolution.finish_time) {
+			cout << "on target within 10% " << bestSolution.finish_time << std::endl;
 			break;
 		}
-		itterations++;
+		iterations++;
 	}
 }
 
@@ -177,13 +177,42 @@ void calc_start_time(Operation_manager& tabu, operation_seq_t& schedule) {
 	}
 }
 
-void make_roulette_board(Operation_manager& tabu, vector<interval_roulett>& roulette, float tau_sum,vector<float>& tau_ij) {
+/*
+void calc_start_time(Operation_manager& tabu, operation_seq_t& schedule, std::vector<std::vector<start_duration_pair>> machine_vacancies_tab) {
+	for (int i = 0; i < tabu.get_n_jobs(); ++i) {
+		if (tabu.job_complete(i)) continue; // if assignment complete, continue
+
+		float job_end_time = 0;
+		
+		// get prev jobs end time, meaning earliest starting point
+		if (tabu.get_current_job_index(i) > 0) {
+			job_end_time = tabu.get_jobs_prev_operation_start_time(i) + tabu.get_jobs_prev_operation_process_time(i);
+		}
+		int task_machine_ID = tabu.get_jobs_current_machine_id(i)
+		std::vector<start_duration_pair>* machine_vacancies = &machine_vacancies_tab[task_machine_ID];
+		for(int vac_index = 0; vac_index <machine_va)
+
+		float machine_end_time = 0;
+		int machine_size = schedule.at(tabu.get_jobs_current_machine_id(i)).size();
+
+		if (machine_size) {
+			machine_end_time = schedule.at(tabu.get_jobs_current_machine_id(i))[machine_size - 1].start_time +
+				schedule.at(tabu.get_jobs_current_machine_id(i))[machine_size - 1].duration;
+		}
+		double new_start_time = max(job_end_time, machine_end_time); // change logic to come in between?
+		tabu.set_job_start_time(i, new_start_time);
+	}
+}
+*/
+
+
+void make_roulette_board(Operation_manager& tabu, vector<interval_roulett>& roulette,  vector<float>& P) {
 	float totVal = 0;
 	interval_roulett temp;
 	for (int i = 0; i < tabu.get_n_jobs(); ++i) {
 		if (tabu.job_complete(i)) continue;
 		temp.start = totVal;
-		totVal += (pow(tau_ij[i], ALPHA)*pow(1 / (tabu.get_jobs_current_start_time(i) + tabu.get_jobs_current_process_time(i)), BETHA) / tau_sum);
+		totVal += P[i];
 		temp.end = totVal;
 		temp.job_index = i;
 		roulette.push_back(temp);
@@ -201,4 +230,22 @@ int pin_on_roulette(vector<interval_roulett>& roulette) {
 		}
 	}
 	return roulette_id;
+}
+
+void calc_transition_probability(Operation_manager& tabu, vector<Ant>& colony, vector<vector<vector<float>>>& phi, int ant_k, vector<float>& P, double ALPHA, double BETHA) {
+
+	int n_jobs = tabu.get_n_jobs();
+	vector<float> tau_ij(n_jobs, 0.0);
+	float tau_sum = 0.0;
+	for (int edge = 0; edge < n_jobs; ++edge) {
+		if (tabu.job_complete(edge)) continue;
+		int current_job = colony[ant_k].gene.back();
+		tau_ij[edge] += phi[current_job][tabu.get_current_job_index(current_job)][edge];
+		tau_sum += pow(tau_ij[edge], ALPHA)*pow(1 / (tabu.get_jobs_current_start_time(edge) + tabu.get_jobs_current_process_time(edge)), BETHA);
+	}
+	
+	for (int i = 0; i < tabu.get_n_jobs(); ++i) {
+		if (tabu.job_complete(i)) continue;
+		P[i] = (pow(tau_ij[i], ALPHA)*pow(1 / (tabu.get_jobs_current_start_time(i) + tabu.get_jobs_current_process_time(i)), BETHA) / tau_sum);
+	}
 }

@@ -1,9 +1,11 @@
 #pragma once
+#ifndef BCA_H
+#define BCA_H
 #include"operation_manager.h"
 
 void bee_colony_algorithm(Operation_manager& om, double target, bool minimize);
-const int NUM_BEES = 100;
-const int NUM_EMPLOYEES = 10;
+const int NUM_BEES = 300;
+const int NUM_EMPLOYEES = 30;
 const int NUM_ONLOOKERS = NUM_BEES - NUM_EMPLOYEES;
 
 const double PRIORITY_EMPLOYEE_RATIO = 0.5;
@@ -14,3 +16,4 @@ const int NUM_ONLOOKERS_FOR_NONPRIORITY_EMPLOYEES = NUM_ONLOOKERS - NUM_ONLOOKER
 
 const int NUM_ONLOOKERS_PER_PRIORITY_EMPLOYEES = NUM_ONLOOKERS_FOR_PRIORITY_EMPLOYEE / NUM_PRIORITY_EMPLOYEES;
 const int NUM_ONLOOKERS_PER_NONPRIORITY_EMPLOYEES = NUM_ONLOOKERS_FOR_NONPRIORITY_EMPLOYEES / (NUM_EMPLOYEES - NUM_PRIORITY_EMPLOYEES);
+#endif

@@ -34,4 +34,37 @@ void read_file(std::string filename,  int &n_jobs, int &n_machines, operation_se
 		}
 		ss.clear();
 	}
+	f.close();
+}
+
+void write_file(std::string filename, Operation_manager& om) {
+	std::fstream f(filename, std::ios::out);
+	if (!f.is_open()) {
+		std::cout << "Could not find file path" << std::endl;
+		return;
+	}
+	om.reset_increment();
+	
+	f << om.get_n_machines();
+	f << ",";
+	f << om.get_n_jobs();
+	f << ",";
+	f << om.get_operation_finish_time();
+	f << std::endl;
+
+	for (int i = 0; i < om.get_n_jobs(); i++) {
+		for (int line = 0; line < om.get_n_machines(); line++) {
+			f << om.get_jobs_current_machine_id(i);
+			f << ",";
+			f << i;
+			f << ",";
+			f << om.get_jobs_current_start_time(i);
+			f << ",";
+			f << om.get_jobs_current_start_time(i) + om.get_jobs_current_process_time(i);
+			f << std::endl;
+			om.increment(i);
+		}
+	}
+	
+	f.close();
 }

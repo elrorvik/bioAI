@@ -118,6 +118,7 @@
     <ClCompile Include="Ant.cpp" />
     <ClCompile Include="BCA.cpp" />
     <ClCompile Include="file.cpp" />
+    <ClCompile Include="JSSP.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="operation_manager.cpp" />
     <ClCompile Include="scheduler.cpp" />
@@ -126,6 +127,7 @@
     <ClInclude Include="Ant.h" />
     <ClInclude Include="BCA.h" />
     <ClInclude Include="file.h" />
+    <ClInclude Include="JSSP.h" />
     <ClInclude Include="operation_manager.h" />
     <ClInclude Include="scheduler.h" />
   </ItemGroup>
