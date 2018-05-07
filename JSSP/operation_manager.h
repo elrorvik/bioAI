@@ -44,7 +44,7 @@ public:
 	int get_n_jobs() { return n_jobs; };
 
 	int get_jobs_current_machine_id(int job_index) {
-		return operation_seq[job_index][current_job_index[job_index]].machine_id; 
+		return operation_seq[job_index][current_job_index[job_index]].machine_id;
 	}
 	double get_jobs_current_start_time(int job_index) { return operation_seq[job_index][current_job_index[job_index]].start_time; }
 	double get_jobs_current_process_time(int job_index) { return operation_seq[job_index][current_job_index[job_index]].duration; }

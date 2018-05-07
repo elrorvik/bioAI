@@ -17,7 +17,6 @@ int main() {
 	
 	//std::cout << std::endl << std::endl;
 	bee_colony_algorithm(om, target, true);
-	write_file("plot\\sol.txt", om);
 	
 	std::cout << "finished" << std::endl;
 	

@@ -115,3 +115,4 @@ void invert(std::vector<int> &sol, int start, int end) {
 	std::vector<int>::iterator sol_it_B = sol.begin() + pos_B;
 	std::reverse(sol_it_A, sol_it_B);
 }
+
