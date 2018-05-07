@@ -129,9 +129,6 @@ void ants(Operation_manager& om, float target) {
 			std::cout << "on target " << bestSolution.finish_time << " " << std::endl;
 			break;
 		}
-		
-		
-		
 		itterations++;
 	}
 }
