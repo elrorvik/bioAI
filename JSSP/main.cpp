@@ -3,19 +3,20 @@
 #include "operation_manager.h"
 #include "BCA.h"
 #include "Ant.h"
+#include "file.h"
 
 int main() {
 	srand(time(0));
 
 
-	std::string filename = "test_data\\7.txt";
-	float target = 944;
+	std::string filename = "test_data\\8.txt";
+	float target = 8200/1.1;
 	Operation_manager om(filename);
 
-	ants(om,target);
+	//ants(om,target);
 	
 	//std::cout << std::endl << std::endl;
-	bee_colony_algorithm(om, 0, true);
+	bee_colony_algorithm(om, target, true);
 	write_file("plot\\sol.txt", om);
 	
 	std::cout << "finished" << std::endl;

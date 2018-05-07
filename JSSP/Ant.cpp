@@ -39,8 +39,7 @@ void ants(Operation_manager& om, float target) {
 	bestSolution.finish_time = INFINITY;
 	Operation_manager om_init = om;
 
-	int itterations = 0;
-	int percent_10 = 0;
+	int iterations = 0;
 	int percent_20 = 0;
 	int percent_30 = 0;
 
@@ -116,23 +115,17 @@ void ants(Operation_manager& om, float target) {
 			cout << "within 20% " << bestSolution.finish_time << std::endl;
 			percent_20 = 1;
 		}
-		else if (percent_20 == 1 && itterations % 100 == 0) {
+		else if (percent_20 == 1 && iterations % 100 == 0) {
 			std::cout << bestSolution.finish_time << " ";
-		}else if (target*1.1 > bestSolution.finish_time && percent_10 == 0) {
-			cout << "within 10% " << bestSolution.finish_time << std::endl;
-			percent_10 = 1;
 		}
-		else if (percent_10 == 1 && itterations % 100 == 0) {
-			std::cout << bestSolution.finish_time << " " ;
-		}
-		else if (target >= bestSolution.finish_time) {
-			std::cout << "on target " << bestSolution.finish_time << " " << std::endl;
+		else if (target*1.1 > bestSolution.finish_time) {
+			cout << "on target within 10% " << bestSolution.finish_time << std::endl;
 			break;
 		}
 		
 		
 		
-		itterations++;
+		iterations++;
 	}
 }
 

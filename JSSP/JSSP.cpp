@@ -51,7 +51,7 @@ void mutate_search(Operation_manager& om, std::vector<int> &sol, int sign) {
 
 void mutate_search_greedy(Operation_manager& om, std::vector<int> &sol, int sign) {
 	int length = (rand() % 8) + 4;
-	int start = rand() % sol.size() - length;
+	int start = rand() % (sol.size() - length);
 	search_greedy(om, sol, sign, start, start + length);
 }
 
@@ -114,19 +114,4 @@ void invert(std::vector<int> &sol, int start, int end) {
 	std::vector<int>::iterator sol_it_A = sol.begin() + pos_A;
 	std::vector<int>::iterator sol_it_B = sol.begin() + pos_B;
 	std::reverse(sol_it_A, sol_it_B);
-}
-
-bool end_condition_and_summary(Operation_manager& om, int iteration, int cout_period, double target, int end_step, std::string session_name) {
-	static std::string prev_session = "";
-	static int remember_stage = 0;
-	if (prev_session.compare(session_name) == 0) {
-		remember_stage = 0;
-		prev_session = session_name;
-	}
-
-	if (om.get_operation_finish_time() < target*1.3) {
-		std::cout << "Target " << target * 1.3 << " reached, writing to file as sol30.txt";
-	}
-
-	if (iteration % cout_period == 0) std::cout;
 }

@@ -37,7 +37,7 @@ void bee_colony_algorithm(Operation_manager& om, double target, bool minimize) {
 	double sign = 1;
 	if (minimize) sign = -1;
 
-	const int N_STEPS_BEFORE_RETIREMENT = 20;
+	const int N_STEPS_BEFORE_RETIREMENT = 30;
 	std::vector<bee> retired_employees;
 	int retired_employees_trimmed = 0;
 
@@ -62,6 +62,8 @@ void bee_colony_algorithm(Operation_manager& om, double target, bool minimize) {
 	
 	// Search algorithm
 	int iteration = 0;
+	int percent_20 = 0;
+	int percent_30 = 0;
 	while (1) {
 		//std::cout << "Step!" << std::endl << std::endl;
 		// Recruit onlooker bees, higher priority bracket employees gets more
@@ -153,11 +155,24 @@ void bee_colony_algorithm(Operation_manager& om, double target, bool minimize) {
 		//std::cout << "Best fitness: " << calc_makespan(om, flowerpatches[0].bees[0]) << std::endl;
 		if (retired_employees.size() > 0) {
 			double best = flowerpatches[0].bees[0].fitness > retired_employees[0].fitness ? flowerpatches[0].bees[0].fitness : retired_employees[0].fitness;
-			if (iteration % 100) std::cout << "Best fitness achieved: " << sign * best << std::endl;
-			if (target > 0 && sign*best < target) break;
-			else if (target == 0 && retired_employees_trimmed > 200) break;
-			if (target > 0) {
-				//if (end_condition_and_summary(om, iteration, 1000, target, 0)) break;
+			best *= sign;
+			//if (iteration % 100) std::cout << "Best fitness achieved: " << sign * best << std::endl;
+			//if (target > 0 && sign*best < target*1.1) break;
+			//else if (target == 0 && retired_employees_trimmed > 200) break;
+			if (target*1.3 > best && percent_30 == 0) {
+				std::cout << "within 30% " << best << std::endl;
+				percent_30 = 1;
+			}
+			else if (target*1.2 > best && percent_20 == 0) {
+				std::cout << "within 20% " << best << std::endl;
+				percent_20 = 1;
+			}
+			else if (percent_20 == 1 && iteration % 100 == 0) {
+				std::cout << best << " ";
+			}
+			else if (target*1.1 > best) {
+				std::cout << "on target within 10% " << best << std::endl;
+				break;
 			}
 		}
 		iteration += 1;
