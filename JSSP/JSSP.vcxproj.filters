@@ -24,13 +24,13 @@
     <ClCompile Include="operation_manager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ACO.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="BCA.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="scheduler.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Ant.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -44,10 +44,10 @@
     <ClInclude Include="scheduler.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="BCA.h">
+    <ClInclude Include="Ant.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ACO.h">
+    <ClInclude Include="BCA.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

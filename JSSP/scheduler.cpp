@@ -5,7 +5,7 @@
 #include"operation_manager.h"
 
 void develop(Operation_manager& om, std::vector<int>& genotype) {
-
+	om.reset_all_jobs();
 	struct start_duration_pair {
 		double start;
 		double duration;
@@ -21,16 +21,20 @@ void develop(Operation_manager& om, std::vector<int>& genotype) {
 		machine_vacancies_tab.emplace_back();
 		machine_vacancies_tab[m_index].emplace_back(0, DBL_MAX);
 	}
-
+	
 	// DEBUG :
 	//std::vector<int> job_count(om.get_n_jobs(), 0);
 	// : DEBUG
+	
 	for (int task_index = 0; task_index < genotype.size(); task_index++) {
+		
 		int task_job_ID = genotype[task_index];
 		int task_machine_ID = om.get_jobs_current_machine_id(task_job_ID);
+		
+		
 		double task_duration = om.get_jobs_current_process_time(genotype[task_index]);
 		std::vector<start_duration_pair>* machine_vacancies = &machine_vacancies_tab[task_machine_ID];
-
+	
 		for (int vac_index = 0; vac_index < machine_vacancies->size(); vac_index++) {
 			if ((*machine_vacancies)[vac_index].start + (*machine_vacancies)[vac_index].duration < job_finish_time[task_job_ID]) continue;
 

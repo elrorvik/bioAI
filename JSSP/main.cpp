@@ -2,18 +2,21 @@
 #include <time.h>
 #include "operation_manager.h"
 #include "BCA.h"
-#include "ACO.h"
+#include "Ant.h"
 
 int main() {
 	srand(time(0));
-	std::string filename = "test_data\\7.txt";
-	Operation_manager om(filename);
-	//om.print_operation_sequence();
-	//om.test();
 
-	//ACO(om); // bug in program
+
+	std::string filename = "test_data\\7.txt";
+	float target = 944;
+	Operation_manager om(filename);
+
+	ants(om,target);
+	
 	//std::cout << std::endl << std::endl;
-	bee_colony_algorithm(om, 1000, true);
+	//bee_colony_algorithm(om, 1000, true);
+	std::cout << " found correct" << std::endl;
 	std::cout << "finished" << std::endl;
 	
 	system("pause");
