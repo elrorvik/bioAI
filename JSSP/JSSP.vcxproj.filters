@@ -30,10 +30,10 @@
     <ClCompile Include="scheduler.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Ant.cpp">
+    <ClCompile Include="JSSP.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="JSSP.cpp">
+    <ClCompile Include="ACO.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -47,13 +47,13 @@
     <ClInclude Include="scheduler.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Ant.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="BCA.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="JSSP.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ACO.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

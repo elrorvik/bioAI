@@ -2,7 +2,7 @@
 #include <time.h>
 #include "operation_manager.h"
 #include "BCA.h"
-#include "Ant.h"
+#include "ACO.h"
 #include "file.h"
 
 int main() {
@@ -21,19 +21,17 @@ int main() {
 	target = 1451;
 	filename = "test_data\\6.txt";
 	target = 979;
-	filename = "test_data\\7.txt";
+	/*filename = "test_data\\7.txt";
 	target = 944;
-	/*std::string filename = "test_data\\8.txt";
-	float target = 8200/1.1;*/
+	filename = "test_data\\8.txt";
+	target = 8200/1.1;*/
 	Operation_manager om(filename);
-
-	ants(om,target);
-	
-	//std::cout << std::endl << std::endl;
-	//bee_colony_algorithm(om, target, true);
+	std::cout << " ******* ACO *********** " << std::endl;
+	ant_coloy_optimization(om, target);
 	write_file("plot\\sol.txt", om);
+	std::cout << "\n ******* ABC *********** " << std::endl;
+	bee_colony_algorithm(om, target, true);
 	
-	std::cout << "finished" << std::endl;
 	
 	system("pause");
 	return 0;

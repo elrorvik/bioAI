@@ -115,7 +115,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Ant.cpp" />
+    <ClCompile Include="ACO.cpp" />
     <ClCompile Include="BCA.cpp" />
     <ClCompile Include="file.cpp" />
     <ClCompile Include="JSSP.cpp" />
@@ -124,7 +124,7 @@
     <ClCompile Include="scheduler.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Ant.h" />
+    <ClInclude Include="ACO.h" />
     <ClInclude Include="BCA.h" />
     <ClInclude Include="file.h" />
     <ClInclude Include="JSSP.h" />

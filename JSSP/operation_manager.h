@@ -39,12 +39,12 @@ private:
 public:
 	Operation_manager(std::string file_name);
 
-	int get_current_job_index(int job) { return current_job_index[job]; }
+	int get_current_job_index(int job) { return current_job_index[job]; }// should be named get current task id
 	int get_n_machines() { return n_machines; };
 	int get_n_jobs() { return n_jobs; };
 
 	int get_jobs_current_machine_id(int job_index) {
-		return operation_seq[job_index][current_job_index[job_index]].machine_id; 
+		return operation_seq[job_index][current_job_index[job_index]].machine_id;
 	}
 	double get_jobs_current_start_time(int job_index) { return operation_seq[job_index][current_job_index[job_index]].start_time; }
 	double get_jobs_current_process_time(int job_index) { return operation_seq[job_index][current_job_index[job_index]].duration; }

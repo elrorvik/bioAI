@@ -4,8 +4,8 @@
 #include"operation_manager.h"
 
 void bee_colony_algorithm(Operation_manager& om, double target, bool minimize);
-const int NUM_BEES = 300;
-const int NUM_EMPLOYEES = 30;
+const int NUM_BEES = 1000;
+const int NUM_EMPLOYEES = 50;
 const int NUM_ONLOOKERS = NUM_BEES - NUM_EMPLOYEES;
 
 const double PRIORITY_EMPLOYEE_RATIO = 0.5;
