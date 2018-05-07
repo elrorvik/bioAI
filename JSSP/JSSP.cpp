@@ -22,7 +22,8 @@ void mutate(std::vector<int> &sol) {
 	}
 }
 
-void mutate_search(Operation_manager& om, std::vector<int> &sol, int sign) {
+bool mutate_search(Operation_manager& om, std::vector<int> &sol, int sign) {
+	bool improved = false;
 	int num_mutations = (rand() % 5) + 1;
 	int mutation_index = 0;
 
@@ -41,12 +42,14 @@ void mutate_search(Operation_manager& om, std::vector<int> &sol, int sign) {
 		if (best_fitness < new_fitness) {
 			best_fitness = new_fitness;
 			mutation_index += 1;
+			improved = true;
 		}
 		else {
 			sol = best_sol;
 			if (rand() % 10 > 2) mutation_index += 1;
 		}
 	}
+	return improved;
 }
 
 void mutate_search_greedy(Operation_manager& om, std::vector<int> &sol, int sign) {
