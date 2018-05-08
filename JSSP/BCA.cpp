@@ -108,7 +108,7 @@ void bee_colony_algorithm(Operation_manager& om, double target, bool minimize) {
 		// Swap best employed with its best owned onlooker
 		for (int patch_index = 0; patch_index < NUM_EMPLOYEES; patch_index++) {
 			for (int bee_index = 0; bee_index < flowerpatches[patch_index].num_bees; bee_index++) {
-				flowerpatches[patch_index].bees[bee_index].fitness = sign*calc_makespan(om, flowerpatches[patch_index].bees[bee_index].tasks);
+				flowerpatches[patch_index].bees[bee_index].fitness = sign*develop_makespan(om, flowerpatches[patch_index].bees[bee_index].tasks);
 			}
 			std::vector<bee>::iterator begin = flowerpatches[patch_index].bees.begin();
 			std::vector<bee>::iterator end = begin + flowerpatches[patch_index].num_bees;
@@ -156,7 +156,7 @@ void bee_colony_algorithm(Operation_manager& om, double target, bool minimize) {
 		//std::cout << "Best fitness: " << calc_makespan(om, flowerpatches[0].bees[0]) << std::endl;
 		if (retired_employees.size() > 0) {
 			std::vector<int> best_sol = flowerpatches[0].bees[0].fitness > retired_employees[0].fitness ? flowerpatches[0].bees[0].tasks : retired_employees[0].tasks;
-			double best = calc_makespan(om, best_sol);
+			double best = develop_makespan(om, best_sol);
 			//if (iteration % 100) std::cout << "Best fitness achieved: " << sign * best << std::endl;
 			//if (target > 0 && sign*best < target*1.1) break;
 			//else if (target == 0 && retired_employees_trimmed > 200) break;

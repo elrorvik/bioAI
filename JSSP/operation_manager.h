@@ -15,16 +15,24 @@ struct interval_roulett {
 
 };
 
+struct start_duration_pair {
+	double start;
+	double duration;
+	start_duration_pair(double start, double duration) : start(start), duration(duration) {};
+	bool operator<(const start_duration_pair& rhs) {
+		return this->start < rhs.start;
+	}
+};
+
 struct operation_t {
 	double start_time;
 	const double duration;
 	const int machine_id;
+	const int job_id;
 	const int operation_id;
-	operation_t(int machine_id,int task_id, double duration) : start_time(-1.0), duration(duration), machine_id(machine_id), operation_id(task_id) {};
-	operation_t(int machine_id, int task_id,  double duration, double start_time) : start_time(start_time), duration(duration), machine_id(machine_id), operation_id(task_id) {};
-	operation_t(const operation_t& rhs) :operation_t(rhs.machine_id, rhs.operation_id, rhs.duration, rhs.start_time) {
-
-	}
+	operation_t(int machine_id,int task_id, int job_id, double duration) : start_time(-1.0), duration(duration), machine_id(machine_id), operation_id(task_id), job_id(job_id) {};
+	operation_t(int machine_id, int task_id, int job_id,  double duration, double start_time) : start_time(start_time), duration(duration), machine_id(machine_id), operation_id(task_id), job_id(job_id) {};
+	operation_t(const operation_t& rhs) :operation_t(rhs.machine_id, rhs.operation_id, rhs.job_id, rhs.duration, rhs.start_time) {}
 };
 
 typedef std::vector<std::vector<operation_t>> operation_seq_t;
@@ -55,6 +63,9 @@ public:
 
 
 	operation_t get_jobs_current_operation(int job_index) { return operation_seq[job_index][current_job_index[job_index]]; }
+	operation_t get_job_at_machine_time(int machine_ID, double time);
+	void resolve_task_overlap_at_machine(int machine_ID, std::vector<start_duration_pair>& machine_vacancies);
+	std::vector<int> get_genotype();
 	double get_jobs_prev_operation_start_time(int job_index) { return operation_seq[job_index][current_job_index[job_index] - 1].start_time; }
 	double get_jobs_prev_operation_process_time(int job_index) { return operation_seq[job_index][current_job_index[job_index] - 1].duration; }
 	bool job_not_complete(int job_index) { return !(current_job_index[job_index] == operation_seq[job_index].size()); }
