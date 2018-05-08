@@ -38,7 +38,6 @@ void bee_colony_algorithm(Operation_manager& om, double target, bool minimize) {
 	double sign = 1;
 	if (minimize) sign = -1;
 
-	const int N_STEPS_BEFORE_RETIREMENT = 30;
 	std::vector<bee> retired_employees;
 	int retired_employees_trimmed = 0;
 
@@ -116,7 +115,7 @@ void bee_colony_algorithm(Operation_manager& om, double target, bool minimize) {
 		}
 
 		// ONLY IF NEEDED: If stagnation, store achieved result of employed bee, and turn into scout bee
-		// If too similar, turn least fitness patch into scout bee
+		// If too similar, turn least fitness patch into scout bee (NOT IMPLEMENTED, but would probably be wise)
 		for (int i = 0; i < NUM_EMPLOYEES; i++) {
 			if (i >= NUM_EMPLOYEES - 2) {
 				std::random_shuffle(flowerpatches[i].bees[0].tasks.begin(), flowerpatches[i].bees[0].tasks.end());

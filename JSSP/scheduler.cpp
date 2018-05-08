@@ -99,6 +99,7 @@ void develop(Operation_manager& om, std::vector<int>& genotype) {
 	return;
 }
 
+// NOT IN USE
 void develop_greedy(Operation_manager& om, std::vector<int>& genotype) {
 	om.reset_all_jobs();
 
@@ -221,6 +222,7 @@ double develop_makespan(Operation_manager& om, std::vector<int>& genotype) { // 
 	return om.get_operation_finish_time();
 }
 
+// NOT IN USE
 double develop_greedy_makespan(Operation_manager& om, std::vector<int>& genotype) {
 	develop_greedy(om, genotype);
 	genotype = om.get_genotype();
@@ -231,8 +233,4 @@ double calc_makespan(Operation_manager& om, const std::vector<int>& genotype) { 
 	std::vector<int> genotype_copy = genotype;
 	develop(om, genotype_copy);
 	return om.get_operation_finish_time();
-}
-
-void print_schedule(Operation_manager& om) {
-	return;
 }

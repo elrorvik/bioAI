@@ -7,6 +7,7 @@
 void swap(std::vector<int> &sol, int start, int end);
 void invert(std::vector<int> &sol, int start, int end);
 
+// NOT IN USE
 void mutate(std::vector<int> &sol) {
 	int num_mutations = (rand() % 5) + 1;
 	int mutation_index = 0;
@@ -52,12 +53,14 @@ double mutate_search(Operation_manager& om, std::vector<int> &sol, int sign) {
 	return best_fitness;
 }
 
+// NOT IN USE
 void mutate_search_greedy(Operation_manager& om, std::vector<int> &sol, int sign) {
 	int length = (rand() % 8) + 4;
 	int start = rand() % (sol.size() - length);
 	search_greedy(om, sol, sign, start, start + length);
 }
 
+// NOT IN USE
 void search_greedy(Operation_manager& om, std::vector<int> &sol, int sign, int start, int end) {
 	int num_mutations = (rand() % 5) + 1;
 	int mutation_index = 0;
