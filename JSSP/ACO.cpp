@@ -32,7 +32,7 @@ int pin_on_roulette(vector<interval_roulett>& roulette);
 void make_roulette_board(Operation_manager& tabu, vector<interval_roulett>& roulette, vector<float>& P);
 void calc_transition_probability(Operation_manager& tabu, vector<Ant>& colony, vector<vector<vector<float>>>& phi, int ant_k, vector<float>& P, double ALPHA, double BETHA);
 double eta_LPT(double SC, double PT);
-double eta_SPT(int SC, int PT);
+double eta_SPT(double SC, double PT);
 void calc_start_time(Operation_manager& tabu, std::vector<std::vector<start_duration_pair>>& machine_vacancies_tab);
 void update_vacencies(Operation_manager& tabu, std::vector<std::vector<start_duration_pair>>& machine_vacancies_tab, int job_id);
 
@@ -42,11 +42,10 @@ void ant_coloy_optimization(Operation_manager& om, float target) {
 	int n_machines = om.get_n_machines();
 	const int K_ANTS = 500; //n_jobs / 2;
 
-	int total_operations = 0;
-	vector<vector<vector<float>>> phi; //pheromone
-	vector<vector<vector<float>>> delta_phi; //pheromone
-
-	init_pheromone(om,  phi,  delta_phi,  total_operations);
+	int full_length_geno = 0;
+	vector<vector<vector<float>>> pher; //pheromone
+	vector<vector<vector<float>>> pher_delta; //pheromone added to old pheromone
+	init_pheromone(om,  pher, pher_delta, full_length_geno);
 
 	vector<Ant> colony(K_ANTS);
 	Ant bestSolution;
@@ -77,14 +76,14 @@ void ant_coloy_optimization(Operation_manager& om, float target) {
 			tabu.increment(colony[ant_k].tasks[0]);
 
 			// schedule of which operations are performed at machines
-			operation_seq_t schedule(tabu.get_n_machines(), vector<operation_t>());
-			while (colony[ant_k].tasks.size() < total_operations) {
+			//operation_seq_t schedule(tabu.get_n_machines(), vector<operation_t>());
+			while (colony[ant_k].tasks.size() < full_length_geno) {
 				//calculations for stepcounter
 				//calc_start_time( tabu, schedule);
 				calc_start_time(tabu,machine_vacancies_tab);
 			
 				vector<float> P(n_jobs, 0.0);
-				calc_transition_probability(tabu, colony, phi, ant_k, P, ALPHA,BETHA);
+				calc_transition_probability(tabu, colony, pher, ant_k, P, ALPHA,BETHA);
 
 				vector<interval_roulett> roulette;
 				make_roulette_board(tabu, roulette, P);
@@ -110,7 +109,7 @@ void ant_coloy_optimization(Operation_manager& om, float target) {
 				int prev_job = colony[ant_k].tasks[i - 1];
 				int prev_task = current_job_index[colony[ant_k].tasks[i - 1]];
 				int current_job = colony[ant_k].tasks[i];
-				delta_phi[prev_job][prev_task][current_job] += Q *scale/ colony[ant_k].fitness; 
+				pher_delta[prev_job][prev_task][current_job] += Q *scale/ colony[ant_k].fitness;
 				current_job_index[colony[ant_k].tasks[i]]++;
 			}
 		}
@@ -119,11 +118,11 @@ void ant_coloy_optimization(Operation_manager& om, float target) {
 		for (int i = 0; i < n_jobs; ++i) {
 			for (int j = 0; j <= n_machines; ++j) {
 				for (int edge_index = 0; edge_index < n_jobs; ++edge_index) {
-					phi[i][j][edge_index] = delta_phi[i][j][edge_index] + RHO * phi[i][j][edge_index]; 
-					if (phi[i][j][edge_index] < PHERO_LIMIT_MIN) phi[i][j][edge_index] = PHERO_LIMIT_MIN;
-					if (phi[i][j][edge_index] > PHERO_LIMIT_MAX) phi[i][j][edge_index] = PHERO_LIMIT_MAX;
-
-					delta_phi[i][j][edge_index] = 0; 
+					float new_phero = pher_delta[i][j][edge_index] + RHO * pher[i][j][edge_index];
+					if (pher[i][j][edge_index] < PHERO_LIMIT_MIN) new_phero = PHERO_LIMIT_MIN;
+					if (pher[i][j][edge_index] > PHERO_LIMIT_MAX) new_phero = PHERO_LIMIT_MAX;
+					pher[i][j][edge_index] = new_phero;
+					pher_delta[i][j][edge_index] = 0;
 				}
 			}
 		}
@@ -147,7 +146,7 @@ void ant_coloy_optimization(Operation_manager& om, float target) {
 	}
 }
 
-void init_pheromone(Operation_manager& om, vector<vector<vector<float>>>& phi, vector<vector<vector<float>>>& delta_phi, int& total_operations) {
+void init_pheromone(Operation_manager& om, vector<vector<vector<float>>>& pher, vector<vector<vector<float>>>& pher_delta, int& total_operations) {
 
 	const int n_jobs = om.get_n_jobs();
 	vector<float> delta_task(n_jobs, 0);
@@ -164,8 +163,8 @@ void init_pheromone(Operation_manager& om, vector<vector<vector<float>>>& phi, v
 			phi_job.push_back(phi_task);
 			delta_job.push_back(delta_task);
 		}
-		phi.push_back(phi_job);
-		delta_phi.push_back(delta_job);
+		pher.push_back(phi_job);
+		pher_delta.push_back(delta_job);
 	}
 }
 
@@ -313,47 +312,47 @@ int pin_on_roulette(vector<interval_roulett>& roulette) {
 	return roulette_id;
 }
 
-void calc_transition_probability(Operation_manager& tabu, vector<Ant>& colony, vector<vector<vector<float>>>& phi, int ant_k, vector<float>& P, double ALPHA, double BETHA) {
+void calc_transition_probability(Operation_manager& tabu, vector<Ant>& colony, vector<vector<vector<float>>>& pher, int ant_k, vector<float>& P, double ALPHA, double BETHA) {
 
 	int n_jobs = tabu.get_n_jobs();
 	vector<float> tau_ij(n_jobs, 0.0);
 	float tau_sum = 0.0;
-	for (int edge = 0; edge < n_jobs; ++edge) {
-		if (tabu.job_complete(edge)) continue;
+	for (int next = 0; next < n_jobs; ++next) {
+		if (tabu.job_complete(next)) continue;
 		int current_job = colony[ant_k].tasks.back();
-		tau_ij[edge] += phi[current_job][tabu.get_current_job_index(current_job)][edge];
+		tau_ij[next] = pher[current_job][tabu.get_current_job_index(current_job)][next];
 		double step = 0;
-		if (tabu.get_jobs_current_start_time(edge) == 0) {
+		if (tabu.get_jobs_current_start_time(next) == 0) {
 			step = 1;
 		}
 		else {
-			step = tabu.get_jobs_current_start_time(edge);
+			step = tabu.get_jobs_current_start_time(next);
 		}
-		double PT = tabu.get_jobs_current_process_time(edge);
-		tau_sum += pow(tau_ij[edge], ALPHA)*pow(eta_LPT(step, PT), BETHA);
+		double PT = tabu.get_jobs_current_process_time(next);
+		tau_sum += pow(tau_ij[next], ALPHA)*pow(eta_SPT(step, PT), BETHA);
 	}
 	
-	for (int edge = 0; edge < n_jobs; ++edge) {
-		if (tabu.job_complete(edge)) continue;
+	for (int next = 0; next< n_jobs; ++next) {
+		if (tabu.job_complete(next)) continue;
 		double step = 0;
-		if (tabu.get_jobs_current_start_time(edge) == 0) {
+		if (tabu.get_jobs_current_start_time(next) == 0) {
 			step = 1;
 		}
 		else {
-			step = tabu.get_jobs_current_start_time(edge);
+			step = tabu.get_jobs_current_start_time(next);
 		}
-		double PT = tabu.get_jobs_current_process_time(edge);
-		P[edge] = (pow(tau_ij[edge], ALPHA)*pow(eta_LPT(step,PT), BETHA) / tau_sum);
+		double PT = tabu.get_jobs_current_process_time(next);
+		P[next] = (pow(tau_ij[next], ALPHA)*pow(eta_SPT(step,PT), BETHA) / tau_sum);
 	}
 }
 
 
-double eta_LPT(double SC, double PT) {
+double eta_SPT(double SC, double PT) {
 	int eta_Q = 1;
 	return eta_Q / (SC * PT);
 }
 
-double eta_SPT(int SC, int PT) {
+double eta_LPT(double SC, double PT) {
 	int eta_Q = 5;
 	return eta_Q * PT / (SC + PT);
 }
