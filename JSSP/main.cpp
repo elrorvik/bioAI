@@ -21,17 +21,16 @@ int main() {
 	target = 1451;
 	filename = "test_data\\6.txt";
 	target = 979;
-	/*filename = "test_data\\7.txt";
+	filename = "test_data\\7.txt";
 	target = 944;
 	filename = "test_data\\8.txt";
-	target = 8200/1.1;*/
+	target = 8200/1.1;
 	Operation_manager om(filename);
 	std::cout << " ******* ACO *********** " << std::endl;
-	ant_coloy_optimization(om, target);
+	//ant_coloy_optimization(om, target);
 	write_file("plot\\sol.txt", om);
 	std::cout << "\n ******* ABC *********** " << std::endl;
 	bee_colony_algorithm(om, target, true);
-	
 	
 	system("pause");
 	return 0;

@@ -32,7 +32,7 @@ Operation_manager::Operation_manager(std::string filename) {
 		int operation_id = 0;
 		while (ss >> machine_id) {
 			ss >> duration;
-			operation_seq[job_id].push_back(operation_t(machine_id, operation_id, duration));
+			operation_seq[job_id].push_back(operation_t(machine_id, operation_id, job_id, duration));
 			operation_id++;
 		}
 		ss.clear();
@@ -69,25 +69,25 @@ void Operation_manager::test() {
 	n_jobs = 3;
 	// double duration, int machine_id, int task_id
 	operation_seq = operation_seq_t(n_jobs, std::vector<operation_t>());
-	operation_t a(1.0, 0, 1);
+	operation_t a(1.0, 0, 1, 0);
 	operation_seq[0].push_back(a);
-	operation_t b(1.0, 1, 2);
+	operation_t b(1.0, 1, 2, 0);
 	operation_seq[0].push_back(b);
-	operation_t c(1.0, 1, 3);
+	operation_t c(1.0, 1, 3, 0);
 	operation_seq[0].push_back(c);
 
-	operation_t e(1.0, 1, 1);
+	operation_t e(1.0, 1, 1, 1);
 	operation_seq[1].push_back(e);
-	operation_t f(1.0, 2, 2);
+	operation_t f(1.0, 2, 2, 1);
 	operation_seq[1].push_back(f);
-	operation_t g(1.0, 2, 3);
+	operation_t g(1.0, 2, 3, 1);
 	operation_seq[1].push_back(g);
 
-	operation_t c_1(1.0, 2, 1);
+	operation_t c_1(1.0, 2, 1, 2);
 	operation_seq[2].push_back(c_1);
-	operation_t c_2(1.0, 2, 2);
+	operation_t c_2(1.0, 2, 2, 2);
 	operation_seq[2].push_back(c_2);
-	operation_t c_3(1.0, 1, 3);
+	operation_t c_3(1.0, 1, 3, 2);
 	operation_seq[2].push_back(c_3);
 
 	current_job_index = std::vector<int>(n_jobs, 0);
@@ -108,4 +108,88 @@ void test_JSSP_sol(const std::vector<int> &sol, int n_jobs, int n_machines) {
 			std::cin.get();
 		}
 	}
+}
+
+ operation_t Operation_manager::get_job_at_machine_time(int machine_ID, double time) {
+	for (int job = 0; job < n_jobs; job++) {
+		for (int task = 0; task < n_machines; task++) {
+			if (operation_seq[job][task].start_time <= time && operation_seq[job][task].start_time + operation_seq[job][task].duration >= time) {
+				return operation_seq[job][task];
+			}
+		}
+	}
+}
+
+ void Operation_manager::resolve_task_overlap_at_machine(int machine_ID, std::vector<start_duration_pair>& vacancies) {
+	 double prev_start_time = -1.0;
+	 double prev_duration;
+	 for (int task = 0; task < n_machines; task++) {
+		 for (int job = 0; job < n_jobs; job++) {
+			 if (machine_ID == operation_seq[job][task].machine_id) {
+				 if (prev_start_time == -1.0) {
+					 prev_start_time = operation_seq[job][task].start_time;
+					 prev_duration = operation_seq[job][task].duration;
+					 continue;
+				 }
+
+				 if (prev_start_time + prev_duration > operation_seq[job][task].start_time) {
+					 operation_seq[job][task].start_time = prev_start_time + prev_duration;
+				 }
+				 prev_start_time = operation_seq[job][task].start_time;
+				 prev_duration = operation_seq[job][task].duration;
+			 }
+		 }
+	 }
+
+	 // Create new vacancies, possibly through another function
+	 prev_start_time = -1.0;
+	 vacancies.clear();
+	 for (int task = 0; task < n_machines; task++) {
+		 for (int job = 0; job < n_jobs; job++) {
+			 if (machine_ID == operation_seq[job][task].machine_id) {
+				 if (prev_start_time == -1.0) {
+					 prev_start_time = operation_seq[job][task].start_time;
+					 prev_duration = operation_seq[job][task].duration;
+					 continue;
+				 }
+
+				 if (prev_start_time + prev_duration + prev_duration/100000 < operation_seq[job][task].start_time) {
+					 vacancies.emplace_back(prev_start_time + prev_duration, operation_seq[job][task].start_time - prev_start_time + prev_duration);
+
+				 }
+
+				 prev_start_time = operation_seq[job][task].start_time;
+				 prev_duration = operation_seq[job][task].duration;
+			 }
+		 }
+	 }
+ }
+
+std::vector<int> Operation_manager::get_genotype() {
+	std::vector<int> genotype(n_jobs*n_machines, 0);
+	double min_duration = DBL_MAX;
+	for (int task = 0; task < n_machines; task++) {
+		for (int job = 0; job < n_jobs; job++) {
+			double task_duration = operation_seq[job][task].duration;
+			if (task_duration < min_duration) min_duration = task_duration;
+		}
+	}
+
+	int added_jobs = 0;
+	double current_time = 0.0;
+	while (added_jobs < n_machines*n_jobs) {
+		
+		for (int job = 0; job < n_jobs; job++) {
+			if (job_complete(job)) continue;
+			double task_start = get_jobs_current_start_time(job);
+			if (task_start >= current_time && task_start <= current_time + min_duration) {
+				genotype[added_jobs++] = get_jobs_current_operation(job).job_id;
+				increment(job);
+			}
+		}
+		current_time += min_duration;
+
+	}
+
+	return genotype;
 }

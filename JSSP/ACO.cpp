@@ -6,15 +6,6 @@
 #include <algorithm>
 using namespace std;
 
-struct start_duration_pair {
-	double start;
-	double duration;
-	start_duration_pair(double start, double duration) : start(start), duration(duration) {};
-	bool operator<(const start_duration_pair& rhs) {
-		return this->start < rhs.start;
-	}
-};
-
 struct Ant {
 	std::vector<int> tasks;
 	float fitness;
