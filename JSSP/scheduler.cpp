@@ -8,7 +8,7 @@ void develop(Operation_manager& om, std::vector<int>& genotype) {
 	om.reset_all_jobs();
 
 	std::vector<std::vector<start_duration_pair>> machine_vacancies_tab;
-	std::vector<double> job_finish_time(om.get_n_jobs(), 0);
+	std::vector<double> jobs_finish_time(om.get_n_jobs(), 0);
 	for (int m_index = 0; m_index < om.get_n_machines(); m_index++) {
 		machine_vacancies_tab.emplace_back();
 		machine_vacancies_tab[m_index].emplace_back(0, DBL_MAX);
@@ -28,17 +28,17 @@ void develop(Operation_manager& om, std::vector<int>& genotype) {
 		std::vector<start_duration_pair>* machine_vacancies = &machine_vacancies_tab[task_machine_ID];
 	
 		for (int vac_index = 0; vac_index < machine_vacancies->size(); vac_index++) {
-			if ((*machine_vacancies)[vac_index].start + (*machine_vacancies)[vac_index].duration < job_finish_time[task_job_ID]) continue;
+			if ((*machine_vacancies)[vac_index].start + (*machine_vacancies)[vac_index].duration < jobs_finish_time[task_job_ID]) continue;
 
 			double available_processing_time;
 			double first_available_start_time;
-			if ((*machine_vacancies)[vac_index].start > job_finish_time[task_job_ID]) {
+			if ((*machine_vacancies)[vac_index].start > jobs_finish_time[task_job_ID]) {
 				available_processing_time = (*machine_vacancies)[vac_index].duration;
 				first_available_start_time = (*machine_vacancies)[vac_index].start;
 			}
 			else {
-				available_processing_time = (*machine_vacancies)[vac_index].duration - (job_finish_time[task_job_ID] - (*machine_vacancies)[vac_index].start);
-				first_available_start_time = job_finish_time[task_job_ID];
+				available_processing_time = (*machine_vacancies)[vac_index].duration - (jobs_finish_time[task_job_ID] - (*machine_vacancies)[vac_index].start);
+				first_available_start_time = jobs_finish_time[task_job_ID];
 			}
 
 			// DEBUG :
@@ -51,8 +51,8 @@ void develop(Operation_manager& om, std::vector<int>& genotype) {
 				//std::cout << "Made it." << std::endl;
 				// : DEBUG
 
-				// Update job_finish_time
-				job_finish_time[task_job_ID] = first_available_start_time + task_duration;
+				// Update jobs_finish_time
+				jobs_finish_time[task_job_ID] = first_available_start_time + task_duration;
 
 				// Update om
 				om.set_job_start_time(task_job_ID, first_available_start_time);
@@ -103,7 +103,7 @@ void develop_greedy(Operation_manager& om, std::vector<int>& genotype) {
 	om.reset_all_jobs();
 
 	std::vector<std::vector<start_duration_pair>> machine_vacancies_tab;
-	std::vector<double> job_finish_time(om.get_n_jobs(), 0);
+	std::vector<double> jobs_finish_time(om.get_n_jobs(), 0);
 	for (int m_index = 0; m_index < om.get_n_machines(); m_index++) {
 		machine_vacancies_tab.emplace_back();
 		machine_vacancies_tab[m_index].emplace_back(0, DBL_MAX);
@@ -123,17 +123,17 @@ void develop_greedy(Operation_manager& om, std::vector<int>& genotype) {
 		std::vector<start_duration_pair>* machine_vacancies = &machine_vacancies_tab[task_machine_ID];
 
 		for (int vac_index = 0; vac_index < machine_vacancies->size(); vac_index++) {
-			if ((*machine_vacancies)[vac_index].start + (*machine_vacancies)[vac_index].duration < job_finish_time[task_job_ID]) continue;
+			if ((*machine_vacancies)[vac_index].start + (*machine_vacancies)[vac_index].duration < jobs_finish_time[task_job_ID]) continue;
 
 			double available_processing_time;
 			double first_available_start_time;
-			if ((*machine_vacancies)[vac_index].start > job_finish_time[task_job_ID]) {
+			if ((*machine_vacancies)[vac_index].start > jobs_finish_time[task_job_ID]) {
 				available_processing_time = (*machine_vacancies)[vac_index].duration;
 				first_available_start_time = (*machine_vacancies)[vac_index].start;
 			}
 			else {
-				available_processing_time = (*machine_vacancies)[vac_index].duration - (job_finish_time[task_job_ID] - (*machine_vacancies)[vac_index].start);
-				first_available_start_time = job_finish_time[task_job_ID];
+				available_processing_time = (*machine_vacancies)[vac_index].duration - (jobs_finish_time[task_job_ID] - (*machine_vacancies)[vac_index].start);
+				first_available_start_time = jobs_finish_time[task_job_ID];
 			}
 
 
@@ -161,8 +161,8 @@ void develop_greedy(Operation_manager& om, std::vector<int>& genotype) {
 				//std::cout << "Made it." << std::endl;
 				// : DEBUG
 
-				// Update job_finish_time
-				job_finish_time[task_job_ID] = first_available_start_time + task_duration;
+				// Update jobs_finish_time
+				jobs_finish_time[task_job_ID] = first_available_start_time + task_duration;
 
 				// Update om
 				om.set_job_start_time(task_job_ID, first_available_start_time);
@@ -187,7 +187,7 @@ void develop_greedy(Operation_manager& om, std::vector<int>& genotype) {
 
 				// Handle pushing the next task forwards in time to fit this one
 				if (next_task_job_ID != -1) {
-					om.resolve_task_overlap_at_machine(task_machine_ID, (*machine_vacancies));
+					om.resolve_task_overlap_at_machine(task_machine_ID, (*machine_vacancies), jobs_finish_time);
 				}
 
 				// DEBUG :
@@ -203,6 +203,7 @@ void develop_greedy(Operation_manager& om, std::vector<int>& genotype) {
 	for (int i = 0; i < om.get_n_machines(); i++) {
 		if (om.get_current_job_index(i) != om.get_n_machines()) {
 			std::cout << "current_job_index of job " << i << " is " << om.get_current_job_index(i) << ", should be " << om.get_n_machines() << std::endl;
+			std::cin.get();
 		}
 		//if (job_count[i] != om.get_n_machines()) {
 		//	std::cout << "job " << i << " has not been counted " << om.get_n_machines() << " times" << std::endl;

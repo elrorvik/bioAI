@@ -64,7 +64,7 @@ public:
 
 	operation_t get_jobs_current_operation(int job_index) { return operation_seq[job_index][current_job_index[job_index]]; }
 	operation_t get_job_at_machine_time(int machine_ID, double time);
-	void resolve_task_overlap_at_machine(int machine_ID, std::vector<start_duration_pair>& machine_vacancies);
+	void resolve_task_overlap_at_machine(int machine_ID, std::vector<start_duration_pair>& machine_vacancies, std::vector<double>& jobs_finish_time);
 	std::vector<int> get_genotype();
 	double get_jobs_prev_operation_start_time(int job_index) { return operation_seq[job_index][current_job_index[job_index] - 1].start_time; }
 	double get_jobs_prev_operation_process_time(int job_index) { return operation_seq[job_index][current_job_index[job_index] - 1].duration; }

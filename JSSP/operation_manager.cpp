@@ -118,32 +118,50 @@ void test_JSSP_sol(const std::vector<int> &sol, int n_jobs, int n_machines) {
 			}
 		}
 	}
+	return operation_t(-1, -1, -1, -1);
 }
 
- void Operation_manager::resolve_task_overlap_at_machine(int machine_ID, std::vector<start_duration_pair>& vacancies) {
-	 double prev_start_time = -1.0;
-	 double prev_duration;
+ void Operation_manager::resolve_task_overlap_at_machine(int machine_ID, std::vector<start_duration_pair>& vacancies, std::vector<double>& jobs_finish_time) {
+	 double min_duration = DBL_MAX;
+	 double total_time = 0;
 	 for (int task = 0; task < n_machines; task++) {
 		 for (int job = 0; job < n_jobs; job++) {
-			 if (machine_ID == operation_seq[job][task].machine_id) {
-				 if (prev_start_time == -1.0) {
-					 prev_start_time = operation_seq[job][task].start_time;
-					 prev_duration = operation_seq[job][task].duration;
-					 continue;
-				 }
-
-				 if (prev_start_time + prev_duration > operation_seq[job][task].start_time) {
-					 operation_seq[job][task].start_time = prev_start_time + prev_duration;
-				 }
-				 prev_start_time = operation_seq[job][task].start_time;
-				 prev_duration = operation_seq[job][task].duration;
-			 }
+			 double task_duration = operation_seq[job][task].duration;
+			 if (task_duration < min_duration) min_duration = task_duration;
+			 total_time += task_duration;
 		 }
 	 }
+
+	 double current_time = 0;
+	 double prev_start_time = -1.0;
+	 double prev_duration;
+	 while (current_time < total_time) {
+		 operation_t task = get_job_at_machine_time(machine_ID, current_time);
+		 if (task.job_id == -1) {
+			 current_time += min_duration;
+			 continue;
+		 }
+		 if (prev_start_time == -1.0) {
+			 prev_start_time = task.start_time;
+			 prev_duration = task.duration;
+			 current_time += min_duration;
+			 continue;
+		 }
+
+		 if (prev_start_time + prev_duration > task.start_time) {
+			 operation_seq[task.job_id][task.operation_id].start_time = prev_start_time + prev_duration;
+		 }
+
+		 prev_start_time = task.start_time;
+		 prev_duration = task.duration;
+		 current_time += min_duration;
+	 }
+	 double finish_time = prev_start_time + prev_duration;
 
 	 // Create new vacancies, possibly through another function
 	 prev_start_time = -1.0;
 	 vacancies.clear();
+	 double current_machine_finish_time = 0.0;
 	 for (int task = 0; task < n_machines; task++) {
 		 for (int job = 0; job < n_jobs; job++) {
 			 if (machine_ID == operation_seq[job][task].machine_id) {
@@ -155,11 +173,24 @@ void test_JSSP_sol(const std::vector<int> &sol, int n_jobs, int n_machines) {
 
 				 if (prev_start_time + prev_duration + prev_duration/100000 < operation_seq[job][task].start_time) {
 					 vacancies.emplace_back(prev_start_time + prev_duration, operation_seq[job][task].start_time - prev_start_time + prev_duration);
+				 }
 
+				 if (operation_seq[job][task].start_time + operation_seq[job][task].duration > current_machine_finish_time) {
+					 current_machine_finish_time = operation_seq[job][task].start_time + operation_seq[job][task].duration;
 				 }
 
 				 prev_start_time = operation_seq[job][task].start_time;
 				 prev_duration = operation_seq[job][task].duration;
+			 }
+		 }
+	 }
+	 vacancies.emplace_back(current_machine_finish_time, DBL_MAX);
+
+	 // Keep track of the last current finish time of each job
+	 for (int task = 0; task < n_machines; task++) {
+		 for (int job = 0; job < n_jobs; job++) {
+			 if (operation_seq[job][task].start_time > jobs_finish_time[job]) {
+				 jobs_finish_time[job] = operation_seq[job][task].start_time;
 			 }
 		 }
 	 }
@@ -190,6 +221,6 @@ std::vector<int> Operation_manager::get_genotype() {
 		current_time += min_duration;
 
 	}
-
+	reset_increment();
 	return genotype;
 }
