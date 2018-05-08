@@ -163,20 +163,20 @@ void bee_colony_algorithm(Operation_manager& om, double target, bool minimize) {
 
 			if (target*1.3 > best && percent_30 == 0) {
 				std::cout << "within 30% " << best << std::endl;
-				write_file("plot\\sol.txt", om);
+				write_file("plot\\bee_sol.txt", om);
 				percent_30 = 1;
 			}
 			else if (target*1.2 > best && percent_20 == 0) {
 				std::cout << "within 20% " << best << std::endl;
-				write_file("plot\\sol.txt", om);
+				write_file("plot\\bee_sol.txt", om);
 				percent_20 = 1;
 			}
 			else if (percent_20 == 1 && iteration % 100 == 0) {
-				std::cout << best << " ";
+				std::cout <<"it: " << iteration << " best: " << best << std::endl;
 			}
 			else if (target*1.1 > best) {
 				std::cout << "on target within 10% " << best << std::endl;
-				write_file("plot\\sol.txt", om);
+				write_file("plot\\bee_sol.txt", om);
 				break;
 			}
 		}

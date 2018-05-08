@@ -4,6 +4,8 @@
 #include "ACO.h"
 #include "scheduler.h"
 #include <algorithm>
+#include "file.h"
+#include "JSSP.h"
 using namespace std;
 
 struct Ant {
@@ -26,6 +28,8 @@ double eta_LPT(double SC, double PT);
 double eta_SPT(double SC, double PT);
 void calc_start_time(Operation_manager& tabu, std::vector<std::vector<start_duration_pair>>& machine_vacancies_tab);
 void update_vacencies(Operation_manager& tabu, std::vector<std::vector<start_duration_pair>>& machine_vacancies_tab, int job_id);
+void calculate_pheromone_update(vector<int>& current_job_index, Ant ant_k, int i, vector<vector<vector<float>>>& pher_delta);
+void update_pheromone_globally(Operation_manager&om, vector<vector<vector<float>>>& pher, vector<vector<vector<float>>>& pher_delta);
 
 
 void ant_coloy_optimization(Operation_manager& om, float target) {
@@ -42,11 +46,14 @@ void ant_coloy_optimization(Operation_manager& om, float target) {
 	Ant bestSolution;
 	bestSolution.fitness = INFINITY;
 	Operation_manager om_init = om;
+	Operation_manager om_best = om;
 
 	int iterations = 0;
+	int it_last_change = -1;
 	int percent_20 = 0;
 	int percent_30 = 0;
 	int percent_10 = 0;
+	int intervall_between_mutations = 100;
 
 	while (1) {
 		for (int ant_k = 0; ant_k < K_ANTS; ++ant_k) {
@@ -86,27 +93,41 @@ void ant_coloy_optimization(Operation_manager& om, float target) {
 				colony[ant_k].tasks.push_back(roulette_id);
 			}
 			colony[ant_k].fitness = calc_makespan(tabu, colony[ant_k].tasks);
+			
 
 			int scale = 1;
 			if (colony[ant_k] < bestSolution) {
 				bestSolution = colony[ant_k];
+				it_last_change = iterations;
 				scale = 1;
 			}
+			//std::cout << " it last change " << it_last_change << std::endl;
+			/*if (abs(iterations- it_last_change) >  intervall_between_mutations) {
+				double old_makespan = bestSolution.fitness;
+				double new_makespan = -mutate_search(tabu, bestSolution.tasks, -1);
+				it_last_change = iterations;
+				intervall_between_mutations = 50;
+				if (new_makespan < old_makespan) {
+					bestSolution.fitness = new_makespan;
+					std::cout << " new better mutation "  << old_makespan << " vs. " << new_makespan << std::endl;
+					scale = 1;
+					intervall_between_mutations = 100;
+					
+				}
+			}*/
 
 			// calculate pheromone
-			vector<char> current_job_index(n_jobs, 0);
+			vector<int> current_job_index(n_jobs, 0);
 			for (int i = 1; i < colony[ant_k].tasks.size(); ++i) {
 				if (current_job_index[colony[ant_k].tasks[i - 1]]> n_machines) continue;
-				int prev_job = colony[ant_k].tasks[i - 1];
-				int prev_task = current_job_index[colony[ant_k].tasks[i - 1]];
-				int current_job = colony[ant_k].tasks[i];
-				pher_delta[prev_job][prev_task][current_job] += Q *scale/ colony[ant_k].fitness;
-				current_job_index[colony[ant_k].tasks[i]]++;
+				calculate_pheromone_update(current_job_index, colony[ant_k], i, pher_delta);
+				
 			}
+			
 		}
 
 		//Update pheromone globally
-		for (int i = 0; i < n_jobs; ++i) {
+		/*for (int i = 0; i < n_jobs; ++i) {
 			for (int j = 0; j <= n_machines; ++j) {
 				for (int edge_index = 0; edge_index < n_jobs; ++edge_index) {
 					float new_phero = pher_delta[i][j][edge_index] + RHO * pher[i][j][edge_index];
@@ -116,25 +137,33 @@ void ant_coloy_optimization(Operation_manager& om, float target) {
 					pher_delta[i][j][edge_index] = 0;
 				}
 			}
-		}
+		}*/
+		update_pheromone_globally(om, pher, pher_delta);
 		
 		if (target*1.3 > bestSolution.fitness && percent_30 == 0) {
 			cout << "within 30% " << bestSolution.fitness << std::endl;
+			calc_makespan(om_best, bestSolution.tasks);
+			write_file("plot\\ant_sol.txt", om_best);
 			percent_30 = 1;
 		}
 		else if (target*1.2 > bestSolution.fitness && percent_20 == 0) {
 			cout << "within 20% " << bestSolution.fitness << std::endl;
+			calc_makespan(om_best, bestSolution.tasks);
+			write_file("plot\\ant_sol.txt", om_best);
 			percent_20 = 1;
 		}
 		else if (percent_20 == 1 && iterations % 100 == 0) {
-			std::cout << bestSolution.fitness << " ";
+			std::cout << "it: " << iterations << " best: " << bestSolution.fitness << " " << std::endl;;
 		}
 		else if (target*1.1 > bestSolution.fitness) {
-			cout << "on target within 10% " << bestSolution.fitness << std::endl;
+			calc_makespan(om_best, bestSolution.tasks);
+			write_file("plot\\ant_sol.txt", om_best);
+			std::cout << "on target within 10% " << bestSolution.fitness << std::endl;
 			break;
 		}
 		iterations++;
 	}
+	std::cout << "Ant algorithm terminated with best fitness: " << bestSolution.fitness << " with solution:" << std::endl;
 }
 
 void init_pheromone(Operation_manager& om, vector<vector<vector<float>>>& pher, vector<vector<vector<float>>>& pher_delta, int& total_operations) {
@@ -149,7 +178,8 @@ void init_pheromone(Operation_manager& om, vector<vector<vector<float>>>& pher, 
 		for (int task = 0; task <= om.get_op_size(job); ++task) {
 				
 			for (int edge = 0; edge < n_jobs; ++edge) {
-				phi_task[edge] = (((double)rand() / (RAND_MAX / PHERO_INIT)));
+				//phi_task[edge] = (((double)rand() / (RAND_MAX / PHERO_INIT)));
+				phi_task[edge] = 0.1; //(((double)rand() / (RAND_MAX / PHERO_INIT)));
 			}
 			phi_job.push_back(phi_task);
 			delta_job.push_back(delta_task);
@@ -346,4 +376,45 @@ double eta_SPT(double SC, double PT) {
 double eta_LPT(double SC, double PT) {
 	int eta_Q = 5;
 	return eta_Q * PT / (SC + PT);
+}
+
+void init_pheromone_heurestic(Operation_manager& om,  vector<vector<vector<float>>>& pher, vector<vector<vector<float>>>& pher_delta) {
+	int n_jobs = om.get_n_jobs();
+	int n_machines = om.get_n_machines();
+	Ant  geno;
+
+	for (int j = 0; j < 3; j++) {
+		vector<int> current_job_index(n_jobs, 0);
+		for (int i = 1; i < geno.tasks.size(); ++i) {
+			if (current_job_index[geno.tasks[i - 1]] > n_machines) continue;
+			calculate_pheromone_update(current_job_index, geno, i, pher_delta);
+
+		}
+	}
+
+	update_pheromone_globally(om, pher, pher_delta);
+}
+
+void calculate_pheromone_update( vector<int>& current_job_index, Ant ant_k, int i, vector<vector<vector<float>>>& pher_delta) {
+	int prev_job = ant_k.tasks[i - 1];
+	int prev_task = current_job_index[ant_k.tasks[i - 1]];
+	int current_job = ant_k.tasks[i];
+	pher_delta[prev_job][prev_task][current_job] += Q / ant_k.fitness;
+	current_job_index[ant_k.tasks[i]]++;
+}
+
+void update_pheromone_globally(Operation_manager&om, vector<vector<vector<float>>>& pher,vector<vector<vector<float>>>& pher_delta) {
+	int n_jobs = om.get_n_jobs();
+	int n_machines = om.get_n_machines();
+	for (int i = 0; i < n_jobs; ++i) {
+		for (int j = 0; j <= n_machines; ++j) {
+			for (int edge_index = 0; edge_index < n_jobs; ++edge_index) {
+				float new_phero = pher_delta[i][j][edge_index] + RHO * pher[i][j][edge_index];
+				if (pher[i][j][edge_index] < PHERO_LIMIT_MIN) new_phero = PHERO_LIMIT_MIN;
+				if (pher[i][j][edge_index] > PHERO_LIMIT_MAX) new_phero = PHERO_LIMIT_MAX;
+				pher[i][j][edge_index] = new_phero;
+				pher_delta[i][j][edge_index] = 0;
+			}
+		}
+	}
 }
