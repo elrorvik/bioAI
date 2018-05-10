@@ -7,8 +7,7 @@
 
 int main() {
 	srand(time(0));
-
-
+	
 	std::string filename = "test_data\\1.txt";
 	float target = 56;
 	filename = "test_data\\2.txt";
@@ -21,20 +20,18 @@ int main() {
 	target = 1451;
 	filename = "test_data\\6.txt";
 	target = 979;
-	filename = "test_data\\7.txt";
-	target = 1000; //944;
-	filename = "test_data\\8.txt";
-	target = 8300/1.1;
+	filename = "test_data\\demo\\3.txt";
+	target = 1721;
+
+
 	std::cout << " 1.1 of target " << target * 1.1 << std::endl;
 	Operation_manager om(filename);
+	std::cout << " ******* ACO *********** " << std::endl;
+	ant_coloy_optimization(om, target);
+	om.reset_all_jobs();
 
 	std::cout << "\n ******* ABC *********** " << std::endl;
 	bee_colony_algorithm(om, target, true);
-	om.reset_all_jobs();
-
-	std::cout << " ******* ACO *********** " << std::endl;
-	ant_coloy_optimization(om, target);
-
 	
 	system("pause");
 	return 0;

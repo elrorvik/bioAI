@@ -57,7 +57,7 @@ void ant_coloy_optimization(Operation_manager& om, float target) {
 	int percent_20 = 0;
 	int percent_30 = 0;
 	int percent_10 = 0;
-	int intervall_between_mutations = 100;
+	int intervall_between_mutations = 2;
 
 	while (1) {
 		for (int ant_k = 0; ant_k < K_ANTS; ++ant_k) {
@@ -68,9 +68,9 @@ void ant_coloy_optimization(Operation_manager& om, float target) {
 				machine_vacancies_tab[m_index].emplace_back(0, DBL_MAX);
 			}
 
-			double ALPHA = (rand() % 99) / 100 + 0.01;
+			double ALPHA = (rand() % 50) / 100 + 0.3;
 			double BETHA = 1.0 - ALPHA;
-			Operation_manager tabu = om_init; 
+			Operation_manager tabu = om_init;
 			colony[ant_k].tasks.clear();
 
 			//random assignment of first task
@@ -97,7 +97,6 @@ void ant_coloy_optimization(Operation_manager& om, float target) {
 				colony[ant_k].tasks.push_back(roulette_id);
 			}
 			colony[ant_k].fitness = develop_makespan(tabu, colony[ant_k].tasks);
-			
 
 			int scale = 1;
 			if (colony[ant_k] < bestSolution) {
@@ -106,28 +105,31 @@ void ant_coloy_optimization(Operation_manager& om, float target) {
 				scale = 1;
 			}
 			//std::cout << " it last change " << it_last_change << std::endl;
-			/*if (abs(iterations- it_last_change) >  intervall_between_mutations) {
+			if (abs(iterations - it_last_change) >  intervall_between_mutations) {
 				double old_makespan = bestSolution.fitness;
 				double new_makespan = -mutate_search(tabu, bestSolution.tasks, -1);
-				it_last_change = iterations;
-				intervall_between_mutations = 50;
+				intervall_between_mutations = 1;
 				if (new_makespan < old_makespan) {
 					bestSolution.fitness = new_makespan;
-					std::cout << " new better mutation "  << old_makespan << " vs. " << new_makespan << std::endl;
+					std::cout << " new better mutation " << old_makespan << " vs. " << new_makespan << std::endl;
 					scale = 1;
-					intervall_between_mutations = 100;
-					
+					intervall_between_mutations = 2;
+					it_last_change = iterations;
 				}
-			}*/
+			}
+
+			vector<int> current_job_index1(n_jobs, 0);
+			for (int i = 1; i < colony[ant_k].tasks.size(); ++i) {
+				if (current_job_index1[colony[ant_k].tasks[i - 1]]> n_machines) continue;
+				calculate_pheromone_update(current_job_index1, bestSolution, i, pher_delta);
+			}
 
 			// calculate pheromone
-			vector<int> current_job_index(n_jobs, 0);
+			vector<int> current_job_index2(n_jobs, 0);
 			for (int i = 1; i < colony[ant_k].tasks.size(); ++i) {
-				if (current_job_index[colony[ant_k].tasks[i - 1]]> n_machines) continue;
-				calculate_pheromone_update(current_job_index, colony[ant_k], i, pher_delta);
-				
+				if (current_job_index2[colony[ant_k].tasks[i - 1]]> n_machines) continue;
+				calculate_pheromone_update(current_job_index2, colony[ant_k], i, pher_delta);
 			}
-			
 		}
 
 		//Update pheromone globally
@@ -156,7 +158,7 @@ void ant_coloy_optimization(Operation_manager& om, float target) {
 			write_file("plot\\ant_sol.txt", om_best);
 			percent_20 = 1;
 		}
-		else if (percent_20 == 1 && iterations % 100 == 0) {
+		else if (percent_20 == 1 && iterations % 40 == 0) {
 			std::cout << "it: " << iterations << " best: " << bestSolution.fitness << " " << std::endl;;
 		}
 		else if (target*1.1 > bestSolution.fitness) {
